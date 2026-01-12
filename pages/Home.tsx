@@ -2,17 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Play, Info } from 'lucide-react';
-import { getProjects, getHeroData, urlFor } from '../lib/sanity';
+import { getProjects, getHeroData, urlFor, getPartners } from '../lib/sanity';
 import { Project } from '../types';
 import { ProjectRow } from '../components/ProjectRow';
+import { PartnerRow } from '../components/PartnerRow';
 
 export const Home: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [partners, setPartners] = useState<any[]>([]);
   const [heroProject, setHeroProject] = useState<Project | null>(null);
 
   useEffect(() => {
     getHeroData().then(setHeroProject);
     getProjects().then(setProjects);
+    getPartners().then(setPartners);
   }, []);
 
   const getHeroEmbedUrl = (url: string) => {
@@ -29,7 +32,6 @@ export const Home: React.FC = () => {
             {heroProject.videoUrl ? (
               <div className="absolute inset-0 w-full h-full">
                 <iframe
-                  // OPRAVA: Klasické Netflix "cover" řešení pro YouTube iframe
                   className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none scale-[1.35] w-full h-[120%] object-cover"
                   style={{ width: '100vw', height: '56.25vw', minHeight: '80vh', minWidth: '142.22vh' }}
                   src={getHeroEmbedUrl(heroProject.videoUrl)}
@@ -67,11 +69,18 @@ export const Home: React.FC = () => {
         </section>
       )}
 
-      {/* HORIZONTÁLNÍ ŘADY - S omezením šířky pro obsah */}
-      <div className="max-w-[1400px] mx-auto mt-[-10vh] relative z-20 space-y-12 px-6 md:px-12">
+      {/* OBSAH POD HERO SEKCI */}
+      <div className="max-w-[1400px] mx-auto mt-[-10vh] relative z-20 space-y-12 px-6 md:px-12 lg:px-24">
+        {/* První řada: Tvoje tvorba */}
         <ProjectRow title="Moje tvorba" projects={projects} />
+
+        {/* Sekce reference (zobrazí se jen pokud jsou v Sanity data) */}
+        {partners.length > 0 && (
+          <PartnerRow partners={partners} />
+        )}
+
+        {/* Další řady */}
         <ProjectRow title="Webové projekty" projects={projects.filter(p => p.category?.toLowerCase().includes('web'))} />
-        <ProjectRow title="Video produkce" projects={projects.filter(p => p.category?.toLowerCase().includes('video'))} />
       </div>
     </div>
   );

@@ -26,6 +26,15 @@ export async function getHeroData() {
   return client.fetch(`*[_type == "project" && isHero == true][0]`);
 }
 
+// Funkce pro načtení partnerů a referencí (Loga + Popis)
+export async function getPartners() {
+  return await client.fetch(`*[_type == "partner"]{
+    name,
+    "logo": logo.asset->url,
+    description
+  }`);
+}
+
 export async function getProjects(): Promise<Project[]> {
   return client.fetch(`*[_type == "project" && (isHero != true || !defined(isHero))] | order(_createdAt desc)`);
 }

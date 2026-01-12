@@ -12,7 +12,6 @@ const projectSchema = {
       type: 'string',
       validation: (Rule: any) => Rule.required(),
     },
-    // --- TOTO JE TEN DŮLEŽITÝ PŘEPÍNAČ PRO VIDEO NA POZADÍ ---
     {
       name: 'isHero',
       title: 'Použít jako hlavní video na pozadí (Hero)',
@@ -112,6 +111,32 @@ const postSchema = {
   ],
 };
 
+// --- NOVÉ SCHÉMA PRO PARTNERY ---
+const partnerSchema = {
+  name: 'partner',
+  title: 'Partneři a Reference',
+  type: 'document',
+  fields: [
+    {
+      name: 'name',
+      title: 'Název firmy',
+      type: 'string',
+    },
+    {
+      name: 'logo',
+      title: 'Logo (PNG bez pozadí)',
+      type: 'image',
+      options: { hotspot: true },
+    },
+    {
+      name: 'description',
+      title: 'Popis spolupráce (Zobrazí se po najetí)',
+      type: 'text',
+      description: 'Např.: "Správa sociálních sítí a reklamní kampaně 2023"',
+    },
+  ],
+};
+
 export default defineConfig({
   name: 'default',
   title: 'Portfolio Studio',
@@ -120,6 +145,7 @@ export default defineConfig({
   basePath: '/studio',
   plugins: [deskTool()],
   schema: {
-    types: [projectSchema, postSchema],
+    // PŘIDÁNO partnerSchema do seznamu typů
+    types: [projectSchema, postSchema, partnerSchema],
   },
 });
