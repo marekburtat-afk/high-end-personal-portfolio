@@ -113,8 +113,9 @@ const postSchema = {
 export default defineConfig({
   name: 'default',
   title: 'Portfolio Studio',
-  projectId: '1ycy3rf5', // Dummy ID that passes regex validation
+  projectId: '1ycy3rf5', 
   dataset: 'production',
+  basePath: '/studio', // <--- TENTO ŘÁDEK TAM MUSÍŠ PŘIDAT!
   plugins: [deskTool()],
   schema: {
     types: [projectSchema, postSchema],
