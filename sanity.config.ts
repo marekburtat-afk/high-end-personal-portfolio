@@ -1,6 +1,65 @@
 import { defineConfig } from 'sanity';
 import { deskTool } from 'sanity/desk';
 
+// 1. Pomocné objekty pro bohatý obsah článku
+const imageWithCaption = {
+  name: 'imageWithCaption',
+  title: 'Obrázek s popiskem',
+  type: 'image',
+  options: { hotspot: true },
+  fields: [
+    {
+      name: 'caption',
+      type: 'string',
+      title: 'Popisek obrázku',
+      description: 'Zobrazí se pod fotkou v článku',
+    },
+    {
+      name: 'alt',
+      type: 'string',
+      title: 'Alternativní text',
+      validation: (Rule: any) => Rule.required(),
+    }
+  ]
+};
+
+const videoEmbed = {
+  name: 'videoEmbed',
+  title: 'Video (YouTube/Vimeo)',
+  type: 'object',
+  fields: [
+    {
+      name: 'url',
+      type: 'url',
+      title: 'URL videa',
+      description: 'Vložte odkaz na video (např. z YouTube)'
+    }
+  ]
+};
+
+const beforeAfterSlider = {
+  name: 'beforeAfterSlider',
+  title: 'Before & After Slider',
+  type: 'object',
+  fields: [
+    {
+      name: 'beforeImage',
+      title: 'Obrázek PŘED',
+      type: 'image',
+      options: { hotspot: true },
+      validation: (Rule: any) => Rule.required(),
+    },
+    {
+      name: 'afterImage',
+      title: 'Obrázek PO',
+      type: 'image',
+      options: { hotspot: true },
+      validation: (Rule: any) => Rule.required(),
+    }
+  ]
+};
+
+// 2. Schémata dokumentů
 const projectSchema = {
   name: 'project',
   title: 'Práce (Projects)',
@@ -14,9 +73,8 @@ const projectSchema = {
     },
     {
       name: 'isHero',
-      title: 'Použít jako hlavní video na pozadí (Hero)',
+      title: 'Použít jako Hero video',
       type: 'boolean',
-      description: 'Pokud toto zapneš, projekt se zobrazí jako velké video na úvodní stránce.',
       initialValue: false,
     },
     {
@@ -31,44 +89,41 @@ const projectSchema = {
       title: 'Krátký popis',
       type: 'text',
       rows: 3,
-      description: 'Zobrazí se v mřížce pod hlavním videem.',
     },
     {
       name: 'mainImage',
       title: 'Hlavní obrázek',
       type: 'image',
       options: { hotspot: true },
-      fields: [
-        {
-          name: 'alt',
-          type: 'string',
-          title: 'Alternativní text',
-        }
-      ]
+      fields: [{ name: 'alt', type: 'string', title: 'Alt text' }]
     },
     {
       name: 'videoUrl',
       title: 'YouTube Video URL',
       type: 'url',
-      description: 'Odkaz na YouTube (např. https://www.youtube.com/watch?v=...). Pro video na pozadí je toto nutné.',
     },
     {
       name: 'content',
       title: 'Detailní obsah',
       type: 'array', 
-      of: [{type: 'block'}, {type: 'image'}]
+      of: [
+        { type: 'block' }, 
+        imageWithCaption, 
+        videoEmbed, 
+        beforeAfterSlider
+      ]
     },
     {
-        name: 'category',
-        title: 'Kategorie',
-        type: 'string',
-        options: {
-            list: [
-                {title: 'Web Development', value: 'web'},
-                {title: 'Design', value: 'design'},
-                {title: 'Video', value: 'video'},
-            ]
-        }
+      name: 'category',
+      title: 'Kategorie',
+      type: 'string',
+      options: {
+        list: [
+          {title: 'Web Development', value: 'web'},
+          {title: 'Design', value: 'design'},
+          {title: 'Video', value: 'video'},
+        ]
+      }
     }
   ],
 };
@@ -106,34 +161,24 @@ const postSchema = {
       name: 'body',
       title: 'Text článku',
       type: 'array',
-      of: [{type: 'block'}, {type: 'image'}]
+      of: [
+        { type: 'block' }, 
+        imageWithCaption, 
+        videoEmbed, 
+        beforeAfterSlider
+      ]
     },
   ],
 };
 
-// --- NOVÉ SCHÉMA PRO PARTNERY ---
 const partnerSchema = {
   name: 'partner',
   title: 'Partneři a Reference',
   type: 'document',
   fields: [
-    {
-      name: 'name',
-      title: 'Název firmy',
-      type: 'string',
-    },
-    {
-      name: 'logo',
-      title: 'Logo (PNG bez pozadí)',
-      type: 'image',
-      options: { hotspot: true },
-    },
-    {
-      name: 'description',
-      title: 'Popis spolupráce (Zobrazí se po najetí)',
-      type: 'text',
-      description: 'Např.: "Správa sociálních sítí a reklamní kampaně 2023"',
-    },
+    { name: 'name', title: 'Název firmy', type: 'string' },
+    { name: 'logo', title: 'Logo', type: 'image', options: { hotspot: true } },
+    { name: 'description', title: 'Popis', type: 'text' },
   ],
 };
 
@@ -145,7 +190,6 @@ export default defineConfig({
   basePath: '/studio',
   plugins: [deskTool()],
   schema: {
-    // PŘIDÁNO partnerSchema do seznamu typů
     types: [projectSchema, postSchema, partnerSchema],
   },
 });
