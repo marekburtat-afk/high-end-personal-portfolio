@@ -5,19 +5,18 @@ export interface SanityImage {
     _type: 'reference';
   };
   alt?: string;
+  caption?: string;
 }
 
 export interface Project {
   _id: string;
   _createdAt: string;
   title: string;
-  slug: {
-    current: string;
-  };
-  description: string; // Used for listing
-  content?: any; // Portable Text for details
+  slug: { current: string };
+  description: string;
+  content?: any;
   mainImage?: SanityImage;
-  videoUrl?: string; // YouTube or Vimeo link
+  videoUrl?: string;
   category?: string;
 }
 
@@ -25,9 +24,7 @@ export interface Post {
   _id: string;
   _createdAt: string;
   title: string;
-  slug: {
-    current: string;
-  };
+  slug: { current: string };
   publishedAt: string;
   excerpt: string;
   body?: any;

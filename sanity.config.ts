@@ -1,195 +1,63 @@
 import { defineConfig } from 'sanity';
 import { deskTool } from 'sanity/desk';
 
-// 1. Pomocné objekty pro bohatý obsah článku
 const imageWithCaption = {
   name: 'imageWithCaption',
-  title: 'Obrázek s popiskem',
   type: 'image',
+  title: 'Obrázek s popiskem',
   options: { hotspot: true },
-  fields: [
-    {
-      name: 'caption',
-      type: 'string',
-      title: 'Popisek obrázku',
-      description: 'Zobrazí se pod fotkou v článku',
-    },
-    {
-      name: 'alt',
-      type: 'string',
-      title: 'Alternativní text',
-      validation: (Rule: any) => Rule.required(),
-    }
-  ]
+  fields: [{ name: 'caption', type: 'string', title: 'Popisek' }, { name: 'alt', type: 'string', title: 'Alt' }]
 };
 
 const videoEmbed = {
   name: 'videoEmbed',
-  title: 'Video (YouTube/Vimeo)',
   type: 'object',
-  fields: [
-    {
-      name: 'url',
-      type: 'url',
-      title: 'URL videa',
-      description: 'Vložte odkaz na video (např. z YouTube)'
-    }
-  ]
+  title: 'Video',
+  fields: [{ name: 'url', type: 'url', title: 'URL' }]
 };
 
 const beforeAfterSlider = {
   name: 'beforeAfterSlider',
-  title: 'Before & After Slider',
   type: 'object',
+  title: 'Before/After',
   fields: [
-    {
-      name: 'beforeImage',
-      title: 'Obrázek PŘED',
-      type: 'image',
-      options: { hotspot: true },
-      validation: (Rule: any) => Rule.required(),
-    },
-    {
-      name: 'afterImage',
-      title: 'Obrázek PO',
-      type: 'image',
-      options: { hotspot: true },
-      validation: (Rule: any) => Rule.required(),
-    }
+    { name: 'beforeImage', type: 'image', title: 'Před' },
+    { name: 'afterImage', type: 'image', title: 'Po' }
   ]
 };
 
-// 2. Schémata dokumentů
 const projectSchema = {
   name: 'project',
-  title: 'Práce (Projects)',
+  title: 'Projekty',
   type: 'document',
   fields: [
-    {
-      name: 'title',
-      title: 'Titulek',
-      type: 'string',
-      validation: (Rule: any) => Rule.required(),
-    },
-    {
-      name: 'isHero',
-      title: 'Použít jako Hero video',
-      type: 'boolean',
-      initialValue: false,
-    },
-    {
-      name: 'slug',
-      title: 'URL Slug',
-      type: 'slug',
-      options: { source: 'title', maxLength: 96 },
-      validation: (Rule: any) => Rule.required(),
-    },
-    {
-      name: 'description',
-      title: 'Krátký popis',
-      type: 'text',
-      rows: 3,
-    },
-    {
-      name: 'mainImage',
-      title: 'Hlavní obrázek',
-      type: 'image',
-      options: { hotspot: true },
-      fields: [{ name: 'alt', type: 'string', title: 'Alt text' }]
-    },
-    {
-      name: 'videoUrl',
-      title: 'YouTube Video URL',
-      type: 'url',
-    },
-    {
-      name: 'content',
-      title: 'Detailní obsah',
-      type: 'array', 
-      of: [
-        { type: 'block' }, 
-        imageWithCaption, 
-        videoEmbed, 
-        beforeAfterSlider
-      ]
-    },
-    {
-      name: 'category',
-      title: 'Kategorie',
-      type: 'string',
-      options: {
-        list: [
-          {title: 'Web Development', value: 'web'},
-          {title: 'Design', value: 'design'},
-          {title: 'Video', value: 'video'},
-        ]
-      }
-    }
-  ],
+    { name: 'title', type: 'string', title: 'Titulek' },
+    { name: 'slug', type: 'slug', title: 'Slug', options: { source: 'title', maxLength: 96 } },
+    { name: 'description', type: 'text', title: 'Popis' },
+    { name: 'mainImage', type: 'image', title: 'Hlavní foto' },
+    { name: 'videoUrl', type: 'url', title: 'Video URL' },
+    { name: 'content', type: 'array', title: 'Obsah', of: [{ type: 'block' }, imageWithCaption, videoEmbed, beforeAfterSlider] },
+    { name: 'category', type: 'string', title: 'Kategorie' }
+  ]
 };
 
 const postSchema = {
   name: 'post',
-  title: 'Články (Blog)',
+  title: 'Blog',
   type: 'document',
   fields: [
-    {
-      name: 'title',
-      title: 'Titulek',
-      type: 'string',
-      validation: (Rule: any) => Rule.required(),
-    },
-    {
-      name: 'slug',
-      title: 'URL Slug',
-      type: 'slug',
-      options: { source: 'title', maxLength: 96 },
-    },
-    {
-      name: 'publishedAt',
-      title: 'Datum zveřejnění',
-      type: 'datetime',
-      initialValue: (new Date()).toISOString(),
-    },
-    {
-      name: 'excerpt',
-      title: 'Perex',
-      type: 'text',
-      rows: 2,
-    },
-    {
-      name: 'body',
-      title: 'Text článku',
-      type: 'array',
-      of: [
-        { type: 'block' }, 
-        imageWithCaption, 
-        videoEmbed, 
-        beforeAfterSlider
-      ]
-    },
-  ],
-};
-
-const partnerSchema = {
-  name: 'partner',
-  title: 'Partneři a Reference',
-  type: 'document',
-  fields: [
-    { name: 'name', title: 'Název firmy', type: 'string' },
-    { name: 'logo', title: 'Logo', type: 'image', options: { hotspot: true } },
-    { name: 'description', title: 'Popis', type: 'text' },
-  ],
+    { name: 'title', type: 'string', title: 'Titulek' },
+    { name: 'slug', type: 'slug', title: 'Slug', options: { source: 'title', maxLength: 96 } },
+    { name: 'body', type: 'array', title: 'Text', of: [{ type: 'block' }, imageWithCaption, videoEmbed, beforeAfterSlider] }
+  ]
 };
 
 export default defineConfig({
   name: 'default',
   title: 'Portfolio Studio',
-  projectId: '1ycy3rf5', 
+  projectId: '1ycy3rf5',
   dataset: 'production',
   basePath: '/studio',
   plugins: [deskTool()],
-  schema: {
-    types: [projectSchema, postSchema, partnerSchema],
-  },
+  schema: { types: [projectSchema, postSchema, { name: 'partner', title: 'Partneři', type: 'document', fields: [{ name: 'name', type: 'string' }, { name: 'logo', type: 'image' }, { name: 'description', type: 'text' }] }] },
 });

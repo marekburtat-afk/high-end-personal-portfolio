@@ -4,6 +4,55 @@ import { motion } from 'framer-motion';
 import { X, Plus, ThumbsUp } from 'lucide-react';
 import { getProject, urlFor } from '../lib/sanity';
 import { Project } from '../types';
+import { PortableText } from '@portabletext/react';
+import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
+
+const ptComponents = {
+  types: {
+    imageWithCaption: ({ value }: any) => (
+      <figure className="my-12 space-y-3">
+        <div className="rounded-lg overflow-hidden border border-neutral-800 shadow-2xl">
+          <img src={urlFor(value).width(1200).url()} alt={value.alt || ''} className="w-full h-auto" />
+        </div>
+        {value.caption && <figcaption className="text-center text-neutral-500 italic text-sm border-l-2 border-red-600 py-1 px-4 bg-neutral-900/10">{value.caption}</figcaption>}
+      </figure>
+    ),
+    videoEmbed: ({ value }: any) => {
+      const id = value.url?.includes('v=') ? value.url.split('v=')[1]?.split('&')[0] : value.url?.split('/').pop();
+      return (
+        <div className="my-12 aspect-video rounded-lg overflow-hidden border border-neutral-800 shadow-2xl bg-black">
+          <iframe className="w-full h-full" src={`https://www.youtube.com/embed/${id}?rel=0`} frameBorder="0" allowFullScreen></iframe>
+        </div>
+      );
+    },
+    beforeAfterSlider: ({ value }: any) => (
+      <div className="my-20 space-y-6">
+        <div className="flex justify-between items-end mb-2 uppercase tracking-[0.3em] text-[10px] text-neutral-500 font-black italic">
+          <span>Original Concept</span>
+          <span className="text-red-600">Final Master</span>
+        </div>
+        <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+          <ReactCompareSlider
+            itemOne={<ReactCompareSliderImage src={urlFor(value.beforeImage).width(1400).url()} alt="Před" />}
+            itemTwo={<ReactCompareSliderImage src={urlFor(value.afterImage).width(1400).url()} alt="Po" />}
+            handle={
+              <div className="relative h-full flex items-center justify-center">
+                <div className="w-[2px] h-full bg-red-600 shadow-[0_0_20px_rgba(229,9,20,1)]"></div>
+                <div className="absolute w-12 h-12 bg-[#FF1E56] rounded-full flex items-center justify-center border-2 border-white cursor-ew-resize shadow-[0_0_30px_rgba(255,30,86,0.6)]">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M8 7l-4 5 4 5M16 7l4 5-4 5" /></svg>
+                </div>
+              </div>
+            }
+          />
+        </div>
+      </div>
+    ),
+  },
+  block: {
+    normal: ({ children }: any) => <p className="text-neutral-300 text-lg md:text-xl leading-relaxed mb-8 font-light max-w-4xl">{children}</p>,
+    h2: ({ children }: any) => <h2 className="text-3xl md:text-5xl font-black text-white mt-20 mb-8 italic uppercase tracking-tighter border-b border-red-600 pb-2 inline-block">{children}</h2>,
+  }
+};
 
 export const ProjectDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -13,99 +62,41 @@ export const ProjectDetail: React.FC = () => {
     if (slug) { getProject(slug).then(data => setProject(data)); }
   }, [slug]);
 
-  if (!project) return <div className="min-h-screen bg-[#141414] flex items-center justify-center text-white font-bold uppercase tracking-widest">Načítání...</div>;
+  if (!project) return <div className="min-h-screen bg-[#141414] flex items-center justify-center text-white font-black uppercase tracking-[0.5em]">Loading...</div>;
 
   const getEmbedUrl = (url: string) => {
     if (!url) return "";
-    const id = url.split('v=')[1]?.split('&')[0];
-    // Přidali jsme parametry pro čistší přehrávač bez zbytečností
-    return `https://www.youtube.com/embed/${id}?autoplay=1&rel=0&modestbranding=1&showinfo=0&iv_load_policy=3`;
+    const id = url.includes('v=') ? url.split('v=')[1]?.split('&')[0] : url.split('/').pop();
+    return `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&rel=0&modestbranding=1&loop=1&playlist=${id}`;
   };
 
   return (
-    <div className="min-h-screen bg-[#141414] -mt-24 pb-20 relative overflow-x-hidden">
-      {/* Křížek pro zavření - fixní pozice, která neuhýbá */}
-      <Link 
-        to="/" 
-        className="fixed top-24 right-6 md:right-12 z-[110] bg-black/50 backdrop-blur-md p-3 rounded-full text-white hover:bg-white hover:text-black transition-all shadow-2xl group"
-      >
-        <X size={28} className="group-hover:scale-110 transition-transform" />
-      </Link>
-
-      {/* VIDEO / HERO SEKCE DETAILU */}
-      <div className="relative h-[65vh] md:h-[85vh] w-full overflow-hidden bg-black">
+    <div className="min-h-screen bg-[#141414] -mt-24 pb-32 relative overflow-x-hidden">
+      <Link to="/" className="fixed top-24 right-6 md:right-12 z-[110] bg-black/60 backdrop-blur-xl p-4 rounded-full text-white hover:bg-red-600 transition-all shadow-2xl border border-white/10"><X size={24} /></Link>
+      <div className="relative h-[70vh] md:h-[90vh] w-full overflow-hidden">
         {project.videoUrl ? (
-          <div className="absolute inset-0 w-full h-full">
-            <iframe 
-              // OPRAVA: Iframe se nyní zoomuje správně díky scale a výpočtu poměru stran
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[1.15] md:scale-[1.35] w-full h-[120%]" 
-              style={{ width: '100vw', height: '56.25vw', minHeight: '85vh', minWidth: '151.11vh' }}
-              src={getEmbedUrl(project.videoUrl)} 
-              frameBorder="0" 
-              allow="autoplay; encrypted-media" 
-              allowFullScreen
-              title={project.title}
-            ></iframe>
+          <div className="absolute inset-0 w-full h-full pointer-events-none">
+            <iframe className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[1.2] md:scale-[1.5] w-full h-full" style={{ width: '100vw', height: '56.25vw', minHeight: '100vh', minWidth: '177.77vh' }} src={getEmbedUrl(project.videoUrl)} frameBorder="0" allow="autoplay; encrypted-media"></iframe>
           </div>
         ) : (
-          <img src={urlFor(project.mainImage)} className="w-full h-full object-cover" alt="" />
+          project.mainImage && <img src={urlFor(project.mainImage).url()} className="w-full h-full object-cover" alt="" />
         )}
-        
-        {/* Silnější gradient pro plynulý přechod do textu */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-[#141414]/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-[#141414]/40 to-transparent" />
       </div>
-
-      {/* OBSAH DETAILU */}
-      <div className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-24 -mt-32 md:-mt-48 relative z-10">
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }} 
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <h1 className="text-4xl md:text-7xl lg:text-8xl font-black mb-8 italic uppercase tracking-tighter drop-shadow-2xl text-white">
-            {project.title}
-          </h1>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            {/* Levý sloupec - Popis */}
-            <div className="lg:col-span-2 space-y-8">
-              <div className="flex items-center gap-4 text-sm md:text-base font-bold">
-                <span className="text-green-500 italic">98% Shoda</span>
-                <span className="text-neutral-400">2026</span>
-                <span className="border border-neutral-600 px-2 py-0.5 text-[10px] rounded-sm text-white tracking-widest">4K ULTRA HD</span>
-              </div>
-              
-              <p className="text-lg md:text-2xl text-neutral-200 leading-relaxed font-medium max-w-4xl">
-                {project.description}
-              </p>
+      <div className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-24 -mt-40 relative z-10">
+        <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
+          <h1 className="text-5xl md:text-8xl lg:text-9xl font-black mb-10 italic uppercase tracking-tighter text-white drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)]">{project.title}</h1>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-16 mb-24">
+            <div className="lg:col-span-2">
+              <div className="flex items-center gap-6 text-sm font-black mb-8"><span className="text-green-500 italic">98% MATCH</span><span className="text-neutral-400">2026</span><span className="border border-neutral-700 px-3 py-1 text-[10px] rounded-sm text-white bg-white/5 tracking-[0.2em]">4K ULTRA HD</span></div>
+              <p className="text-xl md:text-3xl text-neutral-200 leading-tight font-medium max-w-4xl italic">{project.description}</p>
             </div>
-
-            {/* Pravý sloupec - Akce a Meta data */}
-            <div className="lg:col-span-1 space-y-10">
-               <div className="flex gap-4">
-                  <button className="w-14 h-14 rounded-full border-2 border-neutral-500 flex items-center justify-center hover:border-white hover:bg-white/10 text-white transition-all group">
-                    <Plus size={28} className="group-hover:scale-110 transition-transform"/>
-                  </button>
-                  <button className="w-14 h-14 rounded-full border-2 border-neutral-500 flex items-center justify-center hover:border-white hover:bg-white/10 text-white transition-all group">
-                    <ThumbsUp size={28} className="group-hover:scale-110 transition-transform"/>
-                  </button>
-               </div>
-               
-               <div className="space-y-4">
-                 <div className="border-l-2 border-red-600 pl-4">
-                   <p className="text-neutral-500 uppercase tracking-[0.2em] text-[10px] mb-1">Kategorie</p>
-                   <p className="text-neutral-100 font-bold text-sm md:text-base uppercase tracking-widest">
-                     {project.category || 'Video produkce'}
-                   </p>
-                 </div>
-                 
-                 <div className="border-l-2 border-neutral-800 pl-4">
-                   <p className="text-neutral-500 uppercase tracking-[0.2em] text-[10px] mb-1">Režie</p>
-                   <p className="text-neutral-100 font-bold text-sm md:text-base uppercase tracking-widest">Marek Verťat</p>
-                 </div>
-               </div>
+            <div className="lg:col-span-1 space-y-6 border-l border-red-600/30 pl-6 font-black italic">
+               <div><p className="text-neutral-500 uppercase tracking-widest text-[9px] mb-1">Genre</p><p className="text-white text-sm uppercase">{project.category || 'Visual Art'}</p></div>
+               <div><p className="text-neutral-500 uppercase tracking-widest text-[9px] mb-1">Director</p><p className="text-white text-sm uppercase underline decoration-red-600 underline-offset-4">Marek Verťat</p></div>
             </div>
           </div>
+          <div className="rich-text-content border-t border-white/5 pt-20">{project.content && <PortableText value={project.content} components={ptComponents} />}</div>
         </motion.div>
       </div>
     </div>
