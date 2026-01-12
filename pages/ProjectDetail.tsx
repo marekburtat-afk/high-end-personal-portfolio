@@ -28,8 +28,8 @@ const ptComponents = {
     beforeAfterSlider: ({ value }: any) => (
       <div className="my-20 space-y-6">
         <div className="flex justify-between items-end mb-2 uppercase tracking-[0.3em] text-[10px] text-neutral-500 font-black italic">
-          <span>Original Concept</span>
-          <span className="text-red-600">Final Master</span>
+          <span>Před</span>
+          <span className="text-red-600">Po</span>
         </div>
         <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
           <ReactCompareSlider
@@ -37,9 +37,13 @@ const ptComponents = {
             itemTwo={<ReactCompareSliderImage src={urlFor(value.afterImage).width(1400).url()} alt="Po" />}
             handle={
               <div className="relative h-full flex items-center justify-center">
-                <div className="w-[2px] h-full bg-red-600 shadow-[0_0_20px_rgba(229,9,20,1)]"></div>
-                <div className="absolute w-12 h-12 bg-[#FF1E56] rounded-full flex items-center justify-center border-2 border-white cursor-ew-resize shadow-[0_0_30px_rgba(255,30,86,0.6)]">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M8 7l-4 5 4 5M16 7l4 5-4 5" /></svg>
+                {/* Netflix červená dělící linka */}
+                <div className="w-[2px] h-full bg-[#E50914] shadow-[0_0_20px_rgba(229,9,20,1)]"></div>
+                {/* Netflix červený puntík */}
+                <div className="absolute w-12 h-12 bg-[#E50914] rounded-full flex items-center justify-center border-2 border-white cursor-ew-resize shadow-[0_0_30px_rgba(229,9,20,0.6)]">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M8 7l-4 5 4 5M16 7l4 5-4 5" />
+                  </svg>
                 </div>
               </div>
             }
