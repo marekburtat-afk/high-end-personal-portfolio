@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { X, Plus, ThumbsUp } from 'lucide-react';
+import { X } from 'lucide-react';
 import { getProject, urlFor } from '../lib/sanity';
 import { Project } from '../types';
 import { PortableText } from '@portabletext/react';
@@ -37,9 +37,7 @@ const ptComponents = {
             itemTwo={<ReactCompareSliderImage src={urlFor(value.afterImage).width(1400).url()} alt="Po" />}
             handle={
               <div className="relative h-full flex items-center justify-center">
-                {/* Netflix červená dělící linka */}
                 <div className="w-[2px] h-full bg-[#E50914] shadow-[0_0_20px_rgba(229,9,20,1)]"></div>
-                {/* Netflix červený puntík */}
                 <div className="absolute w-12 h-12 bg-[#E50914] rounded-full flex items-center justify-center border-2 border-white cursor-ew-resize shadow-[0_0_30px_rgba(229,9,20,0.6)]">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M8 7l-4 5 4 5M16 7l4 5-4 5" />
@@ -60,7 +58,7 @@ const ptComponents = {
 
 export const ProjectDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
-  const [project, setProject] = useState<Project | null>(null);
+  const [project, setProject] = useState<any | null>(null);
 
   useEffect(() => {
     if (slug) { getProject(slug).then(data => setProject(data)); }
@@ -92,12 +90,28 @@ export const ProjectDetail: React.FC = () => {
           <h1 className="text-5xl md:text-8xl lg:text-9xl font-black mb-10 italic uppercase tracking-tighter text-white drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)]">{project.title}</h1>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-16 mb-24">
             <div className="lg:col-span-2">
-              <div className="flex items-center gap-6 text-sm font-black mb-8"><span className="text-green-500 italic">98% MATCH</span><span className="text-neutral-400">2026</span><span className="border border-neutral-700 px-3 py-1 text-[10px] rounded-sm text-white bg-white/5 tracking-[0.2em]">4K ULTRA HD</span></div>
+              <div className="flex items-center gap-6 text-sm font-black mb-8">
+                {/* Dynamické Netflix údaje ze Sanity */}
+                <span className="text-green-500 italic">{project.match || 98}% MATCH</span>
+                <span className="text-neutral-400">{project.year || '2026'}</span>
+                <span className="border border-neutral-700 px-3 py-1 text-[10px] rounded-sm text-white bg-white/5 tracking-[0.2em]">
+                  {project.quality || '4K ULTRA HD'}
+                </span>
+              </div>
               <p className="text-xl md:text-3xl text-neutral-200 leading-tight font-medium max-w-4xl italic">{project.description}</p>
             </div>
             <div className="lg:col-span-1 space-y-6 border-l border-red-600/30 pl-6 font-black italic">
-               <div><p className="text-neutral-500 uppercase tracking-widest text-[9px] mb-1">Genre</p><p className="text-white text-sm uppercase">{project.category || 'Visual Art'}</p></div>
-               <div><p className="text-neutral-500 uppercase tracking-widest text-[9px] mb-1">Director</p><p className="text-white text-sm uppercase underline decoration-red-600 underline-offset-4">Marek Verťat</p></div>
+               {/* Dynamický žánr a režisér */}
+               <div>
+                 <p className="text-neutral-500 uppercase tracking-widest text-[9px] mb-1">Genre</p>
+                 <p className="text-white text-sm uppercase">{project.genre || project.category || 'Visual Art'}</p>
+               </div>
+               <div>
+                 <p className="text-neutral-500 uppercase tracking-widest text-[9px] mb-1">Director</p>
+                 <p className="text-white text-sm uppercase underline decoration-red-600 underline-offset-4">
+                   {project.director || 'Marek Verťat'}
+                 </p>
+               </div>
             </div>
           </div>
           <div className="rich-text-content border-t border-white/5 pt-20">{project.content && <PortableText value={project.content} components={ptComponents} />}</div>
