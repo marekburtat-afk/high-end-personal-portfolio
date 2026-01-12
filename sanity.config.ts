@@ -6,7 +6,24 @@ const imageWithCaption = {
   type: 'image',
   title: 'Obrázek s popiskem',
   options: { hotspot: true },
-  fields: [{ name: 'caption', type: 'string', title: 'Popisek' }, { name: 'alt', type: 'string', title: 'Alt' }]
+  fields: [
+    { name: 'caption', type: 'string', title: 'Popisek' }, 
+    { name: 'alt', type: 'string', title: 'Alt' },
+    // NOVÉ POLE: Zarovnání pro obtékání textem
+    {
+      name: 'alignment',
+      type: 'string',
+      title: 'Zarovnání',
+      options: {
+        list: [
+          { title: 'Na celou šířku', value: 'full' },
+          { title: 'Vlevo (obtékání textem)', value: 'left' },
+          { title: 'Vpravo (obtékání textem)', value: 'right' },
+        ],
+      },
+      initialValue: 'full',
+    }
+  ]
 };
 
 const videoEmbed = {
@@ -37,12 +54,10 @@ const projectSchema = {
     { name: 'mainImage', type: 'image', title: 'Hlavní foto' },
     { name: 'videoUrl', type: 'url', title: 'Video URL' },
     
-    // Netflix detaily (zachováno)
     { name: 'match', type: 'number', title: 'Procento shody (např. 98)', initialValue: 98 },
     { name: 'year', type: 'string', title: 'Rok projektu', initialValue: '2026' },
     { name: 'quality', type: 'string', title: 'Kvalita (např. 4K Ultra HD)', initialValue: '4K Ultra HD' },
     
-    // ZMĚNA: Nahrazení Režiséra polem Výstup
     { 
       name: 'output', 
       type: 'string', 
@@ -50,7 +65,6 @@ const projectSchema = {
       initialValue: 'Online' 
     },
 
-    // Výběr žánru (zachováno s českým názvem)
     { 
       name: 'category', 
       type: 'string', 
