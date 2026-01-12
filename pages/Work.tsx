@@ -11,37 +11,28 @@ export const Work: React.FC = () => {
     getProjects().then(data => setProjects(data));
   }, []);
 
-  // Tady si můžeš projekty rozdělit do kategorií (např. podle tagů nebo typu)
-  // Pro teď je rozdělíme jen na "Všechny projekty" a "Nové", aby to nevypadalo prázdné
-  const commercialProjects = projects.filter(p => p.title.toLowerCase().includes('test')); // Jen příklad
-  const personalProjects = projects;
-
   return (
     <div className="min-h-screen bg-[#141414] pb-20">
-      {/* Hero sekce pro Portfolio - aby to nezačínalo hned řádky */}
+      {/* Hero sekce Portfolia - upravený font a rozestupy */}
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-        className="pt-32 pb-12 px-4 md:px-12"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="pt-32 pb-12 px-6 md:px-12 lg:px-24"
       >
-        <h1 className="text-4xl md:text-6xl font-black text-white mb-4 uppercase tracking-tighter italic">
+        <h1 className="text-6xl md:text-8xl font-display text-white mb-6 uppercase tracking-wider">
           Portfolio
         </h1>
-        <div className="w-24 h-1.5 bg-[#E50914] mb-8" />
-        <p className="text-neutral-400 max-w-2xl text-lg font-medium leading-relaxed">
+        {/* Odstraněna červená lišta pro čistší Netflix look, nahrazeno jemným popisem */}
+        <p className="text-neutral-400 max-w-2xl text-lg md:text-xl font-medium leading-relaxed">
           Kompletní přehled mých komerčních i osobních projektů. 
-          Každý projekt je řešením unikátního problému.
+          Každý projekt je výsledkem hledání unikátního vizuálního řešení.
         </p>
       </motion.div>
 
-      {/* Tady skládáme řádky jako na Netflixu */}
-      <div className="space-y-4 md:-mt-4">
+      {/* Zde zůstává pouze jedna řada s nejnovější prací */}
+      <div className="px-6 md:px-12 lg:px-24">
         <ProjectRow title="Moje nejnovější práce" projects={projects} />
-        
-        {/* Pokud máš více kategorií, můžeš přidat další řádky */}
-        <ProjectRow title="Webové projekty" projects={projects.slice(0, 3)} />
-        <ProjectRow title="Populární v mém portfoliu" projects={projects} />
       </div>
     </div>
   );

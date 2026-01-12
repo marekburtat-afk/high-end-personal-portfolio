@@ -13,17 +13,20 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <script>
       tailwind.config = {
         theme: {
           extend: {
-            fontFamily: { sans: ['Inter', 'sans-serif'] },
+            fontFamily: { 
+              sans: ['Inter', 'sans-serif'],
+              display: ['Bebas Neue', 'sans-serif'], // Nový font pro nadpisy
+            },
             colors: {
-              background: '#141414', // Ta správná Netflix černá
+              background: '#141414',
               surface: '#181818',
-              accent: '#E50914',     // Netflix červená
+              accent: '#E50914',
               subtle: '#333333',
             }
           }
@@ -37,11 +40,9 @@
         color: #ffffff; 
         overflow-x: hidden; 
       }
-      /* Schování scrollbaru pro čistý look */
       .scrollbar-hide::-webkit-scrollbar { display: none; }
       .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
       
-      /* Vlastní scrollbar v červené barvě */
       ::-webkit-scrollbar { width: 8px; }
       ::-webkit-scrollbar-track { background: #141414; }
       ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
