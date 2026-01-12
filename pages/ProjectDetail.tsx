@@ -18,9 +18,9 @@ export const ProjectDetail: React.FC = () => {
   if (!project) return <div className="min-h-[50vh] flex items-center justify-center">Načítání...</div>;
 
   return (
-    <article className="pt-12">
-      <Link to="/projects" className="inline-flex items-center gap-2 text-neutral-500 hover:text-white transition-colors mb-12">
-        <ArrowLeft size={20} /> Zpět na projekty
+    <article className="pt-12 px-4 md:px-0">
+      <Link to="/" className="inline-flex items-center gap-2 text-neutral-500 hover:text-white transition-colors mb-12">
+        <ArrowLeft size={20} /> Zpět na domů
       </Link>
 
       <motion.div
@@ -37,7 +37,7 @@ export const ProjectDetail: React.FC = () => {
                 {project.category && (
                     <div className="mt-6">
                         <span className="text-xs uppercase tracking-widest text-neutral-600 block mb-1">Kategorie</span>
-                        <span>{project.category}</span>
+                        <span className="text-white">{project.category}</span>
                     </div>
                 )}
             </div>
@@ -46,10 +46,9 @@ export const ProjectDetail: React.FC = () => {
         {/* Media Section - Video or Image */}
         <div className="w-full aspect-video bg-neutral-900 rounded-xl overflow-hidden mb-20 relative group">
             {project.videoUrl ? (
-                // Simple implementation for demo. In production, use a proper embed component or react-player
                 <div className="w-full h-full flex items-center justify-center relative">
                     <img 
-                        src={typeof project.mainImage?.asset._ref === 'string' ? project.mainImage?.asset._ref : urlFor(project.mainImage)} 
+                        src={urlFor(project.mainImage)} 
                         alt={project.title}
                         className="absolute inset-0 w-full h-full object-cover opacity-60"
                     />
@@ -61,13 +60,10 @@ export const ProjectDetail: React.FC = () => {
                     >
                         <Play fill="currentColor" className="ml-1" />
                     </a>
-                    <div className="absolute bottom-6 left-6 z-10 bg-black/50 backdrop-blur px-4 py-2 rounded text-sm">
-                        Video Link: {project.videoUrl}
-                    </div>
                 </div>
             ) : (
                 <img 
-                    src={typeof project.mainImage?.asset._ref === 'string' ? project.mainImage?.asset._ref : urlFor(project.mainImage)} 
+                    src={urlFor(project.mainImage)} 
                     alt={project.title}
                     className="w-full h-full object-cover"
                 />
