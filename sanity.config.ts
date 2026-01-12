@@ -41,9 +41,16 @@ const projectSchema = {
     { name: 'match', type: 'number', title: 'Procento shody (např. 98)', initialValue: 98 },
     { name: 'year', type: 'string', title: 'Rok projektu', initialValue: '2026' },
     { name: 'quality', type: 'string', title: 'Kvalita (např. 4K Ultra HD)', initialValue: '4K Ultra HD' },
-    { name: 'director', type: 'string', title: 'Režisér', initialValue: 'Marek Verťat' },
+    
+    // ZMĚNA: Nahrazení Režiséra polem Výstup
+    { 
+      name: 'output', 
+      type: 'string', 
+      title: 'Výstup (např. Online, Socky, Film)', 
+      initialValue: 'Online' 
+    },
 
-    // OPRAVA: Výběr žánru pomocí seznamu (list)
+    // Výběr žánru (zachováno s českým názvem)
     { 
       name: 'category', 
       type: 'string', 
@@ -53,7 +60,7 @@ const projectSchema = {
           { title: 'VFX a Motion Graphics', value: 'vfx' },
           { title: 'Reklamní kampaně', value: 'reklama' },
         ],
-        layout: 'radio' // Zobrazí se jako přepínače pro rychlejší volbu
+        layout: 'radio'
       }
     },
 

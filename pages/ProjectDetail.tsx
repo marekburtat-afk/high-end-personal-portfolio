@@ -105,14 +105,15 @@ export const ProjectDetail: React.FC = () => {
             </div>
             <div className="lg:col-span-1 space-y-6 border-l border-red-600/30 pl-6 font-black">
                <div>
-                 <p className="text-neutral-500 uppercase tracking-widest text-[9px] mb-1">Genre</p>
+                 {/* ZMĚNA: Popisek na Žánr */}
+                 <p className="text-neutral-500 uppercase tracking-widest text-[9px] mb-1">Žánr</p>
                  <p className="text-white text-sm uppercase">{project.genre || project.category || 'Visual Art'}</p>
                </div>
                <div>
-                 <p className="text-neutral-500 uppercase tracking-widest text-[9px] mb-1">Director</p>
-                 {/* OPRAVA: Odstraněno podtržení a dekorace */}
+                 {/* ZMĚNA: Popisek na Výstup a propojení na project.output */}
+                 <p className="text-neutral-500 uppercase tracking-widest text-[9px] mb-1">Výstup</p>
                  <p className="text-white text-sm uppercase">
-                   {project.director || 'Marek Verťat'}
+                   {project.output || 'Online'}
                  </p>
                </div>
             </div>
