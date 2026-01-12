@@ -11,6 +11,7 @@ export default defineConfig(({ mode }) => {
       },
       plugins: [react()],
       define: {
+        'process.env': {}, // Přidali jsme prázdný objekt pro procesy
         'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
         'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
         global: 'window',
@@ -19,6 +20,9 @@ export default defineConfig(({ mode }) => {
         alias: {
           '@': path.resolve(__dirname, '.'),
         }
+      },
+      optimizeDeps: {
+        include: ['sanity', 'styled-components']
       }
     };
 });
