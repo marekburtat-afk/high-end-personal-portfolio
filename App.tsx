@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion'; // Přidáno pro animaci
 import { Navigation } from './components/Navigation';
 import { Footer } from './components/Footer';
 import { Home } from './pages/Home';
@@ -8,10 +9,9 @@ import { Blog } from './pages/Blog';
 import { ProjectDetail } from './pages/ProjectDetail';
 import { StudioPage } from './pages/StudioPage';
 
-// --- NASTAVENÍ REŽIMU ÚDRŽBY ---
-// true = lidi uvidí jen "Coming Soon" (kromě adresy /studio)
-// false = web je normálně vidět
+// --- KONFIGURACE ---
 const isComingSoon = true; 
+const SECRET_KEY = 'ukaz-mi-to'; // Tvoje "heslo" do URL
 
 // Scroll to top wrapper
 const ScrollToTop = () => {
@@ -37,7 +37,6 @@ const ComingSoon = () => (
       <p className="text-neutral-800 text-[10px] mt-24">2026</p>
     </motion.div>
     
-    {/* Decentní pozadí, aby to nebylo jen černé */}
     <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0 overflow-hidden opacity-10">
         <div className="absolute top-[-10%] left-[-10%] w-[40vw] h-[40vw] bg-neutral-800 rounded-full blur-[120px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[30vw] h-[30vw] bg-neutral-900 rounded-full blur-[100px]" />
@@ -46,16 +45,26 @@ const ComingSoon = () => (
 );
 
 const App: React.FC = () => {
+  const [isAuthorized, setIsAuthorized] = useState(false);
+
+  useEffect(() => {
+    // Kontrola, zda je v URL tajný klíč nebo zda už jsme ho dříve zadali
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('dev') === SECRET_KEY || localStorage.getItem('devMode') === 'true') {
+      setIsAuthorized(true);
+      localStorage.setItem('devMode', 'true'); // Zapamatuje si to v tomto prohlížeči
+    }
+  }, []);
+
   return (
     <Router>
       <ScrollToTop />
       <Routes>
-        {/* CESTA PRO STUDIO - Vždy přístupná pro tvoji práci */}
+        {/* Administrace je vždy přístupná */}
         <Route path="/studio/*" element={<StudioPage />} />
         
-        {/* HLAVNÍ WEB ROZHODOVÁNÍ */}
         <Route path="*" element={
-          isComingSoon ? (
+          (isComingSoon && !isAuthorized) ? (
             <ComingSoon />
           ) : (
             <div className="min-h-screen bg-background text-white selection:bg-white selection:text-black font-sans flex flex-col">
@@ -70,7 +79,6 @@ const App: React.FC = () => {
               </main>
               <Footer />
               
-              {/* Animované pozadí */}
               <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0 overflow-hidden opacity-20">
                   <div className="absolute top-[-10%] left-[-10%] w-[40vw] h-[40vw] bg-neutral-800 rounded-full blur-[120px]" />
                   <div className="absolute bottom-[-10%] right-[-10%] w-[30vw] h-[30vw] bg-neutral-900 rounded-full blur-[100px]" />
