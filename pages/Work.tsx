@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { getProjects } from '../lib/sanity';
 import { Project } from '../types';
-import { WorkGrid } from '../components/WorkGrid';
+import { ProjectRow } from '../components/ProjectRow';
 
 export const Work: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -11,26 +11,38 @@ export const Work: React.FC = () => {
     getProjects().then(data => setProjects(data));
   }, []);
 
+  // Tady si můžeš projekty rozdělit do kategorií (např. podle tagů nebo typu)
+  // Pro teď je rozdělíme jen na "Všechny projekty" a "Nové", aby to nevypadalo prázdné
+  const commercialProjects = projects.filter(p => p.title.toLowerCase().includes('test')); // Jen příklad
+  const personalProjects = projects;
+
   return (
-    // PŘIDÁNO: max-w-[1400px] a mx-auto pro vycentrování obsahu na střed
-    <div className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-24 pt-32 pb-20 space-y-16">
+    <div className="min-h-screen bg-[#141414] pb-20">
+      {/* Hero sekce pro Portfolio - aby to nezačínalo hned řádky */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+        className="pt-32 pb-12 px-4 md:px-12"
       >
-        <h1 className="text-5xl md:text-7xl font-black mb-6 uppercase italic tracking-tighter">
+        <h1 className="text-4xl md:text-6xl font-black text-white mb-4 uppercase tracking-tighter italic">
           Portfolio
         </h1>
-        {/* Červená linka pod nadpisem pro Netflix styl */}
-        <div className="w-20 h-1 bg-[#E50914] mb-8" />
-        
-        <p className="text-neutral-400 max-w-2xl text-lg md:text-xl font-medium leading-relaxed">
-          Kompletní přehled mých komerčních i osobních projektů. Každý projekt je řešením unikátního problému.
+        <div className="w-24 h-1.5 bg-[#E50914] mb-8" />
+        <p className="text-neutral-400 max-w-2xl text-lg font-medium leading-relaxed">
+          Kompletní přehled mých komerčních i osobních projektů. 
+          Každý projekt je řešením unikátního problému.
         </p>
       </motion.div>
 
-      <WorkGrid projects={projects} />
+      {/* Tady skládáme řádky jako na Netflixu */}
+      <div className="space-y-4 md:-mt-4">
+        <ProjectRow title="Moje nejnovější práce" projects={projects} />
+        
+        {/* Pokud máš více kategorií, můžeš přidat další řádky */}
+        <ProjectRow title="Webové projekty" projects={projects.slice(0, 3)} />
+        <ProjectRow title="Populární v mém portfoliu" projects={projects} />
+      </div>
     </div>
   );
 };
