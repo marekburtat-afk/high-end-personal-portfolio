@@ -52,6 +52,21 @@ const postSchema = {
   ]
 };
 
+// NOVÉ SCHÉMA: Pro tvou fotku na stránce kontakt
+const settingsSchema = {
+  name: 'settings',
+  title: 'Nastavení webu',
+  type: 'document',
+  fields: [
+    { 
+      name: 'contactPhoto', 
+      type: 'image', 
+      title: 'Moje fotka (Kontakt)',
+      options: { hotspot: true }
+    }
+  ]
+};
+
 export default defineConfig({
   name: 'default',
   title: 'Portfolio Studio',
@@ -59,5 +74,18 @@ export default defineConfig({
   dataset: 'production',
   basePath: '/studio',
   plugins: [deskTool()],
-  schema: { types: [projectSchema, postSchema, { name: 'partner', title: 'Partneři', type: 'document', fields: [{ name: 'name', type: 'string' }, { name: 'logo', type: 'image' }, { name: 'description', type: 'text' }] }] },
+  schema: { 
+    // Přidáno settingsSchema do pole types
+    types: [
+      projectSchema, 
+      postSchema, 
+      settingsSchema, 
+      { 
+        name: 'partner', 
+        title: 'Partneři', 
+        type: 'document', 
+        fields: [{ name: 'name', type: 'string' }, { name: 'logo', type: 'image' }, { name: 'description', type: 'text' }] 
+      }
+    ] 
+  },
 });
