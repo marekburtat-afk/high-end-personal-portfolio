@@ -49,7 +49,8 @@ export const Home: React.FC = () => {
           <div className="absolute bottom-1/4 left-0 right-0 z-10">
             <div className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-24">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-                <h1 className="text-6xl md:text-8xl lg:text-9xl font-display text-white mb-4 tracking-wider uppercase drop-shadow-2xl">
+                {/* OPRAVA: Masivní, tučný font bez ozdob */}
+                <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-4 tracking-tighter drop-shadow-2xl uppercase">
                   {heroProject.title}
                 </h1>
                 <p className="text-sm md:text-lg text-neutral-200 max-w-2xl mb-8 line-clamp-3 font-medium drop-shadow-lg">
@@ -70,10 +71,8 @@ export const Home: React.FC = () => {
       )}
 
       <div className="max-w-[1400px] mx-auto mt-[-10vh] relative z-20 space-y-24 px-6 md:px-12 lg:px-24">
-        {/* První řada: Tvoje tvorba */}
         <ProjectRow title="Moje tvorba" projects={projects} />
 
-        {/* Sekce reference - zarovnaná se zbytkem */}
         {partners.length > 0 && (
           <div className="pt-4 border-t border-white/5"> 
             <PartnerRow partners={partners} />
