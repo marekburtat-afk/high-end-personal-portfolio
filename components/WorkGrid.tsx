@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
-import { Project, SanityImage } from '../types';
+import { Project } from '../types';
 import { urlFor } from '../lib/sanity';
 
 interface WorkGridProps {
@@ -26,7 +26,7 @@ export const WorkGrid: React.FC<WorkGridProps> = ({ projects }) => {
             <div className="relative aspect-[4/3] overflow-hidden rounded-lg bg-neutral-900 mb-6">
                <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10" />
                <img 
-                 src={typeof project.mainImage?.asset._ref === 'string' ? project.mainImage?.asset._ref : urlFor(project.mainImage)} 
+                 src={urlFor(project.mainImage)} 
                  alt={project.title}
                  className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
                />
