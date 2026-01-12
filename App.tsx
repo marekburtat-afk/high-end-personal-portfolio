@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion'; // Přidáno pro animaci
+import { motion } from 'framer-motion';
 import { Navigation } from './components/Navigation';
 import { Footer } from './components/Footer';
 import { Home } from './pages/Home';
@@ -31,6 +31,7 @@ const ComingSoon = () => (
       transition={{ duration: 0.8 }}
       className="text-center"
     >
+      {/* OPRAVENO JMÉNO */}
       <h1 className="text-4xl md:text-6xl font-bold mb-6 tracking-tighter">MAREK VERŤAT</h1>
       <div className="w-12 h-[1px] bg-neutral-800 mx-auto mb-8"></div>
       <p className="text-neutral-500 uppercase tracking-[0.4em] text-xs md:text-sm">Portfolio coming soon</p>
