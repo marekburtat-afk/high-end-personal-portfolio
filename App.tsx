@@ -31,7 +31,7 @@ const ComingSoon = () => (
       transition={{ duration: 0.8 }}
       className="text-center"
     >
-      <h1 className="text-4xl md:text-6xl font-bold mb-6 tracking-tighter">MAREK VERŤÁT</h1>
+      <h1 className="text-4xl md:text-6xl font-bold mb-6 tracking-tighter">MAREK VERŤAT</h1>
       <div className="w-12 h-[1px] bg-neutral-800 mx-auto mb-8"></div>
       <p className="text-neutral-500 uppercase tracking-[0.4em] text-xs md:text-sm">Portfolio coming soon</p>
       <p className="text-neutral-800 text-[10px] mt-24">2026</p>
