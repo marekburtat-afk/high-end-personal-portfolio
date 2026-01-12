@@ -14,12 +14,14 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
 
   return (
     <div className="space-y-1 mb-2 md:mb-4 last:mb-0">
+      {/* Nadpis zarovnaný s obsahem díky -mx-4 u scrollovacího divu níže */}
       <h2 className="text-[1.2vw] md:text-xl lg:text-2xl font-bold text-[#e5e5e5] transition-colors duration-200 hover:text-white cursor-pointer inline-block">
         {title}
       </h2>
       
       <div className="relative group">
-        <div className="flex gap-1.5 overflow-x-auto scrollbar-hide pt-2 pb-8 scroll-smooth">
+        {/* OPRAVA: Přidáno -mx-4 a px-4, aby se zvětšená karta vlevo neřezala o okraj */}
+        <div className="flex gap-1.5 overflow-x-auto scrollbar-hide pt-2 pb-8 scroll-smooth -mx-4 px-4">
           {projects.map((project: any) => (
             <motion.div
               key={project._id}
@@ -38,10 +40,7 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
                     className="w-full h-full object-cover"
                   />
                   
-                  {/* Hover Overlay s Netflix Metadaty */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 p-3 md:p-4 flex flex-col justify-end">
-                    
-                    {/* Metadata řada: Shoda, Rok, Kvalita */}
                     <div className="flex items-center gap-2 mb-1.5 text-[8px] md:text-[10px] font-bold tracking-tight">
                       <span className="text-green-500 italic">
                         {project.match || 98}% Match
@@ -54,12 +53,11 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
                       </span>
                     </div>
 
-                    {/* Titulek projektu */}
-                    <h3 className="text-white text-xs md:text-sm lg:text-base font-black uppercase italic leading-tight mb-1">
+                    {/* OPRAVA: Odstraněno 'italic' i z náhledů na kartě */}
+                    <h3 className="text-white text-xs md:text-sm lg:text-base font-black uppercase leading-tight mb-1">
                       {project.title}
                     </h3>
 
-                    {/* Žánr / Kategorie */}
                     <p className="text-[#E50914] text-[7px] md:text-[9px] font-bold uppercase tracking-widest">
                       {project.genre || project.category || 'Visual Art'}
                     </p>

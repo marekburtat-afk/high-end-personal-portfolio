@@ -27,7 +27,7 @@ const ptComponents = {
     },
     beforeAfterSlider: ({ value }: any) => (
       <div className="my-20 space-y-6">
-        <div className="flex justify-between items-end mb-2 uppercase tracking-[0.3em] text-[10px] text-neutral-500 font-black italic">
+        <div className="flex justify-between items-end mb-2 uppercase tracking-[0.3em] text-[10px] text-neutral-500 font-black">
           <span>Před</span>
           <span className="text-red-600">Po</span>
         </div>
@@ -52,7 +52,7 @@ const ptComponents = {
   },
   block: {
     normal: ({ children }: any) => <p className="text-neutral-300 text-lg md:text-xl leading-relaxed mb-8 font-light max-w-4xl">{children}</p>,
-    h2: ({ children }: any) => <h2 className="text-3xl md:text-5xl font-black text-white mt-20 mb-8 italic uppercase tracking-tighter border-b border-red-600 pb-2 inline-block">{children}</h2>,
+    h2: ({ children }: any) => <h2 className="text-3xl md:text-5xl font-black text-white mt-20 mb-8 uppercase tracking-tighter border-b border-red-600 pb-2 inline-block">{children}</h2>,
   }
 };
 
@@ -87,28 +87,31 @@ export const ProjectDetail: React.FC = () => {
       </div>
       <div className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-24 -mt-40 relative z-10">
         <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-          <h1 className="text-5xl md:text-8xl lg:text-9xl font-black mb-10 italic uppercase tracking-tighter text-white drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)]">{project.title}</h1>
+          <h1 className="text-5xl md:text-8xl lg:text-9xl font-black mb-10 uppercase tracking-tighter text-white drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)]">
+            {project.title}
+          </h1>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-16 mb-24">
             <div className="lg:col-span-2">
               <div className="flex items-center gap-6 text-sm font-black mb-8">
-                {/* Dynamické Netflix údaje ze Sanity */}
                 <span className="text-green-500 italic">{project.match || 98}% MATCH</span>
                 <span className="text-neutral-400">{project.year || '2026'}</span>
                 <span className="border border-neutral-700 px-3 py-1 text-[10px] rounded-sm text-white bg-white/5 tracking-[0.2em]">
                   {project.quality || '4K ULTRA HD'}
                 </span>
               </div>
-              <p className="text-xl md:text-3xl text-neutral-200 leading-tight font-medium max-w-4xl italic">{project.description}</p>
+              <p className="text-xl md:text-3xl text-neutral-200 leading-tight font-medium max-w-4xl">
+                {project.description}
+              </p>
             </div>
-            <div className="lg:col-span-1 space-y-6 border-l border-red-600/30 pl-6 font-black italic">
-               {/* Dynamický žánr a režisér */}
+            <div className="lg:col-span-1 space-y-6 border-l border-red-600/30 pl-6 font-black">
                <div>
                  <p className="text-neutral-500 uppercase tracking-widest text-[9px] mb-1">Genre</p>
                  <p className="text-white text-sm uppercase">{project.genre || project.category || 'Visual Art'}</p>
                </div>
                <div>
                  <p className="text-neutral-500 uppercase tracking-widest text-[9px] mb-1">Director</p>
-                 <p className="text-white text-sm uppercase underline decoration-red-600 underline-offset-4">
+                 {/* OPRAVA: Odstraněno podtržení a dekorace */}
+                 <p className="text-white text-sm uppercase">
                    {project.director || 'Marek Verťat'}
                  </p>
                </div>
