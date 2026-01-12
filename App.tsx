@@ -6,6 +6,7 @@ import { Footer } from './components/Footer';
 import { Home } from './pages/Home';
 import { Work } from './pages/Work';
 import { Blog } from './pages/Blog';
+import { Contact } from './pages/Contact'; // Nový import
 import { ProjectDetail } from './pages/ProjectDetail';
 import { StudioPage } from './pages/StudioPage';
 
@@ -53,13 +54,13 @@ const App: React.FC = () => {
           ) : (
             <div className="min-h-screen bg-background text-white selection:bg-white selection:text-black font-sans flex flex-col">
               <Navigation />
-              {/* OPRAVA: Odstraněno max-w-7xl, aby Hero mohlo být přes celou šířku */}
               <main className="flex-grow w-full z-10 relative">
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/projects" element={<Work />} />
                   <Route path="/project/:slug" element={<ProjectDetail />} />
                   <Route path="/blog" element={<Blog />} />
+                  <Route path="/kontakt" element={<Contact />} /> {/* Nová cesta */}
                 </Routes>
               </main>
               <Footer />

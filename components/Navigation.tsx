@@ -39,7 +39,6 @@ export const Navigation: React.FC = () => {
               </span>
             </Link>
 
-            {/* Desktop Links */}
             <div className="hidden md:flex items-center gap-6">
               {navLinks.map((link) => (
                 <Link 
@@ -56,14 +55,14 @@ export const Navigation: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-6">
-            <a 
-                href="mailto:kontakt@marekvertat.cz" 
-                className="hidden md:block px-4 py-1.5 bg-[#E50914] text-white text-xs font-bold rounded hover:bg-[#ff0a16] transition-colors"
+            {/* ZMĚNA: Tlačítko nyní vede na /kontakt pomocí Link */}
+            <Link 
+                to="/kontakt" 
+                className="hidden md:block px-4 py-1.5 bg-[#E50914] text-white text-xs font-bold rounded hover:bg-[#ff0a16] transition-all transform hover:scale-105 active:scale-95"
             >
                 KONTAKT
-            </a>
+            </Link>
             
-            {/* Mobile Toggle */}
             <button onClick={() => setIsOpen(!isOpen)} className="md:hidden text-white p-2">
               {isOpen ? <X size={28} /> : <Menu size={28} />}
             </button>
@@ -71,7 +70,6 @@ export const Navigation: React.FC = () => {
         </div>
       </nav>
 
-      {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {isOpen && (
           <motion.div 
@@ -89,6 +87,8 @@ export const Navigation: React.FC = () => {
                 {link.name}
               </Link>
             ))}
+            {/* Kontakt pro mobilní verzi */}
+            <Link to="/kontakt" className="text-2xl font-bold text-[#E50914]">Kontakt</Link>
           </motion.div>
         )}
       </AnimatePresence>
