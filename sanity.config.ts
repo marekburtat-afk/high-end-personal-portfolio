@@ -36,6 +36,15 @@ const projectSchema = {
     { name: 'description', type: 'text', title: 'Popis' },
     { name: 'mainImage', type: 'image', title: 'Hlavní foto' },
     { name: 'videoUrl', type: 'url', title: 'Video URL' },
+    
+    // NOVÁ POLÍČKA PRO NETFLIX DETAILY
+    { name: 'match', type: 'number', title: 'Procento shody (např. 98)', initialValue: 98 },
+    { name: 'year', type: 'string', title: 'Rok projektu', initialValue: '2026' },
+    { name: 'quality', type: 'string', title: 'Kvalita (např. 4K Ultra HD)', initialValue: '4K Ultra HD' },
+    { name: 'genre', type: 'string', title: 'Žánr (např. Visual Art)', initialValue: 'Visual Art' },
+    { name: 'director', type: 'string', title: 'Režisér', initialValue: 'Marek Verťat' },
+    { name: 'vibe', type: 'string', title: 'Vibe projektu (např. Cinematic, Cyberpunk)' },
+
     { name: 'content', type: 'array', title: 'Obsah', of: [{ type: 'block' }, imageWithCaption, videoEmbed, beforeAfterSlider] },
     { name: 'category', type: 'string', title: 'Kategorie' }
   ]
@@ -52,7 +61,6 @@ const postSchema = {
   ]
 };
 
-// NOVÉ SCHÉMA: Pro tvou fotku na stránce kontakt
 const settingsSchema = {
   name: 'settings',
   title: 'Nastavení webu',
@@ -75,7 +83,6 @@ export default defineConfig({
   basePath: '/studio',
   plugins: [deskTool()],
   schema: { 
-    // Přidáno settingsSchema do pole types
     types: [
       projectSchema, 
       postSchema, 
