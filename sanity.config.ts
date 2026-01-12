@@ -9,7 +9,6 @@ const imageWithCaption = {
   fields: [
     { name: 'caption', type: 'string', title: 'Popisek' }, 
     { name: 'alt', type: 'string', title: 'Alt' },
-    // NOVÉ POLE: Zarovnání pro obtékání textem
     {
       name: 'alignment',
       type: 'string',
@@ -39,7 +38,21 @@ const beforeAfterSlider = {
   title: 'Before/After',
   fields: [
     { name: 'beforeImage', type: 'image', title: 'Před' },
-    { name: 'afterImage', type: 'image', title: 'Po' }
+    { name: 'afterImage', type: 'image', title: 'Po' },
+    // NOVÉ POLE: Zarovnání i pro slider
+    {
+      name: 'alignment',
+      type: 'string',
+      title: 'Zarovnání',
+      options: {
+        list: [
+          { title: 'Na celou šířku', value: 'full' },
+          { title: 'Vlevo (obtékání textem)', value: 'left' },
+          { title: 'Vpravo (obtékání textem)', value: 'right' },
+        ],
+      },
+      initialValue: 'full',
+    }
   ]
 };
 
@@ -53,18 +66,22 @@ const projectSchema = {
     { name: 'description', type: 'text', title: 'Popis' },
     { name: 'mainImage', type: 'image', title: 'Hlavní foto' },
     { name: 'videoUrl', type: 'url', title: 'Video URL' },
-    
+    { 
+      name: 'isHero', 
+      type: 'boolean', 
+      title: 'Hlavní projekt (Hero)', 
+      description: 'Pokud je zapnuto, tento projekt se zobrazí nahoře na úvodní stránce.',
+      initialValue: false 
+    },
     { name: 'match', type: 'number', title: 'Procento shody (např. 98)', initialValue: 98 },
     { name: 'year', type: 'string', title: 'Rok projektu', initialValue: '2026' },
     { name: 'quality', type: 'string', title: 'Kvalita (např. 4K Ultra HD)', initialValue: '4K Ultra HD' },
-    
     { 
       name: 'output', 
       type: 'string', 
       title: 'Výstup (např. Online, Socky, Film)', 
       initialValue: 'Online' 
     },
-
     { 
       name: 'category', 
       type: 'string', 
@@ -77,7 +94,6 @@ const projectSchema = {
         layout: 'radio'
       }
     },
-
     { name: 'content', type: 'array', title: 'Obsah', of: [{ type: 'block' }, imageWithCaption, videoEmbed, beforeAfterSlider] },
   ]
 };

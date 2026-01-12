@@ -10,7 +10,6 @@ import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slide
 const ptComponents = {
   types: {
     imageWithCaption: ({ value }: any) => {
-      // Logika pro obtékání textu - kontroluje, zda má fotka nastavenou pozici
       const isFloating = value.alignment === 'left' || value.alignment === 'right';
       const floatClass = value.alignment === 'left' ? 'md:float-left md:mr-8 md:mb-4' : value.alignment === 'right' ? 'md:float-right md:ml-8 md:mb-4' : '';
       const widthClass = isFloating ? 'md:w-1/2 w-full' : 'w-full';
@@ -40,36 +39,40 @@ const ptComponents = {
         </div>
       );
     },
-    beforeAfterSlider: ({ value }: any) => (
-      <div className="my-12 space-y-4 clear-both">
-        {/* OPRAVA: Výraznější a větší popisky Před/Po */}
-        <div className="flex justify-between items-end mb-2 uppercase tracking-[0.2em] text-xs md:text-sm font-black text-white/90">
-          <span className="bg-black/40 px-3 py-1 rounded-sm border border-white/10">Před</span>
-          <span className="bg-red-600/20 px-3 py-1 rounded-sm border border-red-600/30 text-red-500">Po</span>
-        </div>
-        <div className="rounded-xl overflow-hidden border border-white/10 shadow-2xl">
-          <ReactCompareSlider
-            itemOne={<ReactCompareSliderImage src={urlFor(value.beforeImage).width(1400).url()} alt="Před" />}
-            itemTwo={<ReactCompareSliderImage src={urlFor(value.afterImage).width(1400).url()} alt="Po" />}
-            handle={
-              <div className="relative h-full flex items-center justify-center">
-                <div className="w-[2px] h-full bg-[#E50914] shadow-[0_0_20px_rgba(229,9,20,1)]"></div>
-                <div className="absolute w-10 h-10 bg-[#E50914] rounded-full flex items-center justify-center border-2 border-white cursor-ew-resize shadow-[0_0_30px_rgba(229,9,20,0.6)]">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M8 7l-4 5 4 5M16 7l4 5-4 5" />
-                  </svg>
+    beforeAfterSlider: ({ value }: any) => {
+      // PŘIDÁNO: Logika obtékání i pro slider
+      const isFloating = value.alignment === 'left' || value.alignment === 'right';
+      const floatClass = value.alignment === 'left' ? 'md:float-left md:mr-8 md:mb-4' : value.alignment === 'right' ? 'md:float-right md:ml-8 md:mb-4' : '';
+      const widthClass = isFloating ? 'md:w-1/2 w-full' : 'w-full';
+
+      return (
+        <div className={`my-12 ${floatClass} ${widthClass} space-y-4 clear-both`}>
+          <div className="flex justify-between items-end mb-2 uppercase tracking-[0.2em] text-xs md:text-sm font-black text-white/90">
+            <span className="bg-black/40 px-3 py-1 rounded-sm border border-white/10">Před</span>
+            <span className="bg-red-600/20 px-3 py-1 rounded-sm border border-red-600/30 text-red-500">Po</span>
+          </div>
+          <div className="rounded-xl overflow-hidden border border-white/10 shadow-2xl">
+            <ReactCompareSlider
+              itemOne={<ReactCompareSliderImage src={urlFor(value.beforeImage).width(isFloating ? 800 : 1400).url()} alt="Před" />}
+              itemTwo={<ReactCompareSliderImage src={urlFor(value.afterImage).width(isFloating ? 800 : 1400).url()} alt="Po" />}
+              handle={
+                <div className="relative h-full flex items-center justify-center">
+                  <div className="w-[2px] h-full bg-[#E50914] shadow-[0_0_20px_rgba(229,9,20,1)]"></div>
+                  <div className="absolute w-10 h-10 bg-[#E50914] rounded-full flex items-center justify-center border-2 border-white cursor-ew-resize shadow-[0_0_30px_rgba(229,9,20,0.6)]">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M8 7l-4 5 4 5M16 7l4 5-4 5" />
+                    </svg>
+                  </div>
                 </div>
-              </div>
-            }
-          />
+              }
+            />
+          </div>
         </div>
-      </div>
-    ),
+      );
+    },
   },
   block: {
-    // Snížení mezer mezi odstavci
     normal: ({ children }: any) => <p className="text-neutral-300 text-lg md:text-xl leading-relaxed mb-4 font-light max-w-4xl">{children}</p>,
-    // Snížení mezer u nadpisů
     h2: ({ children }: any) => <h2 className="text-2xl md:text-4xl font-black text-white mt-12 mb-6 uppercase tracking-tighter border-b border-red-600 pb-2 inline-block">{children}</h2>,
   }
 };
@@ -110,7 +113,6 @@ export const ProjectDetail: React.FC = () => {
             {project.title}
           </h1>
           
-          {/* OPRAVA: Sníženy mezery v mřížce (mb-24 -> mb-12) */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-12">
             <div className="lg:col-span-2">
               <div className="flex items-center gap-6 text-sm font-black mb-6">
@@ -137,7 +139,6 @@ export const ProjectDetail: React.FC = () => {
             </div>
           </div>
 
-          {/* OPRAVA: Snížen horní padding (pt-20 -> pt-10) */}
           <div className="rich-text-content border-t border-white/5 pt-10">
             {project.content && <PortableText value={project.content} components={ptComponents} />}
           </div>
