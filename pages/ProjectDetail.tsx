@@ -8,6 +8,31 @@ import { PortableText } from '@portabletext/react';
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 
 const ptComponents = {
+  // NOVÁ SEKCE: Marks (zpracovává Bold, Kurzívu, Podtržení a Odkazy)
+  marks: {
+    strong: ({ children }: any) => (
+      <strong className="font-black text-white">{children}</strong>
+    ),
+    em: ({ children }: any) => (
+      <em className="italic text-neutral-200">{children}</em>
+    ),
+    underline: ({ children }: any) => (
+      <span className="underline decoration-red-600 underline-offset-4">{children}</span>
+    ),
+    link: ({ children, value }: any) => {
+      const rel = !value.href.startsWith('/') ? 'noreferrer noopener' : undefined;
+      return (
+        <a 
+          href={value.href} 
+          rel={rel} 
+          className="text-red-600 hover:text-white underline transition-colors"
+        >
+          {children}
+        </a>
+      );
+    },
+  },
+
   types: {
     imageWithCaption: ({ value }: any) => {
       const isFloating = value.alignment === 'left' || value.alignment === 'right';
@@ -40,7 +65,6 @@ const ptComponents = {
       );
     },
     beforeAfterSlider: ({ value }: any) => {
-      // PŘIDÁNO: Logika obtékání i pro slider
       const isFloating = value.alignment === 'left' || value.alignment === 'right';
       const floatClass = value.alignment === 'left' ? 'md:float-left md:mr-8 md:mb-4' : value.alignment === 'right' ? 'md:float-right md:ml-8 md:mb-4' : '';
       const widthClass = isFloating ? 'md:w-1/2 w-full' : 'w-full';
