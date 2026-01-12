@@ -1,12 +1,6 @@
 import { defineConfig } from 'sanity';
 import { deskTool } from 'sanity/desk';
 
-/*
-  POKYN PRO UŽIVATELE:
-  Toto je konfigurační soubor pro Sanity Studio.
-  Až budete nastavovat skutečný Sanity projekt, tento kód definuje strukturu dat.
-*/
-
 const projectSchema = {
   name: 'project',
   title: 'Práce (Projects)',
@@ -17,6 +11,14 @@ const projectSchema = {
       title: 'Titulek',
       type: 'string',
       validation: (Rule: any) => Rule.required(),
+    },
+    // --- TOTO JE TEN DŮLEŽITÝ PŘEPÍNAČ PRO VIDEO NA POZADÍ ---
+    {
+      name: 'isHero',
+      title: 'Použít jako hlavní video na pozadí (Hero)',
+      type: 'boolean',
+      description: 'Pokud toto zapneš, projekt se zobrazí jako velké video na úvodní stránce.',
+      initialValue: false,
     },
     {
       name: 'slug',
@@ -30,7 +32,7 @@ const projectSchema = {
       title: 'Krátký popis',
       type: 'text',
       rows: 3,
-      description: 'Zobrazí se v mřížce na úvodní stránce.',
+      description: 'Zobrazí se v mřížce pod hlavním videem.',
     },
     {
       name: 'mainImage',
@@ -47,9 +49,9 @@ const projectSchema = {
     },
     {
       name: 'videoUrl',
-      title: 'Odkaz na Video',
+      title: 'YouTube Video URL',
       type: 'url',
-      description: 'YouTube nebo Vimeo odkaz (pokud je vyplněn, má přednost před fotkou v detailu).',
+      description: 'Odkaz na YouTube (např. https://www.youtube.com/watch?v=...). Pro video na pozadí je toto nutné.',
     },
     {
       name: 'content',
@@ -115,7 +117,7 @@ export default defineConfig({
   title: 'Portfolio Studio',
   projectId: '1ycy3rf5', 
   dataset: 'production',
-  basePath: '/studio', // <--- TENTO ŘÁDEK TAM MUSÍŠ PŘIDAT!
+  basePath: '/studio',
   plugins: [deskTool()],
   schema: {
     types: [projectSchema, postSchema],

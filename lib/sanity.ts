@@ -15,17 +15,19 @@ export const client = createClient({
 const builder = imageUrlBuilder(client);
 
 export function urlFor(source: any) {
-  // Pokud obrázek neexistuje, vrátíme prázdný řetězec, aby web nespadl
-  if (!source || !source.asset) {
-    return '';
-  }
-  // Oficiální Sanity cesta pro vygenerování URL
+  if (!source || !source.asset) return '';
   return builder.image(source).url();
 }
 
 // --- API CALLS ---
+
+// Nová funkce pro načtení statického pozadí
+export async function getHeroData() {
+  return client.fetch(`*[_type == "project" && isHero == true][0]`);
+}
+
 export async function getProjects(): Promise<Project[]> {
-  return client.fetch(`*[_type == "project"] | order(_createdAt desc)`);
+  return client.fetch(`*[_type == "project" && (isHero != true || !defined(isHero))] | order(_createdAt desc)`);
 }
 
 export async function getPosts(): Promise<Post[]> {
