@@ -11,7 +11,7 @@ export const client = createClient({
 
 const builder = imageUrlBuilder(client);
 
-// OPRAVA: Funkce nyní vrací builder, aby šlo nastavovat .width() atd.
+// Funkce pro generování URL obrázků
 export function urlFor(source: any) {
   return builder.image(source);
 }
@@ -36,7 +36,6 @@ export async function getPosts(): Promise<Post[]> {
   return client.fetch(`*[_type == "post"] | order(publishedAt desc)`);
 }
 
-// OPRAVA: Přidán explicitní fetch pro "content"
 export async function getProject(slug: string): Promise<Project | null> {
     return client.fetch(`*[_type == "project" && slug.current == $slug][0]{
       ...,
@@ -52,4 +51,15 @@ export async function getProject(slug: string): Promise<Project | null> {
         }
       }
     }`, { slug });
+}
+
+/**
+ * NOVÁ FUNKCE: Získá data pro kontaktní stránku.
+ * Předpokládá, že v Sanity existuje dokument typu "settings" s polem "contactPhoto".
+ */
+export async function getContactData() {
+  return client.fetch(`*[_type == "settings"][0]{
+    contactPhoto,
+    "photoUrl": contactPhoto.asset->url
+  }`);
 }
