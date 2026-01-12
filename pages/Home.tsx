@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
-import { getProjects } from '../lib/sanity';
+import { Play, Info } from 'lucide-react';
+import { getProjects, urlFor } from '../lib/sanity';
 import { Project } from '../types';
 import { WorkGrid } from '../components/WorkGrid';
 
@@ -10,55 +10,73 @@ export const Home: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
-    getProjects().then(data => setProjects(data.slice(0, 4))); // Only show first 4
+    // Načteme všechny projekty
+    getProjects().then(data => setProjects(data));
   }, []);
 
-  return (
-    <div className="space-y-32">
-      {/* Hero Section */}
-      <section className="min-h-[80vh] flex flex-col justify-center">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="max-w-3xl"
-        >
-          <span className="text-blue-500 font-mono text-sm mb-6 block tracking-widest">
-            — FRONTEND DEVELOPER & CREATIVE
-          </span>
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[1.1] mb-8">
-            Tvořím digitální <br/>
-            <span className="text-neutral-500">zážitky zítřka.</span>
-          </h1>
-          <p className="text-lg md:text-xl text-neutral-400 max-w-xl leading-relaxed mb-12">
-            Specializuji se na tvorbu špičkových webových aplikací s důrazem na minimalistický design, plynulé animace a perfektní uživatelskou zkušenost.
-          </p>
-          
-          <div className="flex gap-6">
-            <Link 
-                to="/projects" 
-                className="bg-white text-black px-8 py-4 rounded-full font-semibold hover:bg-neutral-200 transition-colors flex items-center gap-2"
-            >
-                Zobrazit Práce <ArrowRight size={18} />
-            </Link>
-            <a 
-                href="mailto:me@example.com"
-                className="px-8 py-4 border border-neutral-800 rounded-full font-semibold hover:border-white transition-colors"
-            >
-                Kontaktujte mě
-            </a>
-          </div>
-        </motion.div>
-      </section>
+  // První projekt v seznamu použijeme jako hlavní "Featured" film/projekt
+  const featured = projects[0];
 
-      {/* Selected Work */}
-      <section>
-        <div className="flex justify-between items-end mb-12 border-b border-neutral-900 pb-6">
-            <h2 className="text-3xl font-light">Vybrané projekty</h2>
-            <Link to="/projects" className="text-sm text-neutral-500 hover:text-white transition-colors">
+  return (
+    <div className="relative -mt-24">
+      {/* HERO SECTION - Tenhle blok vytvoří ten Netflix pocit */}
+      {featured && (
+        <section className="relative h-[85vh] w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden">
+          {/* Pozadí (Obrázek projektu) */}
+          <div className="absolute inset-0">
+            <img 
+              src={urlFor(featured.mainImage)} 
+              alt={featured.title}
+              className="w-full h-full object-cover object-center"
+            />
+            {/* Netflix Gradienty pro čitelnost a splynutí s pozadím */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-[#141414]/20 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#141414] via-transparent to-transparent opacity-80" />
+          </div>
+
+          {/* Obsah Hero sekce */}
+          <div className="absolute bottom-1/4 px-6 md:px-12 lg:px-24 w-full z-10">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1 }}
+            >
+              <h1 className="text-4xl md:text-6xl lg:text-8xl font-black text-white mb-4 tracking-tighter drop-shadow-2xl">
+                {featured.title}
+              </h1>
+              <p className="text-sm md:text-lg text-neutral-200 max-w-xl mb-8 line-clamp-3 drop-shadow-md">
+                {featured.description}
+              </p>
+              
+              <div className="flex gap-4">
+                <Link 
+                  to={`/project/${featured.slug.current}`}
+                  className="flex items-center gap-2 bg-white text-black px-4 md:px-8 py-2 md:py-3 rounded-md font-bold hover:bg-white/80 transition-all scale-100 hover:scale-105"
+                >
+                  <Play size={24} fill="black" /> Přehrát
+                </Link>
+                <Link 
+                  to={`/project/${featured.slug.current}`}
+                  className="flex items-center gap-2 bg-neutral-500/50 text-white px-4 md:px-8 py-2 md:py-3 rounded-md font-bold hover:bg-neutral-500/70 backdrop-blur-md transition-all scale-100 hover:scale-105"
+                >
+                  <Info size={24} /> Více informací
+                </Link>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+      )}
+
+      {/* SEZNAM PROJEKTŮ - Zbytek pod velkým bannerem */}
+      <section className="relative z-20 -mt-20 pb-20">
+        <div className="flex justify-between items-end mb-6">
+            <h2 className="text-xl md:text-2xl font-bold text-white tracking-tight">Moje tvorba</h2>
+            <Link to="/projects" className="text-sm text-neutral-400 hover:underline">
                 Zobrazit vše
             </Link>
         </div>
+        
+        {/* Tady se zobrazí tvoje mřížka, kterou hned v dalším kroku upravíme na řady */}
         <WorkGrid projects={projects} />
       </section>
     </div>

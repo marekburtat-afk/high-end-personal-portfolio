@@ -13,7 +13,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800;900&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         theme: {
@@ -22,9 +22,9 @@
               sans: ['Inter', 'sans-serif'],
             },
             colors: {
-              background: '#050505',
-              surface: '#0a0a0a',
-              accent: '#ffffff',
+              background: '#141414', // Netflix černá
+              surface: '#181818',    // Karty/Sekce
+              accent: '#E50914',     // Netflix červená
               subtle: '#333333',
             }
           }
@@ -33,13 +33,22 @@
     </script>
     <style>
       body {
-        background-color: #050505;
+        background-color: #141414;
         color: #ffffff;
       }
+      /* Schování scrollbaru pro čistý Netflix look, ale zachování funkčnosti */
+      .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+      }
+      .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      
       ::-webkit-scrollbar { width: 8px; }
-      ::-webkit-scrollbar-track { background: #050505; }
+      ::-webkit-scrollbar-track { background: #141414; }
       ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-      ::-webkit-scrollbar-thumb:hover { background: #555; }
+      ::-webkit-scrollbar-thumb:hover { background: #E50914; }
     </style>
     <link rel="stylesheet" href="/index.css">
   </head>

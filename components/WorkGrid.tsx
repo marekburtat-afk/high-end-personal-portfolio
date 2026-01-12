@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowUpRight } from 'lucide-react';
 import { Project } from '../types';
 import { urlFor } from '../lib/sanity';
 
@@ -11,45 +10,34 @@ interface WorkGridProps {
 
 export const WorkGrid: React.FC<WorkGridProps> = ({ projects }) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
       {projects.map((project, index) => (
         <motion.div
           key={project._id}
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: index * 0.1 }}
-          className="group cursor-pointer"
+          className="relative"
         >
-          <Link to={`/project/${project.slug.current}`} className="block">
-            {/* Image Container */}
-            <div className="relative aspect-[4/3] overflow-hidden rounded-lg bg-neutral-900 mb-6">
-               <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10" />
+          <Link to={`/project/${project.slug.current}`} className="group block relative">
+            {/* Thumbnail Card */}
+            <div className="relative aspect-video overflow-hidden rounded-sm bg-zinc-900 transition-all duration-300 ease-out group-hover:scale-110 group-hover:z-50 shadow-none group-hover:shadow-2xl group-hover:ring-1 group-hover:ring-neutral-700">
                <img 
                  src={urlFor(project.mainImage)} 
                  alt={project.title}
-                 className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
+                 className="w-full h-full object-cover"
                />
-               <div className="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white text-black p-2 rounded-full">
-                  <ArrowUpRight size={20} />
-               </div>
-            </div>
-
-            {/* Content */}
-            <div className="flex justify-between items-start">
-              <div>
-                <h3 className="text-xl font-medium text-white group-hover:text-neutral-300 transition-colors mb-2">
+               
+               {/* Info Overlay on Hover */}
+               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3">
+                  <h3 className="text-white text-[10px] md:text-sm font-bold truncate">
                     {project.title}
-                </h3>
-                <p className="text-neutral-500 text-sm leading-relaxed max-w-sm">
-                    {project.description}
-                </p>
-              </div>
-              {project.category && (
-                <span className="text-xs uppercase tracking-wider text-neutral-600 border border-neutral-800 px-3 py-1 rounded-full">
-                    {project.category}
-                </span>
-              )}
+                  </h3>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-[8px] md:text-[10px] text-green-500 font-bold">98% Shoda</span>
+                    <span className="text-[8px] md:text-[10px] text-white border border-neutral-600 px-1 uppercase">{project.category}</span>
+                  </div>
+               </div>
             </div>
           </Link>
         </motion.div>
