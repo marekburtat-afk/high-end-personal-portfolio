@@ -11,56 +11,41 @@ export const Work: React.FC = () => {
     getProjects().then(data => setProjects(data));
   }, []);
 
-  // FILTROVÁNÍ PROJEKTŮ DO ŘAD
-  // 1. Nejnovější (vezmeme prvních 6 projektů seřazených podle data)
   const newestProjects = projects.slice(0, 6);
-
-  // 2. VFX a Motion Graphics (filtrujeme podle kategorie v Sanity)
-  // Tip: V Sanity u těchto projektů napiš do pole Kategorie "vfx"
   const vfxProjects = projects.filter(p => 
-    p.category?.toLowerCase().includes('vfx') || 
-    p.category?.toLowerCase().includes('motion')
+    p.category === 'vfx'
   );
-
-  // 3. Reklamní kampaně
-  // Tip: V Sanity u těchto projektů napiš do pole Kategorie "reklama"
   const commercialProjects = projects.filter(p => 
-    p.category?.toLowerCase().includes('reklama') || 
-    p.category?.toLowerCase().includes('kampaň')
+    p.category === 'reklama'
   );
 
   return (
     <div className="min-h-screen bg-[#141414] pb-32">
-      {/* Hero sekce Portfolia */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="pt-32 pb-16 px-6 md:px-12 lg:px-24"
+        className="pt-32 pb-8 px-6 md:px-12 lg:px-24" // Sníženo pb-16 na pb-8
       >
-        <h1 className="text-6xl md:text-8xl lg:text-9xl font-black text-white mb-6 uppercase tracking-tighter italic">
+        <h1 className="text-6xl md:text-8xl lg:text-9xl font-black text-white mb-4 uppercase tracking-tighter italic leading-none">
           Portfolio
         </h1>
-        <p className="text-neutral-400 max-w-2xl text-lg md:text-xl font-medium leading-tight italic">
-          Kompletní přehled mých komerčních i osobních projektů. 
-          Každý projekt je výsledkem hledání unikátního vizuálního řešení.
+        <p className="text-neutral-500 max-w-2xl text-base md:text-lg font-medium leading-tight italic opacity-80">
+          Kompletní přehled mých komerčních i osobních projektů.
         </p>
       </motion.div>
 
-      {/* STRUKTURA TŘÍ PRUHŮ (Netflix Style) */}
-      <div className="space-y-24 px-6 md:px-12 lg:px-24">
+      {/* ZMĚNA: space-y-24 upraveno na space-y-8 (mobil) a space-y-12 (desktop) */}
+      <div className="space-y-8 md:space-y-12 px-6 md:px-12 lg:px-24">
         
-        {/* 1. PRUH: Nejnovější práce */}
         {newestProjects.length > 0 && (
           <ProjectRow title="Moje nejnovější práce" projects={newestProjects} />
         )}
 
-        {/* 2. PRUH: VFX a Motion Graphics */}
         {vfxProjects.length > 0 && (
           <ProjectRow title="VFX a Motion Graphics" projects={vfxProjects} />
         )}
 
-        {/* 3. PRUH: Reklamní kampaně */}
         {commercialProjects.length > 0 && (
           <ProjectRow title="Reklamní kampaně" projects={commercialProjects} />
         )}

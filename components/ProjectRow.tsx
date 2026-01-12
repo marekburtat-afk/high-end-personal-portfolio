@@ -13,14 +13,15 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
   if (projects.length === 0) return null;
 
   return (
-    <div className="space-y-1 mb-6 md:mb-10 last:mb-0">
-      {/* Nadpis přesně podle Netflixu: tučný, čistý, bílý */}
+    /* ZMENŠENO: mb-6 md:mb-10 -> mb-2 md:mb-4 pro těsnější řazení pod sebou */
+    <div className="space-y-1 mb-2 md:mb-4 last:mb-0">
       <h2 className="text-[1.2vw] md:text-xl lg:text-2xl font-bold text-[#e5e5e5] transition-colors duration-200 hover:text-white cursor-pointer inline-block">
         {title}
       </h2>
       
       <div className="relative group">
-        <div className="flex gap-1.5 overflow-x-auto scrollbar-hide pt-2 pb-12 scroll-smooth">
+        {/* ZMENŠENO: pb-12 -> pb-8 pro zmenšení díry mezi řadami (ponecháno místo pro scale efekt) */}
+        <div className="flex gap-1.5 overflow-x-auto scrollbar-hide pt-2 pb-8 scroll-smooth">
           {projects.map((project) => (
             <motion.div
               key={project._id}
