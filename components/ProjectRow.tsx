@@ -14,44 +14,39 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
 
   return (
     <div className="space-y-4 mb-12 last:mb-0">
-      {/* Nadpis řady - trochu jsme ho odsadili pro lepší rytmus */}
-      <h2 className="text-lg md:text-xl font-semibold text-neutral-300 tracking-wide px-1">
+      <h2 className="text-lg md:text-2xl font-bold text-neutral-200 tracking-tight px-1">
         {title}
       </h2>
       
-      {/* Kontejner pro scrollování. 
-          Přidali jsme větší spodní padding (pb-20), aby se karty při zvětšení měly kam "rozpínat" 
-          a neřezaly se o okraj divu.
-      */}
       <div className="relative group">
-        <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-20 pt-4 px-1 scroll-smooth">
+        {/* OPRAVA: pt-8 a pb-16 vytvoří místo, aby se karta při zvětšení (scale) neořízla */}
+        <div className="flex gap-4 overflow-x-auto scrollbar-hide pt-8 pb-16 px-1 scroll-smooth">
           {projects.map((project) => (
             <motion.div
               key={project._id}
               whileHover={{ 
-                scale: 1.2, // O trochu výraznější Netflix efekt
+                scale: 1.15,
                 zIndex: 50,
                 transition: { duration: 0.3, ease: "easeOut" }
               }}
-              className="flex-none w-[220px] sm:w-[280px] md:w-[320px] relative cursor-pointer"
+              className="flex-none w-[240px] md:w-[340px] relative cursor-pointer"
             >
               <Link to={`/project/${project.slug.current}`} className="block relative">
-                <div className="aspect-video overflow-hidden rounded-md shadow-lg bg-neutral-900 border border-neutral-800/30 transition-all duration-300 group-hover:shadow-2xl">
+                <div className="aspect-video rounded-sm shadow-2xl bg-neutral-900 border border-neutral-800/50 relative overflow-hidden group">
                   <img 
                     src={urlFor(project.mainImage)} 
                     alt={project.title}
                     className="w-full h-full object-cover"
-                    loading="lazy"
                   />
                   
-                  {/* Netflix info overlay - teď je jemnější a čitelnější */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-[#141414]/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 p-4 flex flex-col justify-end">
-                    <p className="text-white text-xs md:text-sm font-bold uppercase tracking-wider truncate mb-1">
+                  {/* Netflix info overlay - opraveno ořezávání textu */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 p-4 flex flex-col justify-end">
+                    <p className="text-white text-sm font-black uppercase tracking-tighter leading-tight line-clamp-2">
                       {project.title}
                     </p>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 mt-2">
                       <span className="text-[10px] text-green-500 font-bold italic">98% Shoda</span>
-                      <span className="text-[10px] text-white border border-neutral-500 px-1 rounded-[2px] opacity-70">HD</span>
+                      <span className="text-[10px] text-white border border-neutral-600 px-1 rounded-sm">HD</span>
                     </div>
                   </div>
                 </div>
