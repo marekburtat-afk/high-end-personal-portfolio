@@ -13,13 +13,12 @@ interface PartnerRowProps {
 
 export const PartnerRow: React.FC<PartnerRowProps> = ({ partners }) => {
   return (
-    <div className="space-y-8">
-      {/* OPRAVA: Čistý, tučný nadpis s jemnější šedou barvou podle Netflixu */}
+    <div className="space-y-6">
       <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-[#e5e5e5] tracking-tight">
         Reference a partneři
       </h2>
       
-      <div className="flex flex-wrap gap-x-16 gap-y-10 items-center justify-start">
+      <div className="flex flex-wrap gap-x-12 gap-y-8 items-center justify-start">
         {partners.map((partner, index) => (
           <motion.div 
             key={index}
