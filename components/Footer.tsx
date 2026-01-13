@@ -1,15 +1,37 @@
 import React from 'react';
 
 export const Footer: React.FC = () => {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="border-t border-neutral-900 py-12 mt-20 relative z-10 bg-black">
-      <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 flex flex-col md:flex-row justify-between items-center text-neutral-500 text-sm">
-        <p>© {new Date().getFullYear()} Marek Veřtat. Všechna práva vyhrazena.</p>
-        <div className="flex gap-6 mt-4 md:mt-0">
-            <a href="#" className="hover:text-white transition-colors">Instagram</a>
-            <a href="#" className="hover:text-white transition-colors">LinkedIn</a>
-            <a href="#" className="hover:text-white transition-colors">GitHub</a>
+    <footer className="bg-[#050505] border-t border-neutral-900/50 py-12 px-4 md:px-12 lg:px-24">
+      <div className="max-w-[1920px] mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+        
+        {/* LEVÁ STRANA: Copyright */}
+        <div className="text-neutral-500 text-[10px] md:text-xs font-medium uppercase tracking-[0.2em]">
+          © {currentYear} Marek Verťat. Všechna práva vyhrazena.
         </div>
+
+        {/* PRAVÁ STRANA: Pouze Instagram a TikTok */}
+        <div className="flex items-center gap-8">
+          <a 
+            href="https://www.instagram.com/marekvertat" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-neutral-400 hover:text-white text-[10px] md:text-xs font-black uppercase tracking-[0.3em] transition-colors duration-300"
+          >
+            Instagram
+          </a>
+          <a 
+            href="https://www.tiktok.com/@marekvertat" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-neutral-400 hover:text-white text-[10px] md:text-xs font-black uppercase tracking-[0.3em] transition-colors duration-300"
+          >
+            TikTok
+          </a>
+        </div>
+
       </div>
     </footer>
   );
