@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 interface Partner {
   name: string;
   logo: string;
-  description: string;
+  description?: string;
 }
 
 interface PartnerRowProps {
@@ -12,36 +12,37 @@ interface PartnerRowProps {
 }
 
 export const PartnerRow: React.FC<PartnerRowProps> = ({ partners }) => {
+  if (!partners || partners.length === 0) return null;
+
   return (
-    <div className="space-y-6">
-      <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-[#e5e5e5] tracking-tight">
+    <div className="py-12 md:py-20">
+      <h2 className="text-[1.4vw] md:text-xl lg:text-2xl font-black text-[#e5e5e5] uppercase tracking-tighter mb-10 md:mb-14">
         Reference a partneři
       </h2>
       
-      <div className="flex flex-wrap gap-x-12 gap-y-8 items-center justify-start">
+      {/* Kontejner pro loga - Flex s wrapem pro responsivitu */}
+      <div className="flex flex-wrap items-center justify-start gap-x-12 gap-y-10 md:gap-x-24 md:gap-y-16">
         {partners.map((partner, index) => (
-          <motion.div 
+          <motion.div
             key={index}
-            className="group relative cursor-help"
-            whileHover={{ scale: 1.05 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: index * 0.1, duration: 0.5 }}
+            className="group relative"
           >
-            <img 
-              src={partner.logo} 
-              alt={partner.name} 
-              className="h-7 md:h-9 w-auto grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300"
+            <img
+              src={partner.logo}
+              alt={partner.name}
+              /* ZVĚTŠENÍ: h-8 na mobilu, h-12 až h-16 na desktopu */
+              className="h-10 md:h-14 lg:h-18 w-auto object-contain opacity-50 grayscale transition-all duration-500 group-hover:opacity-100 group-hover:grayscale-0 group-hover:scale-110"
             />
-
-            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-6 w-64 p-4 bg-[#181818] border border-neutral-800 rounded-md shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 z-50">
-              <div className="flex flex-col gap-1">
-                <span className="text-[#E50914] font-bold text-[10px] uppercase tracking-widest">
-                  Spolupráce
-                </span>
-                <h4 className="text-white font-bold text-sm">{partner.name}</h4>
-                <p className="text-neutral-400 text-xs leading-relaxed mt-1">
-                  {partner.description}
-                </p>
-              </div>
-              <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-[#181818]" />
+            
+            {/* Volitelný tooltip s názvem partnera při najetí */}
+            <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+              <span className="text-[10px] font-black uppercase tracking-widest text-white/40">
+                {partner.name}
+              </span>
             </div>
           </motion.div>
         ))}
