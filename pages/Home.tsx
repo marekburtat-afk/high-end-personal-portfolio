@@ -23,7 +23,6 @@ export const Home: React.FC = () => {
   const getHeroEmbedUrl = (url: string, isModal: boolean = false) => {
     if (!url) return "";
     const id = url.split('v=')[1]?.split('&')[0];
-    // PŘIDÁNO: loop=1 a playlist=${id} do obou variant pro nekonečné přehrávání
     const params = isModal 
       ? `autoplay=1&rel=0&modestbranding=1&loop=1&playlist=${id}` 
       : `autoplay=1&mute=1&controls=0&loop=1&playlist=${id}&rel=0&showinfo=0&modestbranding=1&iv_load_policy=3&disablekb=1&enablejsapi=1`;
@@ -67,8 +66,10 @@ export const Home: React.FC = () => {
                   >
                     <Play size={20} fill="black" /> Přehrát
                   </button>
+                  
+                  {/* UPRAVENO: Tlačítko nyní vede na stránku /projects */}
                   <Link 
-                    to={`/project/${heroProject.slug?.current}`} 
+                    to="/projects" 
                     className="flex items-center gap-2 bg-neutral-500/40 text-white px-8 py-3 rounded-sm font-black uppercase text-sm hover:bg-neutral-500/60 backdrop-blur-md transition-transform active:scale-95"
                   >
                     <Info size={20} /> Více informací
@@ -80,7 +81,6 @@ export const Home: React.FC = () => {
         </section>
       )}
 
-      {/* --- VIDEO MODAL NA STŘED MONITORU --- */}
       {createPortal(
         <AnimatePresence>
           {showVideoModal && heroProject?.videoUrl && (
@@ -115,11 +115,9 @@ export const Home: React.FC = () => {
         document.body
       )}
 
-      {/* UPRAVENO: space-y-8 pro menší mezeru mezi sekcemi */}
       <div className="relative z-20 -mt-20 space-y-8 pb-12">
         <ProjectRow title="Moje tvorba" projects={projects} />
         {partners.length > 0 && (
-          /* UPRAVENO: pt-6 pro přiblížení partnerů k dělící čáře */
           <div className="pt-6 border-t border-white/5 mx-4 md:px-12"> 
             <PartnerRow partners={partners} />
           </div>
