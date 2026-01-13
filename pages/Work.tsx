@@ -8,19 +8,21 @@ export const Work: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
-    // getProjects už v sobě má to nové řazení (Pin #1 až #4)
     getProjects().then(data => setProjects(data));
   }, []);
 
-  // Filtry pro jednotlivé řady
-  // 'Výběr' ukáže vše seřazené podle tvých pinů
-  const selectionProjects = projects; 
+  // 1. ŘAZENÍ PODLE AKTUALITY: Ignorujeme Piny a řadíme čistě podle data (_createdAt)
+  const newestProjects = [...projects].sort((a, b) => 
+    new Date(b._createdAt).getTime() - new Date(a._createdAt).getTime()
+  );
+
+  // 2. FILTRY PRO KATEGORIE: Zde zůstávají projekty tak, jak přišly (včetně tvých Pinů)
   const vfxProjects = projects.filter(p => p.category === 'vfx');
   const commercialProjects = projects.filter(p => p.category === 'reklama');
 
   return (
     <div className="min-h-screen bg-[#141414] pb-32 overflow-x-hidden">
-      {/* HEADER: Padding sjednocen s ProjectRow, aby nadpis lícoval s kartami */}
+      {/* HEADER: Sjednoceno s designem Homepage */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -30,15 +32,16 @@ export const Work: React.FC = () => {
         <h1 className="text-6xl md:text-8xl lg:text-9xl font-black text-white mb-4 uppercase tracking-tighter leading-none">
           Portfolio
         </h1>
-        <p className="text-neutral-500 max-w-2xl text-base md:text-lg font-medium leading-tight opacity-80 uppercase tracking-widest">
-          Kompletní přehled mých komerčních i osobních projektů.
+        <p className="text-neutral-500 max-w-2xl text-base md:text-lg font-black uppercase tracking-[0.2em] leading-tight opacity-80">
+          Kompletní přehled mých komerčních i osobních projektů seřazený podle času.
         </p>
       </motion.div>
 
-      {/* KONTEJNER PRO ŘADY: Bez horizontálního paddingu, ten řeší ProjectRow.tsx vnitřně */}
-      <div className="space-y-4 md:space-y-8">
-        {selectionProjects.length > 0 && (
-          <ProjectRow title="Výběr z tvorby" projects={selectionProjects} />
+      {/* KONTEJNER PRO ŘADY */}
+      <div className="space-y-4 md:space-y-12">
+        {/* VRÁCENO: Moje nejnovější práce (čistě podle data) */}
+        {newestProjects.length > 0 && (
+          <ProjectRow title="Moje nejnovější práce" projects={newestProjects} />
         )}
         
         {vfxProjects.length > 0 && (
