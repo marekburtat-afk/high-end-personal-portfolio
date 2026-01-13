@@ -14,13 +14,39 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
   const rowRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
+  
+  // Stavy pro "Grab to Scroll"
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeftState, setScrollLeftState] = useState(0);
 
   if (projects.length === 0) return null;
 
+  // --- LOGIKA PRO MYŠ (Grab to scroll) ---
+  const onMouseDown = (e: React.MouseEvent) => {
+    if (!rowRef.current) return;
+    setIsDragging(true);
+    // Uložíme startovní pozici myši a aktuální scroll
+    setStartX(e.pageX - rowRef.current.offsetLeft);
+    setScrollLeftState(rowRef.current.scrollLeft);
+  };
+
+  const onMouseUpOrLeave = () => {
+    setIsDragging(false);
+  };
+
+  const onMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !rowRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - rowRef.current.offsetLeft;
+    const walk = (x - startX) * 2; // Rychlost posunu (násobitel)
+    rowRef.current.scrollLeft = scrollLeftState - walk;
+  };
+
+  // --- LOGIKA PRO ŠIPKY ---
   const handleScroll = (direction: 'left' | 'right') => {
     if (rowRef.current) {
       const { clientWidth } = rowRef.current;
-      // Posuneme přesně o šířku 4 karet
       const scrollAmount = direction === 'left' ? -clientWidth : clientWidth;
       rowRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
@@ -35,60 +61,62 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
   };
 
   return (
-    <div className="space-y-2 mb-8 md:mb-12">
-      {/* Nadpis s větším paddingem, aby lícoval s kartami */}
+    <div className="space-y-2 mb-8 md:mb-12 select-none">
       <h2 className="text-[1.4vw] md:text-xl lg:text-2xl font-black text-[#e5e5e5] px-4 md:px-12 uppercase tracking-tighter">
         {title}
       </h2>
       
       <div className="relative group">
-        {/* LEVÁ ŠIPKA - Netflix styl: celá výška karty */}
+        {/* LEVÁ ŠIPKA */}
         {showLeftArrow && (
           <button
             onClick={() => handleScroll('left')}
-            className="absolute left-0 top-0 bottom-8 z-[60] w-12 md:w-16 bg-black/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center hover:bg-black/80 hover:scale-110"
+            className="absolute left-0 top-0 bottom-8 z-[60] w-12 md:w-16 bg-black/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center hover:bg-black/80 hidden md:flex"
           >
             <ChevronLeft className="w-8 h-8 md:w-12 md:h-12 text-white" />
           </button>
         )}
 
-        {/* KONTEJNER PRO KARTY */}
+        {/* KONTEJNER PRO KARTY S GRAB FUNKCÍ */}
         <div 
           ref={rowRef}
           onScroll={checkScroll}
-          className="flex gap-1.5 overflow-x-auto scrollbar-hide pt-2 pb-8 scroll-smooth px-4 md:px-12"
+          onMouseDown={onMouseDown}
+          onMouseLeave={onMouseUpOrLeave}
+          onMouseUp={onMouseUpOrLeave}
+          onMouseMove={onMouseMove}
+          className={`
+            flex gap-1.5 overflow-x-auto scrollbar-hide pt-2 pb-8 px-4 md:px-12
+            ${isDragging ? 'cursor-grabbing scroll-auto' : 'cursor-grab scroll-smooth'}
+          `}
         >
           {projects.map((project: any) => (
             <motion.div
               key={project._id}
-              whileHover={{ 
-                scale: 1.05,
-                zIndex: 50,
-              }}
-              // ŠÍŘKA: Na mobilu 2 karty, na tabletu 3, na desktopu 4.2 karty (ten peek efekt)
-              className="flex-none w-[70%] md:w-[31%] lg:w-[23.8%] relative cursor-pointer"
+              whileHover={!isDragging ? { scale: 1.05, zIndex: 50 } : {}}
+              className="flex-none w-[70%] md:w-[31%] lg:w-[23.8%] relative"
             >
-              <Link to={`/project/${project.slug?.current}`} className="block relative rounded-sm overflow-hidden shadow-2xl">
+              {/* Zabráníme nechtěnému prokliku při dragování */}
+              <Link 
+                to={`/project/${project.slug?.current}`} 
+                onClick={(e) => isDragging && e.preventDefault()}
+                className="block relative rounded-sm overflow-hidden shadow-2xl pointer-events-auto"
+              >
                 <div className="aspect-video bg-neutral-900 relative">
                   <img 
                     src={urlFor(project.mainImage).url()} 
                     alt={project.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover pointer-events-none"
                   />
                   
-                  {/* Overlay s metadaty */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 p-4 flex flex-col justify-end">
                     <div className="flex items-center gap-2 mb-1.5 text-[8px] md:text-[10px] font-black uppercase">
-                      <span className="text-green-500">{project.match || 98}% Shoda</span>
+                      <span className="text-green-500">{project.match || 98}% Match</span>
                       <span className="text-neutral-400">{project.year || '2026'}</span>
-                      <span className="border border-neutral-600 px-1 rounded-[1px] text-white">4K</span>
                     </div>
-                    <h3 className="text-white text-xs md:text-sm font-black uppercase leading-tight mb-1">
+                    <h3 className="text-white text-xs md:text-sm font-black uppercase tracking-tight mb-1">
                       {project.title}
                     </h3>
-                    <p className="text-[#E50914] text-[7px] md:text-[9px] font-black uppercase tracking-[0.2em]">
-                      {project.output || 'Visual Art'}
-                    </p>
                   </div>
                 </div>
               </Link>
@@ -100,7 +128,7 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
         {showRightArrow && (
           <button
             onClick={() => handleScroll('right')}
-            className="absolute right-0 top-0 bottom-8 z-[60] w-12 md:w-16 bg-black/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center hover:bg-black/80 hover:scale-110"
+            className="absolute right-0 top-0 bottom-8 z-[60] w-12 md:w-16 bg-black/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center hover:bg-black/80 hidden md:flex"
           >
             <ChevronRight className="w-8 h-8 md:w-12 md:h-12 text-white" />
           </button>
