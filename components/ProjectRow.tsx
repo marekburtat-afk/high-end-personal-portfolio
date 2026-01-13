@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Project } from '../types';
 import { urlFor } from '../lib/sanity';
-import { ChevronLeft, ChevronRight } from 'lucide-react'; // Ujisti se, že máš nainstalováno lucide-react
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface ProjectRowProps {
   title: string;
@@ -17,19 +17,15 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
 
   if (projects.length === 0) return null;
 
-  // Funkce pro plynulý posun (Netflix style)
   const handleScroll = (direction: 'left' | 'right') => {
     if (rowRef.current) {
-      const { scrollLeft, clientWidth } = rowRef.current;
-      const scrollTo = direction === 'left' 
-        ? scrollLeft - clientWidth * 0.8 
-        : scrollLeft + clientWidth * 0.8;
-      
-      rowRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
+      const { clientWidth } = rowRef.current;
+      // Posuneme přesně o šířku 4 karet
+      const scrollAmount = direction === 'left' ? -clientWidth : clientWidth;
+      rowRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
 
-  // Hlídání viditelnosti šipek podle pozice scrollu
   const checkScroll = () => {
     if (rowRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = rowRef.current;
@@ -39,26 +35,28 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
   };
 
   return (
-    <div className="space-y-1 mb-6 md:mb-10 last:mb-0">
-      <h2 className="text-[1.2vw] md:text-xl lg:text-2xl font-black text-[#e5e5e5] hover:text-white transition-colors px-4 md:px-12 uppercase tracking-tighter cursor-default">
+    <div className="space-y-2 mb-8 md:mb-12">
+      {/* Nadpis s větším paddingem, aby lícoval s kartami */}
+      <h2 className="text-[1.4vw] md:text-xl lg:text-2xl font-black text-[#e5e5e5] px-4 md:px-12 uppercase tracking-tighter">
         {title}
       </h2>
       
-      <div className="relative group px-4 md:px-12">
-        {/* LEVÁ ŠIPKA */}
+      <div className="relative group">
+        {/* LEVÁ ŠIPKA - Netflix styl: celá výška karty */}
         {showLeftArrow && (
           <button
             onClick={() => handleScroll('left')}
-            className="absolute left-0 top-2 bottom-8 z-[60] w-12 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-black/70"
+            className="absolute left-0 top-0 bottom-8 z-[60] w-12 md:w-16 bg-black/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center hover:bg-black/80 hover:scale-110"
           >
-            <ChevronLeft className="w-8 h-8 text-white" />
+            <ChevronLeft className="w-8 h-8 md:w-12 md:h-12 text-white" />
           </button>
         )}
 
+        {/* KONTEJNER PRO KARTY */}
         <div 
           ref={rowRef}
           onScroll={checkScroll}
-          className="flex gap-1.5 overflow-x-auto scrollbar-hide pt-2 pb-8 scroll-smooth"
+          className="flex gap-1.5 overflow-x-auto scrollbar-hide pt-2 pb-8 scroll-smooth px-4 md:px-12"
         >
           {projects.map((project: any) => (
             <motion.div
@@ -67,9 +65,9 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
                 scale: 1.05,
                 zIndex: 50,
               }}
-              className="flex-none w-[200px] md:w-[280px] lg:w-[320px] relative cursor-pointer"
+              // ŠÍŘKA: Na mobilu 2 karty, na tabletu 3, na desktopu 4.2 karty (ten peek efekt)
+              className="flex-none w-[70%] md:w-[31%] lg:w-[23.8%] relative cursor-pointer"
             >
-              {/* POJISTKA: project.slug?.current zabrání pádu webu do šedé barvy */}
               <Link to={`/project/${project.slug?.current}`} className="block relative rounded-sm overflow-hidden shadow-2xl">
                 <div className="aspect-video bg-neutral-900 relative">
                   <img 
@@ -78,25 +76,18 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
                     className="w-full h-full object-cover"
                   />
                   
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 p-3 md:p-4 flex flex-col justify-end">
+                  {/* Overlay s metadaty */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 p-4 flex flex-col justify-end">
                     <div className="flex items-center gap-2 mb-1.5 text-[8px] md:text-[10px] font-black uppercase">
-                      <span className="text-green-500">
-                        {project.match || 98}% Match
-                      </span>
-                      <span className="text-neutral-400">
-                        {project.year || '2026'}
-                      </span>
-                      <span className="border border-neutral-600 px-1 rounded-[1px] text-white">
-                        {project.quality || '4K'}
-                      </span>
+                      <span className="text-green-500">{project.match || 98}% Shoda</span>
+                      <span className="text-neutral-400">{project.year || '2026'}</span>
+                      <span className="border border-neutral-600 px-1 rounded-[1px] text-white">4K</span>
                     </div>
-
-                    <h3 className="text-white text-xs md:text-sm font-black uppercase tracking-tight leading-tight mb-0.5">
+                    <h3 className="text-white text-xs md:text-sm font-black uppercase leading-tight mb-1">
                       {project.title}
                     </h3>
-
                     <p className="text-[#E50914] text-[7px] md:text-[9px] font-black uppercase tracking-[0.2em]">
-                      {project.output || 'Video Production'}
+                      {project.output || 'Visual Art'}
                     </p>
                   </div>
                 </div>
@@ -109,9 +100,9 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
         {showRightArrow && (
           <button
             onClick={() => handleScroll('right')}
-            className="absolute right-0 top-2 bottom-8 z-[60] w-12 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-black/70"
+            className="absolute right-0 top-0 bottom-8 z-[60] w-12 md:w-16 bg-black/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center hover:bg-black/80 hover:scale-110"
           >
-            <ChevronRight className="w-8 h-8 text-white" />
+            <ChevronRight className="w-8 h-8 md:w-12 md:h-12 text-white" />
           </button>
         )}
       </div>
