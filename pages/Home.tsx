@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom'; // TENTO IMPORT JE KLÍČOVÝ
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Play, Info, X } from 'lucide-react';
@@ -33,7 +33,6 @@ export const Home: React.FC = () => {
     <div className="relative pb-20 bg-[#141414]">
       {heroProject && (
         <section className="relative h-[85vh] w-full overflow-hidden bg-black">
-          {/* HERO VIDEO/IMAGE SEKCE */}
           <div className="absolute inset-0 z-0">
             {heroProject.videoUrl ? (
               <div className="absolute inset-0 w-full h-full">
@@ -51,7 +50,6 @@ export const Home: React.FC = () => {
             <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-[#141414]/20 to-transparent" />
           </div>
 
-          {/* HERO TEXT A TLAČÍTKA */}
           <div className="absolute bottom-1/4 left-0 right-0 z-10">
             <div className="max-w-[1800px] mx-auto px-4 md:px-12 text-left">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
@@ -81,40 +79,45 @@ export const Home: React.FC = () => {
         </section>
       )}
 
-      {/* VIDEO MODAL POUŽÍVAJÍCÍ PORTAL - TOHLE JE TA ZMĚNA */}
-      {showVideoModal && createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-12">
-          <AnimatePresence>
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/95 backdrop-blur-md" 
-              onClick={() => setShowVideoModal(false)} 
-            />
-          </AnimatePresence>
-          
-          <motion.div 
-            initial={{ scale: 0.9, opacity: 0 }} 
-            animate={{ scale: 1, opacity: 1 }} 
-            className="relative w-full max-w-6xl aspect-video bg-black rounded-sm overflow-hidden shadow-2xl z-[10000]"
-          >
-            <button 
-              onClick={() => setShowVideoModal(false)}
-              className="absolute top-4 right-4 z-[10001] p-2 bg-black/50 text-white rounded-full hover:bg-white hover:text-black transition-all"
-            >
-              <X size={24} />
-            </button>
-            <iframe
-              className="w-full h-full"
-              src={getHeroEmbedUrl(heroProject.videoUrl!, true)}
-              frameBorder="0"
-              allow="autoplay; encrypted-media; fullscreen"
-              allowFullScreen
-            ></iframe>
-          </motion.div>
-        </div>,
-        document.body // Vykreslí se přímo do těla stránky, mimo všechny transformace
+      {/* --- NUKLEÁRNÍ FIX PRO MODAL PŘES PORTAL --- */}
+      {createPortal(
+        <AnimatePresence>
+          {showVideoModal && heroProject?.videoUrl && (
+            <div className="fixed inset-0 z-[99999] flex items-center justify-center">
+              {/* BACKDROP: Fixovaný na monitor */}
+              <motion.div 
+                initial={{ opacity: 0 }} 
+                animate={{ opacity: 1 }} 
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black/95 backdrop-blur-xl" 
+                onClick={() => setShowVideoModal(false)} 
+              />
+              
+              {/* OKNO S VIDEEM: Vždy uprostřed monitoru */}
+              <motion.div 
+                initial={{ scale: 0.9, opacity: 0, y: 20 }} 
+                animate={{ scale: 1, opacity: 1, y: 0 }} 
+                exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                className="relative w-[95vw] max-w-6xl aspect-video bg-black rounded-sm overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.8)] z-[100000]"
+              >
+                <button 
+                  onClick={() => setShowVideoModal(false)}
+                  className="absolute top-4 right-4 z-[100001] p-3 bg-black/50 text-white rounded-full hover:bg-white hover:text-black transition-all active:scale-90"
+                >
+                  <X size={28} />
+                </button>
+                <iframe
+                  className="w-full h-full"
+                  src={getHeroEmbedUrl(heroProject.videoUrl, true)}
+                  frameBorder="0"
+                  allow="autoplay; encrypted-media; fullscreen"
+                  allowFullScreen
+                ></iframe>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>,
+        document.body
       )}
 
       {/* SEKCE S ŘADAMI */}
