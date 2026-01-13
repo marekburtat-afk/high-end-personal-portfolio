@@ -35,12 +35,11 @@ export async function getPartners() {
   }`);
 }
 
-// OPRAVENO: Komplexní řazení pro systém Pin #1 až #4
+// OPRAVENO: Robustní řazení pro Pin #1 až #4
 export async function getProjects(): Promise<Project[]> {
   return client.fetch(`
     *[_type == "project" && (isHero != true || !defined(isHero))] | order(
-      pinPosition > 0 desc, 
-      pinPosition asc, 
+      select(defined(pinPosition) && pinPosition > 0 => pinPosition, 999) asc, 
       _createdAt desc
     )
   `);
