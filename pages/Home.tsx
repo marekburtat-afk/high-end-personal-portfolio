@@ -23,8 +23,9 @@ export const Home: React.FC = () => {
   const getHeroEmbedUrl = (url: string, isModal: boolean = false) => {
     if (!url) return "";
     const id = url.split('v=')[1]?.split('&')[0];
+    // PŘIDÁNO: loop=1 a playlist=${id} do obou variant pro nekonečné přehrávání
     const params = isModal 
-      ? `autoplay=1&rel=0&modestbranding=1` 
+      ? `autoplay=1&rel=0&modestbranding=1&loop=1&playlist=${id}` 
       : `autoplay=1&mute=1&controls=0&loop=1&playlist=${id}&rel=0&showinfo=0&modestbranding=1&iv_load_policy=3&disablekb=1&enablejsapi=1`;
     return `https://www.youtube.com/embed/${id}?${params}`;
   };
@@ -79,19 +80,17 @@ export const Home: React.FC = () => {
         </section>
       )}
 
-      {/* --- DEFINITIVNÍ FIX: VIDEO MODAL NA STŘED MONITORU --- */}
+      {/* --- VIDEO MODAL NA STŘED MONITORU --- */}
       {createPortal(
         <AnimatePresence>
           {showVideoModal && heroProject?.videoUrl && (
             <div className="fixed inset-0 z-[99999] flex items-center justify-center overflow-hidden">
-              {/* Pozadí fixované na okno prohlížeče */}
               <motion.div 
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 className="fixed inset-0 bg-black/95 backdrop-blur-xl" 
                 onClick={() => setShowVideoModal(false)} 
               />
               
-              {/* Video okno - VŽDY uprostřed tvého výhledu */}
               <motion.div 
                 initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
                 className="relative w-[90vw] max-w-6xl aspect-video bg-black rounded-sm overflow-hidden shadow-2xl z-[100000]"
@@ -116,10 +115,12 @@ export const Home: React.FC = () => {
         document.body
       )}
 
-      <div className="relative z-20 -mt-20 space-y-12 pb-12">
+      {/* UPRAVENO: space-y-8 pro menší mezeru mezi sekcemi */}
+      <div className="relative z-20 -mt-20 space-y-8 pb-12">
         <ProjectRow title="Moje tvorba" projects={projects} />
         {partners.length > 0 && (
-          <div className="pt-12 border-t border-white/5 mx-4 md:px-12"> 
+          /* UPRAVENO: pt-6 pro přiblížení partnerů k dělící čáře */
+          <div className="pt-6 border-t border-white/5 mx-4 md:px-12"> 
             <PartnerRow partners={partners} />
           </div>
         )}
