@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Navigation } from './components/Navigation';
 import { Footer } from './components/Footer';
 import { Home } from './pages/Home';
@@ -8,8 +8,9 @@ import { Work } from './pages/Work';
 import { Blog } from './pages/Blog';
 import { Contact } from './pages/Contact';
 import { ProjectDetail } from './pages/ProjectDetail';
-import { PostDetail } from './pages/PostDetail'; // NOVÝ IMPORT
+import { PostDetail } from './pages/PostDetail';
 import { StudioPage } from './pages/StudioPage';
+import { NetflixIntro } from './components/NetflixIntro'; // Import nové komponenty
 
 const isComingSoon = true; 
 const SECRET_KEY = 'ukaz-mi-to';
@@ -35,6 +36,7 @@ const ComingSoon = () => (
 
 const App: React.FC = () => {
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const [introFinished, setIntroFinished] = useState(false); // Stav pro intro
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -53,20 +55,25 @@ const App: React.FC = () => {
           (isComingSoon && !isAuthorized) ? (
             <ComingSoon />
           ) : (
-            <div className="min-h-screen bg-background text-white selection:bg-white selection:text-black font-sans flex flex-col">
-              <Navigation />
-              <main className="flex-grow w-full z-10 relative">
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/projects" element={<Work />} />
-                  <Route path="/project/:slug" element={<ProjectDetail />} />
-                  <Route path="/blog" element={<Blog />} />
-                  <Route path="/blog/:slug" element={<PostDetail />} /> {/* NOVÁ CESTA PRO DETAIL BLOGU */}
-                  <Route path="/kontakt" element={<Contact />} />
-                </Routes>
-              </main>
-              <Footer />
-            </div>
+            <>
+              {/* Netflix Intro se spustí jen pokud ještě neskončilo */}
+              {!introFinished && <NetflixIntro onComplete={() => setIntroFinished(true)} />}
+              
+              <div className={`min-h-screen bg-background text-white selection:bg-white selection:text-black font-sans flex flex-col transition-opacity duration-1000 ${!introFinished ? 'opacity-0' : 'opacity-100'}`}>
+                <Navigation />
+                <main className="flex-grow w-full z-10 relative">
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/projects" element={<Work />} />
+                    <Route path="/project/:slug" element={<ProjectDetail />} />
+                    <Route path="/blog" element={<Blog />} />
+                    <Route path="/blog/:slug" element={<PostDetail />} />
+                    <Route path="/kontakt" element={<Contact />} />
+                  </Routes>
+                </main>
+                <Footer />
+              </div>
+            </>
           )
         } />
       </Routes>
