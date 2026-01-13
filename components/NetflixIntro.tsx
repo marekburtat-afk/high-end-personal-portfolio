@@ -12,7 +12,6 @@ export const NetflixIntro: React.FC<NetflixIntroProps> = ({ videoUrl, onComplete
 
   const handleStart = () => {
     setHasStarted(true);
-    // Díky tomuto kliknutí prohlížeč povolí zvuk u tvého .webm souboru
     if (videoRef.current) {
       videoRef.current.muted = false;
       videoRef.current.play();
@@ -26,26 +25,38 @@ export const NetflixIntro: React.FC<NetflixIntroProps> = ({ videoUrl, onComplete
       transition={{ duration: 0.8 }}
       className="fixed inset-0 z-[9999] bg-black flex items-center justify-center overflow-hidden touch-none"
     >
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {!hasStarted ? (
-          /* 1. ÚVODNÍ OBRAZOVKA: Čistý design, který aktivuje zvuk */
+          /* FIX: Přidáno absolute a inset-0 pro zamezení uskakování doleva */
           <motion.div
             key="welcome"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={handleStart}
-            className="flex flex-col items-center justify-center cursor-pointer group"
+            exit={{ opacity: 0, scale: 1.1 }} // Přidán jemný zoom při mizení
+            className="absolute inset-0 flex flex-col items-center justify-center bg-black z-[10000]"
           >
-            <h1 className="text-white text-4xl md:text-6xl font-black uppercase tracking-tighter mb-4 transition-transform group-hover:scale-105 duration-500">
+            <motion.h1 
+              initial={{ y: 20 }}
+              animate={{ y: 0 }}
+              className="text-white text-5xl md:text-7xl font-black uppercase tracking-tighter mb-12"
+            >
               Marek Verťat
-            </h1>
-            <p className="text-neutral-500 text-[10px] font-black uppercase tracking-[0.5em] animate-pulse">
-              Click to Enter
-            </p>
+            </motion.h1>
+
+            {/* VÝRAZNÉ TLAČÍTKO S NETFLIX RED HOVER EFEKTEM */}
+            <button
+              onClick={handleStart}
+              className="group relative px-12 py-4 bg-transparent border-2 border-white/20 rounded-sm transition-all duration-300 hover:border-[#E50914] overflow-hidden"
+            >
+              <span className="relative z-10 text-white font-black uppercase tracking-[0.4em] text-xs transition-colors duration-300 group-hover:text-white">
+                Enter Experience
+              </span>
+              {/* Červená výplň, která vyjede při hoveru */}
+              <div className="absolute inset-0 bg-[#E50914] translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+            </button>
           </motion.div>
         ) : (
-          /* 2. SAMOTNÉ INTRO: Teď už jede se zvukem bez ptaní */
+          /* VIDEO SEKCE */
           <motion.div
             key="video"
             initial={{ opacity: 0 }}
@@ -61,7 +72,6 @@ export const NetflixIntro: React.FC<NetflixIntroProps> = ({ videoUrl, onComplete
               playsInline
             />
             
-            {/* Skip Intro tlačítko zůstává pro netrpělivé */}
             <button 
               onClick={onComplete}
               className="absolute bottom-10 right-10 text-white/40 hover:text-white text-[10px] font-black uppercase tracking-[0.3em] transition-all border border-white/10 px-6 py-3 bg-black/40 backdrop-blur-md z-[10000]"
