@@ -15,46 +15,49 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
   
-  // Stavy pro Dragging
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeftState, setScrollLeftState] = useState(0);
-
-  // LOGIKA PRO KULATÝ KURZOR
   const [isHoveringRow, setIsHoveringRow] = useState(false);
-  const cursorX = useMotionValue(-100);
-  const cursorY = useMotionValue(-100);
 
-  // Spring animace pro hladký pohyb kurzoru ("magnetic effect")
-  const springConfig = { damping: 25, stiffness: 250 };
-  const smoothX = useSpring(cursorX, springConfig);
-  const smoothY = useSpring(cursorY, springConfig);
+  // LOGIKA PRO MODERNÍ KURZOR
+  const mouseX = useMotionValue(-100);
+  const mouseY = useMotionValue(-100);
+
+  // Jemnější nastavení pružnosti pro "elegantní" pohyb
+  const springConfig = { damping: 30, stiffness: 300, mass: 0.5 };
+  const smoothX = useSpring(mouseX, springConfig);
+  const smoothY = useSpring(mouseY, springConfig);
+
+  useEffect(() => {
+    const handleMouseMoveGlobal = (e: MouseEvent) => {
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
+    };
+    window.addEventListener('mousemove', handleMouseMoveGlobal);
+    return () => window.removeEventListener('mousemove', handleMouseMoveGlobal);
+  }, [mouseX, mouseY]);
 
   if (projects.length === 0) return null;
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    // Aktualizace pozice vlastního kurzoru
-    cursorX.set(e.clientX);
-    cursorY.set(e.clientY);
-
-    // Pokud táhneme, hýbeme řadou
-    if (!isDragging || !rowRef.current) return;
-    e.preventDefault();
-    const x = e.pageX - rowRef.current.offsetLeft;
-    const walk = (x - startX) * 1.5; // Upravený násobitel pro lepší plynulost
-    rowRef.current.scrollLeft = scrollLeftState - walk;
-  };
 
   const onMouseDown = (e: React.MouseEvent) => {
     if (!rowRef.current) return;
     setIsDragging(true);
+    // e.pageX je pozice myši, offsetLeft je začátek pásu
     setStartX(e.pageX - rowRef.current.offsetLeft);
     setScrollLeftState(rowRef.current.scrollLeft);
   };
 
+  const onMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !rowRef.current) return;
+    e.preventDefault(); // Zabrání označování textu a plynule táhne
+    const x = e.pageX - rowRef.current.offsetLeft;
+    const walk = (x - startX) * 2; // Násobitel rychlosti
+    rowRef.current.scrollLeft = scrollLeftState - walk;
+  };
+
   const onMouseUpOrLeave = () => {
     setIsDragging(false);
-    setIsHoveringRow(false);
   };
 
   const handleScroll = (direction: 'left' | 'right') => {
@@ -74,24 +77,19 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
   };
 
   return (
-    <div className="space-y-2 mb-8 md:mb-12 select-none relative">
-      {/* VLASTNÍ KULATÝ KURZOR */}
+    <div className="space-y-2 mb-8 md:mb-12 select-none relative group/main">
+      {/* MODERNÍ KURZOR: Čistý kroužek s mix-blend-difference */}
       <motion.div
-        className="fixed top-0 left-0 w-24 h-24 bg-white rounded-full pointer-events-none z-[999] flex items-center justify-center mix-blend-difference"
+        className="fixed top-0 left-0 w-12 h-12 border border-white rounded-full pointer-events-none z-[9999] mix-blend-difference flex items-center justify-center"
         style={{
           x: smoothX,
           y: smoothY,
           translateX: "-50%",
           translateY: "-50%",
           opacity: isHoveringRow ? 1 : 0,
-          scale: isDragging ? 0.8 : 1,
+          scale: isDragging ? 1.5 : 1, // Při kliknutí se kroužek zvětší
         }}
-        transition={{ opacity: { duration: 0.2 } }}
-      >
-        <span className="text-black text-[10px] font-black uppercase tracking-widest">
-          {isDragging ? 'Hold' : 'Drag'}
-        </span>
-      </motion.div>
+      />
 
       <h2 className="text-[1.4vw] md:text-xl lg:text-2xl font-black text-[#e5e5e5] px-4 md:px-12 uppercase tracking-tighter">
         {title}
@@ -113,9 +111,9 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
           ref={rowRef}
           onScroll={checkScroll}
           onMouseDown={onMouseDown}
-          onMouseLeave={onMouseUpOrLeave}
+          onMouseMove={onMouseMove}
           onMouseUp={onMouseUpOrLeave}
-          onMouseMove={handleMouseMove}
+          onMouseLeave={() => { onMouseUpOrLeave(); setIsHoveringRow(false); }}
           onMouseEnter={() => setIsHoveringRow(true)}
           className={`
             flex gap-1.5 overflow-x-auto scrollbar-hide pt-2 pb-8 px-4 md:px-12
