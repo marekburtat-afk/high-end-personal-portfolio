@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Project } from '../types';
@@ -26,7 +26,6 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
   const onMouseDown = (e: React.MouseEvent) => {
     if (!rowRef.current) return;
     setIsDragging(true);
-    // Uložíme startovní pozici myši a aktuální scroll
     setStartX(e.pageX - rowRef.current.offsetLeft);
     setScrollLeftState(rowRef.current.scrollLeft);
   };
@@ -39,7 +38,7 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
     if (!isDragging || !rowRef.current) return;
     e.preventDefault();
     const x = e.pageX - rowRef.current.offsetLeft;
-    const walk = (x - startX) * 2; // Rychlost posunu (násobitel)
+    const walk = (x - startX) * 2;
     rowRef.current.scrollLeft = scrollLeftState - walk;
   };
 
@@ -66,18 +65,18 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
         {title}
       </h2>
       
-      <div className="relative group">
+      <div className="relative group/row">
         {/* LEVÁ ŠIPKA */}
         {showLeftArrow && (
           <button
             onClick={() => handleScroll('left')}
-            className="absolute left-0 top-0 bottom-8 z-[60] w-12 md:w-16 bg-black/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center hover:bg-black/80 hidden md:flex"
+            className="absolute left-0 top-0 bottom-8 z-[60] w-12 md:w-16 bg-black/60 opacity-0 group-hover/row:opacity-100 transition-all flex items-center justify-center hover:bg-black/80 hidden md:flex"
           >
             <ChevronLeft className="w-8 h-8 md:w-12 md:h-12 text-white" />
           </button>
         )}
 
-        {/* KONTEJNER PRO KARTY S GRAB FUNKCÍ */}
+        {/* KONTEJNER PRO KARTY */}
         <div 
           ref={rowRef}
           onScroll={checkScroll}
@@ -96,11 +95,11 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
               whileHover={!isDragging ? { scale: 1.05, zIndex: 50 } : {}}
               className="flex-none w-[70%] md:w-[31%] lg:w-[23.8%] relative"
             >
-              {/* Zabráníme nechtěnému prokliku při dragování */}
+              {/* OPRAVENO: Přidána třída 'group' pro hover efekt */}
               <Link 
                 to={`/project/${project.slug?.current}`} 
                 onClick={(e) => isDragging && e.preventDefault()}
-                className="block relative rounded-sm overflow-hidden shadow-2xl pointer-events-auto"
+                className="block relative rounded-sm overflow-hidden shadow-2xl pointer-events-auto group"
               >
                 <div className="aspect-video bg-neutral-900 relative">
                   <img 
@@ -109,14 +108,21 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
                     className="w-full h-full object-cover pointer-events-none"
                   />
                   
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 p-4 flex flex-col justify-end">
+                  {/* OPRAVENO: Vrácen group-hover:opacity-100 a kompletní metadata */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4 flex flex-col justify-end pointer-events-none">
                     <div className="flex items-center gap-2 mb-1.5 text-[8px] md:text-[10px] font-black uppercase">
-                      <span className="text-green-500">{project.match || 98}% Match</span>
+                      <span className="text-green-500">{project.match || 98}% Shoda</span>
                       <span className="text-neutral-400">{project.year || '2026'}</span>
+                      <span className="border border-neutral-600 px-1 rounded-[1px] text-white">
+                        {project.quality || '4K'}
+                      </span>
                     </div>
-                    <h3 className="text-white text-xs md:text-sm font-black uppercase tracking-tight mb-1">
+                    <h3 className="text-white text-xs md:text-sm font-black uppercase leading-tight mb-1">
                       {project.title}
                     </h3>
+                    <p className="text-[#E50914] text-[7px] md:text-[9px] font-black uppercase tracking-[0.2em]">
+                      {project.output || 'Visual Art'}
+                    </p>
                   </div>
                 </div>
               </Link>
@@ -128,7 +134,7 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
         {showRightArrow && (
           <button
             onClick={() => handleScroll('right')}
-            className="absolute right-0 top-0 bottom-8 z-[60] w-12 md:w-16 bg-black/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center hover:bg-black/80 hidden md:flex"
+            className="absolute right-0 top-0 bottom-8 z-[60] w-12 md:w-16 bg-black/60 opacity-0 group-hover/row:opacity-100 transition-all flex items-center justify-center hover:bg-black/80 hidden md:flex"
           >
             <ChevronRight className="w-8 h-8 md:w-12 md:h-12 text-white" />
           </button>
