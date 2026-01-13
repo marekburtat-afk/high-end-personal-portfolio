@@ -35,24 +35,20 @@ const App: React.FC = () => {
   const [introVideoUrl, setIntroVideoUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    // 1. Autorizace
     const params = new URLSearchParams(window.location.search);
     if (params.get('dev') === SECRET_KEY || localStorage.getItem('devMode') === 'true') {
       setIsAuthorized(true);
       localStorage.setItem('devMode', 'true');
     }
 
-    // 2. Kontrola sessionStorage (aby intro nebylo otravné)
     if (sessionStorage.getItem('hasSeenIntro') === 'true') {
       setIntroFinished(true);
     }
 
-    // 3. Načtení nastavení ze Sanity
     getSettings().then(data => {
       if (data?.introVideoUrl) {
         setIntroVideoUrl(data.introVideoUrl);
       } else if (!sessionStorage.getItem('hasSeenIntro')) {
-        // Pokud v Sanity video není, web rovnou zobrazíme
         setIntroFinished(true);
       }
     });
@@ -77,21 +73,28 @@ const App: React.FC = () => {
         )}
       </AnimatePresence>
       
-      <div className={`min-h-screen flex flex-col transition-opacity duration-1000 ${introFinished ? 'opacity-100' : 'opacity-0'}`}>
-        <Navigation />
-        <main className="flex-grow w-full z-10 relative">
-          <Routes>
-            <Route path="/studio/*" element={<StudioPage />} />
-            <Route path="/" element={<Home />} />
-            <Route path="/projects" element={<Work />} />
-            <Route path="/project/:slug" element={<ProjectDetail />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/blog/:slug" element={<PostDetail />} />
-            <Route path="/kontakt" element={<Contact />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
+      <Routes>
+        {/* Administrace - zcela oddělená, aby se v ní nepropisoval web */}
+        <Route path="/studio/*" element={<StudioPage />} />
+
+        {/* Hlavní web - s hlavičkou a patičkou */}
+        <Route path="*" element={
+          <div className={`min-h-screen flex flex-col transition-opacity duration-1000 ${introFinished ? 'opacity-100' : 'opacity-0'}`}>
+            <Navigation />
+            <main className="flex-grow w-full z-10 relative">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/projects" element={<Work />} />
+                <Route path="/project/:slug" element={<ProjectDetail />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/blog/:slug" element={<PostDetail />} />
+                <Route path="/kontakt" element={<Contact />} />
+              </Routes>
+            </main>
+            <Footer />
+          </div>
+        } />
+      </Routes>
     </Router>
   );
 };
