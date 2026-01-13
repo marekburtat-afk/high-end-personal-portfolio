@@ -63,12 +63,11 @@ const projectSchema = {
     { name: 'title', type: 'string', title: 'Titulek' },
     { name: 'slug', type: 'slug', title: 'Slug', options: { source: 'title', maxLength: 96 } },
     
-    // ZMĚNĚNO: Z boolean na výběr pozice 1-4
     { 
       name: 'pinPosition', 
       type: 'number', 
       title: 'Pozice připnutí (Pin)', 
-      description: 'Vyber pozici 1-4 pro fixní pořadí na začátku. Projekty bez pinu se zařadí za ně.',
+      description: 'Vyber pozici 1-4 pro fixní pořadí na začátku. Projekty bez pinu se zařadí chronologicky za ně.',
       options: {
         list: [
           { title: 'Bez pinu', value: 0 },
@@ -91,8 +90,19 @@ const projectSchema = {
       description: 'Pokud je zapnuto, tento projekt se zobrazí nahoře na úvodní stránce.',
       initialValue: false 
     },
-    { name: 'match', type: 'number', title: 'Procento shody (např. 98)', initialValue: 98 },
-    { name: 'year', type: 'string', title: 'Rok projektu', initialValue: '2026' },
+
+    // ZMĚNĚNO: Místo textového pole "rok" je zde nyní KALENDÁŘ
+    { 
+      name: 'releaseDate', 
+      type: 'date', 
+      title: 'Datum natáčení / projektu',
+      description: 'Vyber přesné datum z kalendáře. Podle tohoto data se budou projekty řadit (od nejnovějších).',
+      options: {
+        dateFormat: 'YYYY-MM-DD',
+      },
+      initialValue: (new Date()).toISOString().split('T')[0]
+    },
+
     { name: 'quality', type: 'string', title: 'Kvalita (např. 4K Ultra HD)', initialValue: '4K Ultra HD' },
     { 
       name: 'output', 
@@ -113,6 +123,9 @@ const projectSchema = {
       }
     },
     { name: 'content', type: 'array', title: 'Obsah', of: [{ type: 'block' }, imageWithCaption, videoEmbed, beforeAfterSlider] },
+    
+    // Ponecháno skryté pole pro "match", pokud bys ho chtěl v budoucnu použít, ale teď v designu nebude vidět
+    { name: 'match', type: 'number', title: 'Procento shody', hidden: true },
   ]
 };
 

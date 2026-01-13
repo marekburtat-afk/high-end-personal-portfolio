@@ -21,14 +21,6 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
 
   if (projects.length === 0) return null;
 
-  // POMOCNÁ FUNKCE PRO ZÍSKÁNÍ ROKU
-  const getDisplayYear = (project: Project) => {
-    // 1. Priorita: releaseDate (např. 2026-01-14 -> vezme první 4 znaky)
-    if (project.releaseDate) return project.releaseDate.substring(0, 4);
-    // 2. Záloha: staré pole year
-    return project.year || '';
-  };
-
   const onMouseDown = (e: React.MouseEvent) => {
     if (!rowRef.current) return;
     setIsDragging(true);
@@ -110,25 +102,19 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
                   />
                   
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4 flex flex-col justify-end pointer-events-none text-left">
-                    {/* METADATA ŘÁDEK: Procenta, Rok a Kvalita */}
-                    <div className="flex items-center gap-2 mb-2">
-                      {project.match && (
-                        <span className="text-green-500 text-[8px] md:text-[10px] font-black">
-                          {project.match}% Match
-                        </span>
-                      )}
-                      <span className="text-white text-[8px] md:text-[10px] font-black">
-                        {getDisplayYear(project)}
-                      </span>
+                    {/* ČISTÝ DESIGN: Pouze kvalita */}
+                    <div className="mb-2">
                       <span className="border border-white/40 px-1 text-[8px] md:text-[10px] rounded-[1px] text-white font-black uppercase">
                         {project.quality || '4K ULTRA HD'}
                       </span>
                     </div>
 
+                    {/* NÁZEV */}
                     <h3 className="text-white text-xs md:text-sm font-black uppercase leading-tight mb-1">
                       {project.title}
                     </h3>
 
+                    {/* ČERVENÝ VÝSTUP */}
                     <p className="text-[#E50914] text-[7px] md:text-[9px] font-black uppercase tracking-[0.2em]">
                       {project.output || 'REKLAMA'}
                     </p>
