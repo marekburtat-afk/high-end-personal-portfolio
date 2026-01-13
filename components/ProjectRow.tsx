@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { createPortal } from 'react-dom'; // Důležité pro fixaci pozice kurzoru
+import { createPortal } from 'react-dom'; 
 import { Link } from 'react-router-dom';
 import { motion, useMotionValue } from 'framer-motion';
 import { Project } from '../types';
@@ -16,17 +16,17 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
   
-  // Dragging logiku jsme zjednodušili pro maximální plynulost
+  // DRAG LOGIKA - 1:1 přilepení k myši
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeftStart, setScrollLeftStart] = useState(0);
 
-  // Moderní kurzor (kroužek)
+  // KURZOR LOGIKA - Používáme MotionValue pro nulový lag
   const [isHoveringRow, setIsHoveringRow] = useState(false);
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
 
-  // Sledování myši – clientX/Y jsou souřadnice okna
+  // Globální sledování myši přes celou obrazovku
   useEffect(() => {
     const moveCursor = (e: MouseEvent) => {
       cursorX.set(e.clientX);
@@ -42,14 +42,16 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
   const onMouseDown = (e: React.MouseEvent) => {
     if (!rowRef.current) return;
     setIsDragging(true);
-    setStartX(e.clientX); // Používáme clientX pro absolutní shodu s oknem
+    // Ukládáme clientX (pozice v okně), aby to sedělo s kuličkou
+    setStartX(e.clientX);
     setScrollLeftStart(rowRef.current.scrollLeft);
   };
 
-  // --- POHYB (Musí být 1:1 k myši) ---
+  // --- POHYB (Plynulé 1:1 přetažení) ---
   const onMouseMove = (e: React.MouseEvent) => {
     if (!isDragging || !rowRef.current) return;
     e.preventDefault();
+    
     const deltaX = e.clientX - startX;
     // Karty se teď hýbou přesně o tolik, o kolik pohneš myší
     rowRef.current.scrollLeft = scrollLeftStart - deltaX;
@@ -59,6 +61,7 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
     setIsDragging(false);
   };
 
+  // Logika pro šipky zůstává
   const handleScroll = (direction: 'left' | 'right') => {
     if (rowRef.current) {
       const { clientWidth } = rowRef.current;
@@ -78,16 +81,16 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
   return (
     <div className="space-y-2 mb-8 md:mb-12 select-none relative">
       
-      {/* PORTAL: Vykreslí kurzor mimo všechny divy, přímo do body */}
+      {/* PORTAL: Tento kód vykreslí kuličku mimo Portfolio, přímo do Body stránky */}
       {isHoveringRow && createPortal(
         <motion.div
-          className="fixed top-0 left-0 w-16 h-16 border border-white/40 rounded-full pointer-events-none z-[99999] mix-blend-difference"
+          className="fixed top-0 left-0 w-16 h-16 border border-white/50 rounded-full pointer-events-none z-[99999] mix-blend-difference"
           style={{
             x: cursorX,
             y: cursorY,
             translateX: "-50%",
             translateY: "-50%",
-            scale: isDragging ? 0.7 : 1, // Kroužek se při stisku lehce zmenší
+            scale: isDragging ? 0.7 : 1, // Při "chycení" se kroužek jemně smrští
           }}
         />,
         document.body
@@ -120,7 +123,7 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
           className={`
             flex gap-1.5 overflow-x-auto scrollbar-hide pt-2 pb-8 px-4 md:px-12
             ${isHoveringRow ? 'cursor-none' : 'cursor-auto'}
-            ${isDragging ? 'scroll-auto touch-none' : 'scroll-smooth'}
+            ${isDragging ? 'scroll-auto cursor-none' : 'scroll-smooth'}
           `}
         >
           {projects.map((project: any) => (
