@@ -78,24 +78,31 @@ export const Home: React.FC = () => {
         </section>
       )}
 
-      {/* VIDEO MODAL: PŘIPNUTÝ NA STŘED OBRAZOVKY */}
+      {/* VIDEO MODAL: FIXNÍ CENTROVÁNÍ VŮČI OBRAZOVCE */}
       <AnimatePresence>
         {showVideoModal && heroProject?.videoUrl && (
           <motion.div 
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }}
             className="fixed inset-0 z-[500] flex items-center justify-center p-4 md:p-12"
           >
-            {/* Tmavé pozadí fixované na celý viewport */}
-            <div className="fixed inset-0 bg-black/95 backdrop-blur-md" onClick={() => setShowVideoModal(false)} />
+            {/* Overlay pozadí fixované na celý viewport */}
+            <div 
+              className="fixed inset-0 bg-black/95 backdrop-blur-md cursor-pointer" 
+              onClick={() => setShowVideoModal(false)} 
+            />
             
-            {/* Samotné video okno centrované uprostřed */}
+            {/* Kontejner s videem - VŽDY uprostřed tvého zobrazení */}
             <motion.div 
-              initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
-              className="relative w-full max-w-6xl aspect-video bg-black rounded-sm overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/10"
+              initial={{ scale: 0.9, opacity: 0 }} 
+              animate={{ scale: 1, opacity: 1 }} 
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative w-full max-w-6xl aspect-video bg-black rounded-sm overflow-hidden shadow-2xl border border-white/10 z-[510]"
             >
               <button 
                 onClick={() => setShowVideoModal(false)}
-                className="absolute top-4 right-4 z-[510] p-2 bg-black/50 text-white rounded-full hover:bg-white hover:text-black transition-all shadow-lg active:scale-90"
+                className="absolute top-4 right-4 z-[520] p-2 bg-black/50 text-white rounded-full hover:bg-white hover:text-black transition-all shadow-lg active:scale-90"
               >
                 <X size={24} />
               </button>
