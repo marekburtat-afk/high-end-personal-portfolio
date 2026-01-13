@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, useMotionValue, animate } from 'framer-motion';
+import { motion, useMotionValue } from 'framer-motion';
 import { Project } from '../types';
 import { urlFor } from '../lib/sanity';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -15,17 +15,17 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
   
-  // Dragging state
+  // DRAG LOGIKA
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeftStart, setScrollLeftStart] = useState(0);
-  const [isHoveringRow, setIsHoveringRow] = useState(false);
 
-  // KURZOR: Použijeme MotionValue pro okamžitou odezvu bez lagu
+  // KURZOR LOGIKA
+  const [isHoveringRow, setIsHoveringRow] = useState(false);
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
 
-  // Sledování myši v celém okně pro odstranění offsetu
+  // Globální sledování myši - odstraní ten offset z videa
   useEffect(() => {
     const moveCursor = (e: MouseEvent) => {
       cursorX.set(e.clientX);
@@ -37,30 +37,30 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
 
   if (projects.length === 0) return null;
 
-  // --- LOGIKA POSOUVÁNÍ ---
+  // ZAČÁTEK TAHU (Click)
   const onMouseDown = (e: React.MouseEvent) => {
     if (!rowRef.current) return;
     setIsDragging(true);
-    // Uložíme přesný bod, kde jsme klikli
-    setStartX(e.pageX - rowRef.current.offsetLeft);
+    // Používáme clientX pro absolutní přesnost vůči oknu
+    setStartX(e.clientX);
     setScrollLeftStart(rowRef.current.scrollLeft);
   };
 
+  // POHYB (Drag)
   const onMouseMove = (e: React.MouseEvent) => {
     if (!isDragging || !rowRef.current) return;
     e.preventDefault();
     
-    // Výpočet 1:1 – o kolik se pohne myš, o tolik se pohne řada
-    const x = e.pageX - rowRef.current.offsetLeft;
-    const walk = x - startX; 
-    rowRef.current.scrollLeft = scrollLeftStart - walk;
+    // Rozdíl mezi startem a aktuální pozicí myši
+    const deltaX = e.clientX - startX;
+    // Okamžitý posun 1:1 bez lagu
+    rowRef.current.scrollLeft = scrollLeftStart - deltaX;
   };
 
   const onMouseUpOrLeave = () => {
     setIsDragging(false);
   };
 
-  // Šipky
   const handleScroll = (direction: 'left' | 'right') => {
     if (rowRef.current) {
       const { clientWidth } = rowRef.current;
@@ -80,16 +80,16 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
   return (
     <div className="space-y-2 mb-8 md:mb-12 select-none relative">
       
-      {/* MINIMALISTICKÝ KURZOR: Pouze tenký kroužek bez textu */}
+      {/* ELEGANTNÍ KURZOR - PŘESNĚ NA ŠPIČCE MYŠI */}
       <motion.div
-        className="fixed top-0 left-0 w-14 h-14 border border-white/50 rounded-full pointer-events-none z-[9999] mix-blend-difference"
+        className="fixed top-0 left-0 w-16 h-16 border border-white/40 rounded-full pointer-events-none z-[9999] mix-blend-difference"
         style={{
           x: cursorX,
           y: cursorY,
           translateX: "-50%",
           translateY: "-50%",
           opacity: isHoveringRow ? 1 : 0,
-          scale: isDragging ? 0.7 : 1, // Při stisku se kroužek jemně smrští
+          scale: isDragging ? 0.7 : 1, // Při "chycení" se kroužek lehce stáhne
         }}
       />
 
@@ -98,7 +98,6 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
       </h2>
       
       <div className="relative group/row">
-        {/* LEVÁ ŠIPKA */}
         {showLeftArrow && (
           <button
             onClick={() => handleScroll('left')}
@@ -108,7 +107,6 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
           </button>
         )}
 
-        {/* KONTEJNER PRO KARTY */}
         <div 
           ref={rowRef}
           onScroll={checkScroll}
@@ -117,7 +115,6 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
           onMouseUp={onMouseUpOrLeave}
           onMouseLeave={() => { onMouseUpOrLeave(); setIsHoveringRow(false); }}
           onMouseEnter={() => setIsHoveringRow(true)}
-          /* ZMĚNA: cursor-none schová tvůj systémový kurzor, zbude jen kulička */
           className={`
             flex gap-1.5 overflow-x-auto scrollbar-hide pt-2 pb-8 px-4 md:px-12
             ${isHoveringRow ? 'cursor-none' : 'cursor-auto'}
@@ -163,7 +160,6 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
           ))}
         </div>
 
-        {/* PRAVÁ ŠIPKA */}
         {showRightArrow && (
           <button
             onClick={() => handleScroll('right')}
