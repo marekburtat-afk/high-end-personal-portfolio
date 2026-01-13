@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom'; // PŘIDÁNO PRO FIXACI MODALU
+import { createPortal } from 'react-dom'; // TENTO IMPORT JE KLÍČOVÝ
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Play, Info, X } from 'lucide-react';
@@ -33,7 +33,7 @@ export const Home: React.FC = () => {
     <div className="relative pb-20 bg-[#141414]">
       {heroProject && (
         <section className="relative h-[85vh] w-full overflow-hidden bg-black">
-          {/* ... Hero video/image zůstává stejné ... */}
+          {/* HERO VIDEO/IMAGE SEKCE */}
           <div className="absolute inset-0 z-0">
             {heroProject.videoUrl ? (
               <div className="absolute inset-0 w-full h-full">
@@ -51,6 +51,7 @@ export const Home: React.FC = () => {
             <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-[#141414]/20 to-transparent" />
           </div>
 
+          {/* HERO TEXT A TLAČÍTKA */}
           <div className="absolute bottom-1/4 left-0 right-0 z-10">
             <div className="max-w-[1800px] mx-auto px-4 md:px-12 text-left">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
@@ -80,7 +81,7 @@ export const Home: React.FC = () => {
         </section>
       )}
 
-      {/* VIDEO MODAL PŘES PORTAL - TOHLE VYŘEŠÍ CENTROVÁNÍ */}
+      {/* VIDEO MODAL POUŽÍVAJÍCÍ PORTAL - TOHLE JE TA ZMĚNA */}
       {showVideoModal && createPortal(
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-12">
           <AnimatePresence>
@@ -113,9 +114,10 @@ export const Home: React.FC = () => {
             ></iframe>
           </motion.div>
         </div>,
-        document.body
+        document.body // Vykreslí se přímo do těla stránky, mimo všechny transformace
       )}
 
+      {/* SEKCE S ŘADAMI */}
       <div className="relative z-20 -mt-20 space-y-12 pb-12">
         <ProjectRow title="Moje tvorba" projects={projects} />
         {partners.length > 0 && (
