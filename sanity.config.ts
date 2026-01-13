@@ -63,13 +63,22 @@ const projectSchema = {
     { name: 'title', type: 'string', title: 'Titulek' },
     { name: 'slug', type: 'slug', title: 'Slug', options: { source: 'title', maxLength: 96 } },
     
-    // NOVÉ: Pole pro připnutí projektu na první pozice
+    // ZMĚNĚNO: Z boolean na výběr pozice 1-4
     { 
-      name: 'pinned', 
-      type: 'boolean', 
-      title: 'Připnout na začátek (Pin)', 
-      description: 'Pokud je zapnuto, tento projekt se v řadě "Moje tvorba" zobrazí jako první.',
-      initialValue: false 
+      name: 'pinPosition', 
+      type: 'number', 
+      title: 'Pozice připnutí (Pin)', 
+      description: 'Vyber pozici 1-4 pro fixní pořadí na začátku. Projekty bez pinu se zařadí za ně.',
+      options: {
+        list: [
+          { title: 'Bez pinu', value: 0 },
+          { title: 'Pin #1 (První)', value: 1 },
+          { title: 'Pin #2', value: 2 },
+          { title: 'Pin #3', value: 3 },
+          { title: 'Pin #4', value: 4 },
+        ],
+      },
+      initialValue: 0
     },
 
     { name: 'description', type: 'text', title: 'Popis' },

@@ -35,9 +35,15 @@ export async function getPartners() {
   }`);
 }
 
-// OPRAVENO: Nejdříve řadíme podle 'pinned' (sestupně), pak podle data vytvoření
+// OPRAVENO: Komplexní řazení pro systém Pin #1 až #4
 export async function getProjects(): Promise<Project[]> {
-  return client.fetch(`*[_type == "project" && (isHero != true || !defined(isHero))] | order(pinned desc, _createdAt desc)`);
+  return client.fetch(`
+    *[_type == "project" && (isHero != true || !defined(isHero))] | order(
+      pinPosition > 0 desc, 
+      pinPosition asc, 
+      _createdAt desc
+    )
+  `);
 }
 
 export async function getPosts(): Promise<Post[]> {

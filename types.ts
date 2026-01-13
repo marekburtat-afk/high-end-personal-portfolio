@@ -26,8 +26,8 @@ export interface Project {
   output?: string;     // Tvůj nový "Výstup" (Online, Socky, Film...)
   isHero?: boolean;    // Přepínač pro hlavní video na úvodní stránce
   
-  // PŘIDÁNO: Přepínač pro připnutí na první 4 pozice
-  pinned?: boolean;    
+  // OPRAVENO: Změna z boolean na číslo pro přesné pořadí Pin #1 až #4
+  pinPosition?: number;    
 }
 
 export interface Post {
