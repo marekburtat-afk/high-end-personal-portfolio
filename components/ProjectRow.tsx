@@ -1,7 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { createPortal } from 'react-dom'; 
 import { Link } from 'react-router-dom';
-import { motion, useMotionValue } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Project } from '../types';
 import { urlFor } from '../lib/sanity';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -13,55 +12,49 @@ interface ProjectRowProps {
 
 export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
   const rowRef = useRef<HTMLDivElement>(null);
+  const cursorRef = useRef<HTMLDivElement>(null);
+  
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
   
-  // DRAG LOGIKA - 1:1 přilepení k myši
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeftStart, setScrollLeftStart] = useState(0);
+  const [isHovering, setIsHovering] = useState(false);
 
-  // KURZOR LOGIKA - Používáme MotionValue pro nulový lag
-  const [isHoveringRow, setIsHoveringRow] = useState(false);
-  const cursorX = useMotionValue(-100);
-  const cursorY = useMotionValue(-100);
-
-  // Globální sledování myši přes celou obrazovku
+  // 1. SLEDOVÁNÍ MYŠI - absolutně bez lagu a mimo CSS transformace
   useEffect(() => {
-    const moveCursor = (e: MouseEvent) => {
-      cursorX.set(e.clientX);
-      cursorY.set(e.clientY);
+    const handleMove = (e: MouseEvent) => {
+      if (cursorRef.current && isHovering) {
+        // Nastavujeme přímo souřadnice okna (viewportu)
+        cursorRef.current.style.left = `${e.clientX}px`;
+        cursorRef.current.style.top = `${e.clientY}px`;
+      }
     };
-    window.addEventListener('mousemove', moveCursor);
-    return () => window.removeEventListener('mousemove', moveCursor);
-  }, [cursorX, cursorY]);
+    window.addEventListener('mousemove', handleMove);
+    return () => window.removeEventListener('mousemove', handleMove);
+  }, [isHovering]);
 
   if (projects.length === 0) return null;
 
-  // --- START TAHU ---
+  // 2. POSOUVÁNÍ (DRAGGING) - 1:1 k pohybu myši
   const onMouseDown = (e: React.MouseEvent) => {
     if (!rowRef.current) return;
     setIsDragging(true);
-    // Ukládáme clientX (pozice v okně), aby to sedělo s kuličkou
-    setStartX(e.clientX);
+    setStartX(e.clientX); 
     setScrollLeftStart(rowRef.current.scrollLeft);
   };
 
-  // --- POHYB (Plynulé 1:1 přetažení) ---
   const onMouseMove = (e: React.MouseEvent) => {
     if (!isDragging || !rowRef.current) return;
     e.preventDefault();
-    
     const deltaX = e.clientX - startX;
-    // Karty se teď hýbou přesně o tolik, o kolik pohneš myší
+    // Tady je to "přilepení" - o kolik pohneš myší, o tolik se posune pás
     rowRef.current.scrollLeft = scrollLeftStart - deltaX;
   };
 
-  const onMouseUpOrLeave = () => {
-    setIsDragging(false);
-  };
+  const onMouseUp = () => setIsDragging(false);
 
-  // Logika pro šipky zůstává
   const handleScroll = (direction: 'left' | 'right') => {
     if (rowRef.current) {
       const { clientWidth } = rowRef.current;
@@ -79,29 +72,26 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
   };
 
   return (
-    <div className="space-y-2 mb-8 md:mb-12 select-none relative">
+    <div className="space-y-2 mb-8 md:mb-12 select-none relative overflow-visible">
       
-      {/* PORTAL: Tento kód vykreslí kuličku mimo Portfolio, přímo do Body stránky */}
-      {isHoveringRow && createPortal(
-        <motion.div
-          className="fixed top-0 left-0 w-16 h-16 border border-white/50 rounded-full pointer-events-none z-[99999] mix-blend-difference"
-          style={{
-            x: cursorX,
-            y: cursorY,
-            translateX: "-50%",
-            translateY: "-50%",
-            scale: isDragging ? 0.7 : 1, // Při "chycení" se kroužek jemně smrští
-          }}
-        />,
-        document.body
-      )}
+      {/* MINIMALISTICKÝ KURZOR - PŘÍMO OVLÁDANÝ PŘES REF */}
+      <div
+        ref={cursorRef}
+        className={`
+          fixed -translate-x-1/2 -translate-y-1/2 w-14 h-14 border border-white/50 rounded-full 
+          pointer-events-none z-[99999] mix-blend-difference transition-transform duration-200
+          ${isHovering ? 'opacity-100' : 'opacity-0'}
+          ${isDragging ? 'scale-75' : 'scale-100'}
+        `}
+        style={{ left: '-100px', top: '-100px' }}
+      />
 
       <h2 className="text-[1.4vw] md:text-xl lg:text-2xl font-black text-[#e5e5e5] px-4 md:px-12 uppercase tracking-tighter">
         {title}
       </h2>
       
       <div className="relative group/row">
-        {/* LEVÁ ŠIPKA */}
+        {/* ŠIPKY */}
         {showLeftArrow && (
           <button
             onClick={() => handleScroll('left')}
@@ -111,19 +101,19 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
           </button>
         )}
 
-        {/* KONTEJNER PRO KARTY */}
         <div 
           ref={rowRef}
           onScroll={checkScroll}
           onMouseDown={onMouseDown}
           onMouseMove={onMouseMove}
-          onMouseUp={onMouseUpOrLeave}
-          onMouseLeave={() => { onMouseUpOrLeave(); setIsHoveringRow(false); }}
-          onMouseEnter={() => setIsHoveringRow(true)}
+          onMouseUp={onMouseUp}
+          onMouseLeave={() => { onMouseUp(); setIsHovering(false); }}
+          onMouseEnter={() => setIsHovering(true)}
+          /* cursor-none schová tvou reálnou myš a zbude jen kroužek */
           className={`
             flex gap-1.5 overflow-x-auto scrollbar-hide pt-2 pb-8 px-4 md:px-12
-            ${isHoveringRow ? 'cursor-none' : 'cursor-auto'}
-            ${isDragging ? 'scroll-auto cursor-none' : 'scroll-smooth'}
+            ${isHovering ? 'cursor-none' : 'cursor-auto'}
+            ${isDragging ? 'scroll-auto' : 'scroll-smooth'}
           `}
         >
           {projects.map((project: any) => (
@@ -148,16 +138,10 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
                     <div className="flex items-center gap-2 mb-1.5 text-[8px] md:text-[10px] font-black uppercase text-white/60">
                       <span className="text-green-500 font-black">{project.match || 98}% Shoda</span>
                       <span>{project.year || '2026'}</span>
-                      <span className="border border-white/40 px-1 rounded-[1px]">
-                        {project.quality || '4K'}
-                      </span>
                     </div>
                     <h3 className="text-white text-xs md:text-sm font-black uppercase leading-tight mb-1">
                       {project.title}
                     </h3>
-                    <p className="text-[#E50914] text-[7px] md:text-[9px] font-black uppercase tracking-[0.2em]">
-                      {project.output || 'Visual Art'}
-                    </p>
                   </div>
                 </div>
               </Link>
@@ -165,7 +149,6 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
           ))}
         </div>
 
-        {/* PRAVÁ ŠIPKA */}
         {showRightArrow && (
           <button
             onClick={() => handleScroll('right')}
