@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion, useMotionValue } from 'framer-motion';
 import { Navigation } from './components/Navigation';
 import { Footer } from './components/Footer';
 import { Home } from './pages/Home';
@@ -34,6 +34,32 @@ const App: React.FC = () => {
   const [introFinished, setIntroFinished] = useState(false);
   const [introVideoUrl, setIntroVideoUrl] = useState<string | null>(null);
 
+  // GLOBÁLNÍ KURZOR STAVY
+  const [cursorType, setCursorType] = useState<'none' | 'drag' | 'dragging'>('none');
+  const mouseX = useMotionValue(-100);
+  const mouseY = useMotionValue(-100);
+
+  useEffect(() => {
+    // Sledování myši (clientX/Y jsou souřadnice okna, ignorují scroll)
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
+    };
+
+    // Posluchač pro zapnutí/vypnutí kuličky z jiných komponent
+    const handleCursorChange = (e: any) => {
+      setCursorType(e.detail);
+    };
+
+    window.addEventListener('mousemove', handleGlobalMouseMove);
+    window.addEventListener('set-global-cursor', handleCursorChange);
+
+    return () => {
+      window.removeEventListener('mousemove', handleGlobalMouseMove);
+      window.removeEventListener('set-global-cursor', handleCursorChange);
+    };
+  }, [mouseX, mouseY]);
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('dev') === SECRET_KEY || localStorage.getItem('devMode') === 'true') {
@@ -54,7 +80,6 @@ const App: React.FC = () => {
     });
   }, []);
 
-  // OPRAVA ZÁMKU: Zamkne skrolování a gesta na pozadí
   useEffect(() => {
     if (!introFinished && introVideoUrl && isAuthorized) {
       document.body.style.overflow = 'hidden';
@@ -79,6 +104,19 @@ const App: React.FC = () => {
   return (
     <Router>
       <ScrollToTop />
+
+      {/* GLOBÁLNÍ KURZOR - Teď už je nad vším a sedí na milimetr */}
+      <motion.div
+        className="fixed top-0 left-0 w-16 h-16 border border-white/40 rounded-full pointer-events-none z-[99999] mix-blend-difference"
+        style={{
+          x: mouseX,
+          y: mouseY,
+          translateX: "-50%",
+          translateY: "-50%",
+          display: cursorType !== 'none' ? 'block' : 'none',
+          scale: cursorType === 'dragging' ? 0.7 : 1,
+        }}
+      />
       
       <AnimatePresence mode="wait">
         {!introFinished && introVideoUrl && (
