@@ -62,11 +62,12 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
       </h2>
       
       <div className="relative group/row flex items-center">
-        {/* LEVÁ ŠIPKA: Čistá šipka, po najetí červené tlačítko */}
+        {/* LEVÁ ŠIPKA: Transparentní, při najetí ČERNÁ */}
         {showLeftArrow && (
           <button
             onClick={() => handleScroll('left')}
-            className="absolute left-0 top-0 bottom-8 z-[60] w-16 md:w-24 bg-transparent opacity-0 group-hover/row:opacity-100 transition-all duration-300 flex items-center justify-center hover:bg-[#E50914] hover:scale-110 hidden md:flex"
+            // ZMĚNA: hover:bg-[#E50914] -> hover:bg-black/90
+            className="absolute left-0 top-0 bottom-8 z-[60] w-16 md:w-24 bg-transparent opacity-0 group-hover/row:opacity-100 transition-all duration-300 flex items-center justify-center hover:bg-black/90 hover:scale-110 hidden md:flex"
           >
             <ChevronLeft className="w-12 h-12 md:w-20 md:h-20 text-white drop-shadow-[0_0_10px_rgba(0,0,0,0.8)]" />
           </button>
@@ -124,11 +125,12 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
           <div className="flex-none w-[1px] h-full invisible md:block md:w-12" />
         </div>
 
-        {/* PRAVÁ ŠIPKA: Čistá šipka, po najetí červené tlačítko */}
+        {/* PRAVÁ ŠIPKA: Transparentní, při najetí ČERNÁ */}
         {showRightArrow && (
           <button
             onClick={() => handleScroll('right')}
-            className="absolute right-0 top-0 bottom-8 z-[60] w-16 md:w-24 bg-transparent opacity-0 group-hover/row:opacity-100 transition-all duration-300 flex items-center justify-center hover:bg-[#E50914] hover:scale-110 hidden md:flex"
+            // ZMĚNA: hover:bg-[#E50914] -> hover:bg-black/90
+            className="absolute right-0 top-0 bottom-8 z-[60] w-16 md:w-24 bg-transparent opacity-0 group-hover/row:opacity-100 transition-all duration-300 flex items-center justify-center hover:bg-black/90 hover:scale-110 hidden md:flex"
           >
             <ChevronRight className="w-12 h-12 md:w-20 md:h-20 text-white drop-shadow-[0_0_10px_rgba(0,0,0,0.8)]" />
           </button>
