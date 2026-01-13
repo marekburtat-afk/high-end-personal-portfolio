@@ -10,33 +10,27 @@ import { Contact } from './pages/Contact';
 import { ProjectDetail } from './pages/ProjectDetail';
 import { PostDetail } from './pages/PostDetail';
 import { StudioPage } from './pages/StudioPage';
-import { NetflixIntro } from './components/NetflixIntro'; // Import nové komponenty
+import { NetflixIntro } from './components/NetflixIntro';
 
 const isComingSoon = true; 
 const SECRET_KEY = 'ukaz-mi-to';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
+  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
   return null;
 };
 
 const ComingSoon = () => (
-  <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center text-white p-6 font-sans">
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="text-center">
-      <h1 className="text-4xl md:text-6xl font-bold mb-6 tracking-tighter">MAREK VERŤAT</h1>
-      <div className="w-12 h-[1px] bg-neutral-800 mx-auto mb-8"></div>
-      <p className="text-neutral-500 uppercase tracking-[0.4em] text-xs md:text-sm">Portfolio coming soon</p>
-      <p className="text-neutral-800 text-[10px] mt-24">2026</p>
-    </motion.div>
+  <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center text-white p-6 text-center font-black uppercase">
+    <h1 className="text-4xl md:text-6xl mb-4">Marek Verťat</h1>
+    <p className="text-neutral-500 tracking-[0.5em] text-xs">Coming Soon 2026</p>
   </div>
 );
 
 const App: React.FC = () => {
   const [isAuthorized, setIsAuthorized] = useState(false);
-  const [introFinished, setIntroFinished] = useState(false); // Stav pro intro
+  const [introFinished, setIntroFinished] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -46,37 +40,32 @@ const App: React.FC = () => {
     }
   }, []);
 
+  if (isComingSoon && !isAuthorized) {
+    return <ComingSoon />;
+  }
+
   return (
     <Router>
       <ScrollToTop />
-      <Routes>
-        <Route path="/studio/*" element={<StudioPage />} />
-        <Route path="*" element={
-          (isComingSoon && !isAuthorized) ? (
-            <ComingSoon />
-          ) : (
-            <>
-              {/* Netflix Intro se spustí jen pokud ještě neskončilo */}
-              {!introFinished && <NetflixIntro onComplete={() => setIntroFinished(true)} />}
-              
-              <div className={`min-h-screen bg-background text-white selection:bg-white selection:text-black font-sans flex flex-col transition-opacity duration-1000 ${!introFinished ? 'opacity-0' : 'opacity-100'}`}>
-                <Navigation />
-                <main className="flex-grow w-full z-10 relative">
-                  <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/projects" element={<Work />} />
-                    <Route path="/project/:slug" element={<ProjectDetail />} />
-                    <Route path="/blog" element={<Blog />} />
-                    <Route path="/blog/:slug" element={<PostDetail />} />
-                    <Route path="/kontakt" element={<Contact />} />
-                  </Routes>
-                </main>
-                <Footer />
-              </div>
-            </>
-          )
-        } />
-      </Routes>
+      {/* Intro se spustí v overlayi */}
+      {!introFinished && <NetflixIntro onComplete={() => setIntroFinished(true)} />}
+      
+      {/* Hlavní web s plynulým náběhem po skončení intra */}
+      <div className={`min-h-screen flex flex-col transition-opacity duration-1000 ${introFinished ? 'opacity-100' : 'opacity-0'}`}>
+        <Navigation />
+        <main className="flex-grow w-full z-10 relative">
+          <Routes>
+            <Route path="/studio/*" element={<StudioPage />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/projects" element={<Work />} />
+            <Route path="/project/:slug" element={<ProjectDetail />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<PostDetail />} />
+            <Route path="/kontakt" element={<Contact />} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
     </Router>
   );
 };

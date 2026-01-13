@@ -1,19 +1,60 @@
-<style>
-  body { 
-    background-color: #000000; 
-    color: #ffffff; 
-    margin: 0;
-    font-family: 'Inter', sans-serif;
-    overflow-x: hidden;
-    /* Perspektiva pro 3D efekt provázků */
-    perspective: 1000px;
-  }
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Marek Verťat | Portfolio</title>
+    
+    <script>
+      window.global = window;
+      window.process = { env: {} };
+    </script>
 
-  #root {
-    background-color: #141414;
-    /* OPRAVA: min-h-screen nahrazeno za validní CSS */
-    min-height: 100vh;
-  }
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: { sans: ['Inter', 'sans-serif'] },
+            colors: {
+              background: '#141414',
+              surface: '#181818',
+              accent: '#E50914',
+              subtle: '#333333',
+            }
+          }
+        }
+      }
+    </script>
+    
+    <style>
+      body { 
+        background-color: #000000; 
+        color: #ffffff; 
+        margin: 0;
+        font-family: 'Inter', sans-serif;
+        overflow-x: hidden;
+        perspective: 1000px;
+      }
 
-  /* ... zbytek stylů ... */
-</style>
+      #root {
+        background-color: #141414;
+        /* OPRAVA: min-h-screen nahrazeno za validní CSS min-height */
+        min-height: 100vh;
+      }
+
+      .scrollbar-hide::-webkit-scrollbar { display: none; }
+      .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+    <link rel="stylesheet" href="/index.css">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
