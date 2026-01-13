@@ -11,8 +11,18 @@ export const client = createClient({
 
 const builder = imageUrlBuilder(client);
 
+// Funkce pro generování URL obrázků
 export function urlFor(source: any) {
   return builder.image(source);
+}
+
+// NOVÁ FUNKCE: Získá nastavení webu včetně Intro videa ze Sanity
+export async function getSettings() {
+  return client.fetch(`*[_type == "settings"][0]{
+    ...,
+    "photoUrl": contactPhoto.asset->url,
+    "introVideoUrl": introVideo.asset->url
+  }`);
 }
 
 export async function getHeroData() {
@@ -35,7 +45,7 @@ export async function getPosts(): Promise<Post[]> {
   return client.fetch(`*[_type == "post"] | order(publishedAt desc)`);
 }
 
-// NOVÁ FUNKCE: Získá detail jednoho blogového příspěvku
+// Získá detail jednoho blogového příspěvku
 export async function getPost(slug: string): Promise<Post | null> {
     return client.fetch(`*[_type == "post" && slug.current == $slug][0]{
       ...,

@@ -11,6 +11,7 @@ import { ProjectDetail } from './pages/ProjectDetail';
 import { PostDetail } from './pages/PostDetail';
 import { StudioPage } from './pages/StudioPage';
 import { NetflixIntro } from './components/NetflixIntro';
+import { getSettings } from './lib/sanity'; 
 
 const isComingSoon = true; 
 const SECRET_KEY = 'ukaz-mi-to';
@@ -31,14 +32,36 @@ const ComingSoon = () => (
 const App: React.FC = () => {
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [introFinished, setIntroFinished] = useState(false);
+  const [introVideoUrl, setIntroVideoUrl] = useState<string | null>(null);
 
   useEffect(() => {
+    // 1. Autorizace
     const params = new URLSearchParams(window.location.search);
     if (params.get('dev') === SECRET_KEY || localStorage.getItem('devMode') === 'true') {
       setIsAuthorized(true);
       localStorage.setItem('devMode', 'true');
     }
+
+    // 2. Kontrola sessionStorage (aby intro nebylo otravné)
+    if (sessionStorage.getItem('hasSeenIntro') === 'true') {
+      setIntroFinished(true);
+    }
+
+    // 3. Načtení nastavení ze Sanity
+    getSettings().then(data => {
+      if (data?.introVideoUrl) {
+        setIntroVideoUrl(data.introVideoUrl);
+      } else if (!sessionStorage.getItem('hasSeenIntro')) {
+        // Pokud v Sanity video není, web rovnou zobrazíme
+        setIntroFinished(true);
+      }
+    });
   }, []);
+
+  const handleIntroComplete = () => {
+    sessionStorage.setItem('hasSeenIntro', 'true');
+    setIntroFinished(true);
+  };
 
   if (isComingSoon && !isAuthorized) {
     return <ComingSoon />;
@@ -47,10 +70,13 @@ const App: React.FC = () => {
   return (
     <Router>
       <ScrollToTop />
-      {/* Intro se spustí v overlayi */}
-      {!introFinished && <NetflixIntro onComplete={() => setIntroFinished(true)} />}
       
-      {/* Hlavní web s plynulým náběhem po skončení intra */}
+      <AnimatePresence>
+        {!introFinished && introVideoUrl && (
+          <NetflixIntro videoUrl={introVideoUrl} onComplete={handleIntroComplete} />
+        )}
+      </AnimatePresence>
+      
       <div className={`min-h-screen flex flex-col transition-opacity duration-1000 ${introFinished ? 'opacity-100' : 'opacity-0'}`}>
         <Navigation />
         <main className="flex-grow w-full z-10 relative">

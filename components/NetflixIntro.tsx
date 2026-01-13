@@ -1,73 +1,50 @@
-import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
 
-export const NetflixIntro: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
-  const [phase, setPhase] = useState<'initial' | 'expand' | 'strings' | 'fade'>('initial');
+interface NetflixIntroProps {
+  videoUrl: string;
+  onComplete: () => void;
+}
+
+export const NetflixIntro: React.FC<NetflixIntroProps> = ({ videoUrl, onComplete }) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    const timers = [
-      setTimeout(() => setPhase('expand'), 1000),   // Změna M- na jméno
-      setTimeout(() => setPhase('strings'), 2600),  // Start "provázků"
-      setTimeout(() => setPhase('fade'), 3800),     // Finální zatmívačka
-      setTimeout(() => onComplete(), 4500)
-    ];
-    return () => timers.forEach(clearTimeout);
-  }, [onComplete]);
+    // Prohlížeče často blokují autoplay se zvukem. 
+    // Pokud chceš zvuk, video se nemusí spustit samo bez interakce.
+    if (videoRef.current) {
+      videoRef.current.play().catch(err => {
+        console.warn("Autoplay s audiem byl zablokován prohlížečem. Video běží ztlumeně.", err);
+        if (videoRef.current) videoRef.current.muted = true;
+        videoRef.current?.play();
+      });
+    }
+  }, []);
 
   return (
-    <div className="fixed inset-0 z-[1000] bg-black flex items-center justify-center overflow-hidden">
-      <AnimatePresence>
-        {phase !== 'fade' && (
-          <motion.div
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0, scale: 1.2, filter: 'blur(30px)' }}
-            transition={{ duration: 0.8 }}
-            className="relative flex items-center justify-center w-full h-full"
-            style={{ transformStyle: 'preserve-3d' }}
-          >
-            {/* TEXT: Marek Verťat */}
-            {phase !== 'strings' && (
-              <motion.h1
-                className="text-[#E50914] font-black text-6xl md:text-8xl lg:text-9xl uppercase tracking-tighter leading-none italic select-none"
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: phase === 'expand' ? 1.05 : 1, opacity: 1 }}
-                transition={{ duration: 1.5, ease: "easeOut" }}
-              >
-                {phase === 'initial' ? 'M—' : 'Marek Verťat'}
-              </motion.h1>
-            )}
+    <motion.div
+      initial={{ opacity: 1 }}
+      exit={{ opacity: 0, scale: 1.1, filter: 'blur(20px)' }}
+      transition={{ duration: 1 }}
+      className="fixed inset-0 z-[1000] bg-black flex items-center justify-center overflow-hidden"
+    >
+      <video
+        ref={videoRef}
+        src={videoUrl}
+        onEnded={onComplete}
+        className="w-full h-full object-cover md:object-contain"
+        autoPlay
+        playsInline
+        muted={false} // Nastav na true, pokud chceš mít jistotu, že autoplay proběhne vždy
+      />
 
-            {/* VLÁKNA (Netflix Strings) */}
-            {phase === 'strings' && (
-              <div className="absolute inset-0 flex items-center justify-center" style={{ transformStyle: 'preserve-3d' }}>
-                {[...Array(40)].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    className="absolute w-[1px] md:w-[2px] h-[300vh]"
-                    style={{
-                      background: `linear-gradient(to bottom, transparent, ${
-                        i % 4 === 0 ? '#E50914' : i % 4 === 1 ? '#ffffff' : i % 4 === 2 ? '#444' : '#222'
-                      }, transparent)`,
-                      left: `${50 + (i - 20) * 3}%`,
-                    }}
-                    initial={{ translateZ: -2000, opacity: 0 }}
-                    animate={{ 
-                      translateZ: 1800, 
-                      opacity: [0, 1, 0],
-                      scaleX: [1, 3, 1]
-                    }}
-                    transition={{ 
-                      duration: 1.4, 
-                      ease: "circIn",
-                      delay: i * 0.015 
-                    }}
-                  />
-                ))}
-              </div>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+      {/* Tlačítko Přeskočit */}
+      <button 
+        onClick={onComplete}
+        className="absolute bottom-10 right-10 text-white/20 hover:text-white text-[10px] font-black uppercase tracking-[0.3em] transition-all border border-white/10 px-4 py-2 rounded-sm backdrop-blur-md"
+      >
+        Skip Intro
+      </button>
+    </motion.div>
   );
 };

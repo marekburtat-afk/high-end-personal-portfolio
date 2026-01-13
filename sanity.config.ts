@@ -104,26 +104,19 @@ const postSchema = {
   fields: [
     { name: 'title', type: 'string', title: 'Titulek' },
     { name: 'slug', type: 'slug', title: 'Slug', options: { source: 'title', maxLength: 96 } },
-    
-    // PŘIDÁNO: Hlavní obrázek článku pro grid
     { 
       name: 'mainImage', 
       type: 'image', 
       title: 'Hlavní obrázek',
       options: { hotspot: true } 
     },
-    
-    // PŘIDÁNO: Datum publikace (vyřeší "Invalid Date")
     { 
       name: 'publishedAt', 
       type: 'datetime', 
       title: 'Datum publikace',
       initialValue: (new Date()).toISOString()
     },
-
-    // PŘIDÁNO: Krátký popisek (pro grid)
     { name: 'excerpt', type: 'text', title: 'Krátký výtah', rows: 3 },
-
     { 
       name: 'body', 
       type: 'array', 
@@ -143,6 +136,16 @@ const settingsSchema = {
       type: 'image', 
       title: 'Moje fotka (Kontakt)',
       options: { hotspot: true }
+    },
+    // PŘIDÁNO: Pole pro nahrání After Effects videa
+    {
+      name: 'introVideo',
+      type: 'file',
+      title: 'Intro Video (MP4/WebM)',
+      description: 'Nahraj video vyexportované z After Effects pro úvodní animaci.',
+      options: {
+        accept: 'video/*'
+      }
     }
   ]
 };
