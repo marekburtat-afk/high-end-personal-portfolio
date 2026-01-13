@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom'; // PŘIDÁNO PRO FIXACI MODALU
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Play, Info, X } from 'lucide-react';
@@ -32,6 +33,7 @@ export const Home: React.FC = () => {
     <div className="relative pb-20 bg-[#141414]">
       {heroProject && (
         <section className="relative h-[85vh] w-full overflow-hidden bg-black">
+          {/* ... Hero video/image zůstává stejné ... */}
           <div className="absolute inset-0 z-0">
             {heroProject.videoUrl ? (
               <div className="absolute inset-0 w-full h-full">
@@ -50,7 +52,7 @@ export const Home: React.FC = () => {
           </div>
 
           <div className="absolute bottom-1/4 left-0 right-0 z-10">
-            <div className="max-w-[1800px] mx-auto px-4 md:px-12">
+            <div className="max-w-[1800px] mx-auto px-4 md:px-12 text-left">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
                 <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-4 tracking-tighter uppercase drop-shadow-2xl">
                   {heroProject.title}
@@ -78,45 +80,41 @@ export const Home: React.FC = () => {
         </section>
       )}
 
-      {/* VIDEO MODAL: FIXNÍ CENTROVÁNÍ VŮČI OBRAZOVCE */}
-      <AnimatePresence>
-        {showVideoModal && heroProject?.videoUrl && (
-          <motion.div 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[500] flex items-center justify-center p-4 md:p-12"
-          >
-            {/* Overlay pozadí fixované na celý viewport */}
-            <div 
-              className="fixed inset-0 bg-black/95 backdrop-blur-md cursor-pointer" 
+      {/* VIDEO MODAL PŘES PORTAL - TOHLE VYŘEŠÍ CENTROVÁNÍ */}
+      {showVideoModal && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-12">
+          <AnimatePresence>
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/95 backdrop-blur-md" 
               onClick={() => setShowVideoModal(false)} 
             />
-            
-            {/* Kontejner s videem - VŽDY uprostřed tvého zobrazení */}
-            <motion.div 
-              initial={{ scale: 0.9, opacity: 0 }} 
-              animate={{ scale: 1, opacity: 1 }} 
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="relative w-full max-w-6xl aspect-video bg-black rounded-sm overflow-hidden shadow-2xl border border-white/10 z-[510]"
+          </AnimatePresence>
+          
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0 }} 
+            animate={{ scale: 1, opacity: 1 }} 
+            className="relative w-full max-w-6xl aspect-video bg-black rounded-sm overflow-hidden shadow-2xl z-[10000]"
+          >
+            <button 
+              onClick={() => setShowVideoModal(false)}
+              className="absolute top-4 right-4 z-[10001] p-2 bg-black/50 text-white rounded-full hover:bg-white hover:text-black transition-all"
             >
-              <button 
-                onClick={() => setShowVideoModal(false)}
-                className="absolute top-4 right-4 z-[520] p-2 bg-black/50 text-white rounded-full hover:bg-white hover:text-black transition-all shadow-lg active:scale-90"
-              >
-                <X size={24} />
-              </button>
-              <iframe
-                className="w-full h-full"
-                src={getHeroEmbedUrl(heroProject.videoUrl, true)}
-                frameBorder="0"
-                allow="autoplay; encrypted-media; fullscreen"
-                allowFullScreen
-              ></iframe>
-            </motion.div>
+              <X size={24} />
+            </button>
+            <iframe
+              className="w-full h-full"
+              src={getHeroEmbedUrl(heroProject.videoUrl!, true)}
+              frameBorder="0"
+              allow="autoplay; encrypted-media; fullscreen"
+              allowFullScreen
+            ></iframe>
           </motion.div>
-        )}
-      </AnimatePresence>
+        </div>,
+        document.body
+      )}
 
       <div className="relative z-20 -mt-20 space-y-12 pb-12">
         <ProjectRow title="Moje tvorba" projects={projects} />
