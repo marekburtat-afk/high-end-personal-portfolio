@@ -15,47 +15,53 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
   
+  // Logika pro Dragging
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
-  const [scrollLeftState, setScrollLeftState] = useState(0);
-  const [isHoveringRow, setIsHoveringRow] = useState(false);
+  const [scrollLeftStart, setScrollLeftStart] = useState(0);
 
-  // LOGIKA PRO MODERNÍ KURZOR
+  // LOGIKA PRO MODERNÍ KURZOR (KROUŽEK)
+  const [isHoveringRow, setIsHoveringRow] = useState(false);
   const mouseX = useMotionValue(-100);
   const mouseY = useMotionValue(-100);
 
-  // Jemnější nastavení pružnosti pro "elegantní" pohyb
-  const springConfig = { damping: 30, stiffness: 300, mass: 0.5 };
+  // Velmi jemná pružnost pro elegantní pocit
+  const springConfig = { damping: 35, stiffness: 400, mass: 0.4 };
   const smoothX = useSpring(mouseX, springConfig);
   const smoothY = useSpring(mouseY, springConfig);
 
   useEffect(() => {
-    const handleMouseMoveGlobal = (e: MouseEvent) => {
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      // clientX/Y jsou souřadnice okna, což fixuje ten "vysoký" offset kurzoru
       mouseX.set(e.clientX);
       mouseY.set(e.clientY);
     };
-    window.addEventListener('mousemove', handleMouseMoveGlobal);
-    return () => window.removeEventListener('mousemove', handleMouseMoveGlobal);
+    window.addEventListener('mousemove', handleGlobalMouseMove);
+    return () => window.removeEventListener('mousemove', handleGlobalMouseMove);
   }, [mouseX, mouseY]);
 
   if (projects.length === 0) return null;
 
+  // --- START TAHU ---
   const onMouseDown = (e: React.MouseEvent) => {
     if (!rowRef.current) return;
     setIsDragging(true);
-    // e.pageX je pozice myši, offsetLeft je začátek pásu
+    // e.pageX je pozice v rámci celé stránky
     setStartX(e.pageX - rowRef.current.offsetLeft);
-    setScrollLeftState(rowRef.current.scrollLeft);
+    setScrollLeftStart(rowRef.current.scrollLeft);
   };
 
+  // --- POHYB PŘI TAHU ---
   const onMouseMove = (e: React.MouseEvent) => {
     if (!isDragging || !rowRef.current) return;
-    e.preventDefault(); // Zabrání označování textu a plynule táhne
+    e.preventDefault(); // DŮLEŽITÉ: Zabrání označování textu/obrázků
+    
     const x = e.pageX - rowRef.current.offsetLeft;
-    const walk = (x - startX) * 2; // Násobitel rychlosti
-    rowRef.current.scrollLeft = scrollLeftState - walk;
+    const walk = x - startX; // Žádný násobitel = karty jsou "přilepené" k myši
+    rowRef.current.scrollLeft = scrollLeftStart - walk;
   };
 
+  // --- KONEC TAHU ---
   const onMouseUpOrLeave = () => {
     setIsDragging(false);
   };
@@ -78,16 +84,16 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
 
   return (
     <div className="space-y-2 mb-8 md:mb-12 select-none relative group/main">
-      {/* MODERNÍ KURZOR: Čistý kroužek s mix-blend-difference */}
+      {/* ELEGANTNÍ KURZOR: Tenký kroužek mix-blend-difference */}
       <motion.div
-        className="fixed top-0 left-0 w-12 h-12 border border-white rounded-full pointer-events-none z-[9999] mix-blend-difference flex items-center justify-center"
+        className="fixed top-0 left-0 w-16 h-16 border border-white/60 rounded-full pointer-events-none z-[9999] mix-blend-difference"
         style={{
           x: smoothX,
           y: smoothY,
           translateX: "-50%",
           translateY: "-50%",
           opacity: isHoveringRow ? 1 : 0,
-          scale: isDragging ? 1.5 : 1, // Při kliknutí se kroužek zvětší
+          scale: isDragging ? 0.6 : 1, // Kroužek se při stisknutí elegantně smrští
         }}
       />
 
@@ -96,7 +102,7 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
       </h2>
       
       <div className="relative group/row">
-        {/* LEVÁ ŠIPKA */}
+        {/* ŠIPKY (pouze pro Desktop) */}
         {showLeftArrow && (
           <button
             onClick={() => handleScroll('left')}
@@ -115,6 +121,7 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
           onMouseUp={onMouseUpOrLeave}
           onMouseLeave={() => { onMouseUpOrLeave(); setIsHoveringRow(false); }}
           onMouseEnter={() => setIsHoveringRow(true)}
+          /* ZMĚNA: cursor-none schová systémovou myš úplně */
           className={`
             flex gap-1.5 overflow-x-auto scrollbar-hide pt-2 pb-8 px-4 md:px-12
             ${isHoveringRow ? 'cursor-none' : 'cursor-auto'}
@@ -139,6 +146,7 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
                     className="w-full h-full object-cover pointer-events-none"
                   />
                   
+                  {/* Overlay s metadaty */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4 flex flex-col justify-end pointer-events-none">
                     <div className="flex items-center gap-2 mb-1.5 text-[8px] md:text-[10px] font-black uppercase">
                       <span className="text-green-500">{project.match || 98}% Shoda</span>
@@ -160,7 +168,6 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
           ))}
         </div>
 
-        {/* PRAVÁ ŠIPKA */}
         {showRightArrow && (
           <button
             onClick={() => handleScroll('right')}
