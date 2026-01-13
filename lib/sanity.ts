@@ -35,12 +35,16 @@ export async function getPartners() {
   }`);
 }
 
-// OPRAVENO: Robustní řazení pro Pin #1 až #4
+/**
+ * ZÍSKÁNÍ PROJEKTŮ S POKROČILÝM ŘAZENÍM:
+ * 1. Přednost mají projekty se špendlíkem (Pin #1 až #4).
+ * 2. Zbytek se řadí chronologicky podle "releaseDate" (od nejnovějšího).
+ */
 export async function getProjects(): Promise<Project[]> {
   return client.fetch(`
     *[_type == "project" && (isHero != true || !defined(isHero))] | order(
       select(defined(pinPosition) && pinPosition > 0 => pinPosition, 999) asc, 
-      _createdAt desc
+      releaseDate desc
     )
   `);
 }

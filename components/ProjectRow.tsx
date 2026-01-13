@@ -21,6 +21,14 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
 
   if (projects.length === 0) return null;
 
+  // POMOCNÁ FUNKCE PRO ZÍSKÁNÍ ROKU
+  const getDisplayYear = (project: Project) => {
+    // 1. Priorita: releaseDate (např. 2026-01-14 -> vezme první 4 znaky)
+    if (project.releaseDate) return project.releaseDate.substring(0, 4);
+    // 2. Záloha: staré pole year
+    return project.year || '';
+  };
+
   const onMouseDown = (e: React.MouseEvent) => {
     if (!rowRef.current) return;
     setIsDragging(true);
@@ -62,11 +70,9 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
       </h2>
       
       <div className="relative group/row flex items-center">
-        {/* LEVÁ ŠIPKA: Transparentní, při najetí ČERNÁ */}
         {showLeftArrow && (
           <button
             onClick={() => handleScroll('left')}
-            // ZMĚNA: hover:bg-[#E50914] -> hover:bg-black/90
             className="absolute left-0 top-0 bottom-8 z-[60] w-16 md:w-24 bg-transparent opacity-0 group-hover/row:opacity-100 transition-all duration-300 flex items-center justify-center hover:bg-black/90 hover:scale-110 hidden md:flex"
           >
             <ChevronLeft className="w-12 h-12 md:w-20 md:h-20 text-white drop-shadow-[0_0_10px_rgba(0,0,0,0.8)]" />
@@ -85,7 +91,7 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
             ${isDragging ? 'cursor-grabbing scroll-auto' : 'cursor-grab scroll-smooth'}
           `}
         >
-          {projects.map((project: any) => (
+          {projects.map((project: Project) => (
             <motion.div
               key={project._id}
               whileHover={!isDragging ? { scale: 1.05, zIndex: 50 } : {}}
@@ -104,7 +110,16 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
                   />
                   
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4 flex flex-col justify-end pointer-events-none text-left">
-                    <div className="mb-2">
+                    {/* METADATA ŘÁDEK: Procenta, Rok a Kvalita */}
+                    <div className="flex items-center gap-2 mb-2">
+                      {project.match && (
+                        <span className="text-green-500 text-[8px] md:text-[10px] font-black">
+                          {project.match}% Match
+                        </span>
+                      )}
+                      <span className="text-white text-[8px] md:text-[10px] font-black">
+                        {getDisplayYear(project)}
+                      </span>
                       <span className="border border-white/40 px-1 text-[8px] md:text-[10px] rounded-[1px] text-white font-black uppercase">
                         {project.quality || '4K ULTRA HD'}
                       </span>
@@ -125,11 +140,9 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
           <div className="flex-none w-[1px] h-full invisible md:block md:w-12" />
         </div>
 
-        {/* PRAVÁ ŠIPKA: Transparentní, při najetí ČERNÁ */}
         {showRightArrow && (
           <button
             onClick={() => handleScroll('right')}
-            // ZMĚNA: hover:bg-[#E50914] -> hover:bg-black/90
             className="absolute right-0 top-0 bottom-8 z-[60] w-16 md:w-24 bg-transparent opacity-0 group-hover/row:opacity-100 transition-all duration-300 flex items-center justify-center hover:bg-black/90 hover:scale-110 hidden md:flex"
           >
             <ChevronRight className="w-12 h-12 md:w-20 md:h-20 text-white drop-shadow-[0_0_10px_rgba(0,0,0,0.8)]" />
