@@ -32,7 +32,6 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
     if (!isDragging || !rowRef.current) return;
     e.preventDefault();
     const deltaX = e.clientX - startX;
-    // Plynulý posun 1:1 k pohybu myši
     rowRef.current.scrollLeft = scrollLeftStart - deltaX;
   };
 
@@ -63,7 +62,6 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
       </h2>
       
       <div className="relative group/row">
-        {/* ŠIPKY */}
         {showLeftArrow && (
           <button
             onClick={() => handleScroll('left')}
@@ -73,7 +71,6 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
           </button>
         )}
 
-        {/* KONTEJNER PRO KARTY */}
         <div 
           ref={rowRef}
           onScroll={checkScroll}
@@ -104,15 +101,25 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
                     className="w-full h-full object-cover pointer-events-none"
                   />
                   
-                  {/* Metadata hover efekt */}
+                  {/* PŘIDÁNO: Metadata Overlay podle tvého zadání */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4 flex flex-col justify-end pointer-events-none">
-                    <div className="flex items-center gap-2 mb-1.5 text-[8px] md:text-[10px] font-black uppercase text-white/60">
-                      <span className="text-green-500 font-black">{project.match || 98}% Shoda</span>
-                      <span>{project.year || '2026'}</span>
+                    
+                    {/* 1. NAHORE KVALITA */}
+                    <div className="mb-1.5 text-[8px] md:text-[10px] font-black uppercase">
+                      <span className="border border-white/40 px-1 rounded-[1px] text-white">
+                        {project.quality || '4K'}
+                      </span>
                     </div>
+
+                    {/* 2. POD TÍM NÁZEV */}
                     <h3 className="text-white text-xs md:text-sm font-black uppercase leading-tight mb-1">
                       {project.title}
                     </h3>
+
+                    {/* 3. POD TÍM ČERVENÝ VÝSTUP */}
+                    <p className="text-[#E50914] text-[7px] md:text-[9px] font-black uppercase tracking-[0.2em]">
+                      {project.output || 'Visual Art'}
+                    </p>
                   </div>
                 </div>
               </Link>
