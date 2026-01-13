@@ -23,8 +23,8 @@ const ScrollToTop = () => {
 };
 
 const ComingSoon = () => (
-  <div className="fixed inset-0 bg-[#050505] flex flex-col items-center justify-center text-white p-6 text-center font-black uppercase z-[2000]">
-    <h1 className="text-4xl md:text-6xl mb-4">Marek Verťat</h1>
+  <div className="fixed inset-0 bg-[#050505] flex flex-col items-center justify-center text-white p-6 text-center font-black uppercase z-[9999]">
+    <h1 className="text-4xl md:text-6xl mb-4 tracking-tighter">Marek Verťat</h1>
     <p className="text-neutral-500 tracking-[0.5em] text-xs">Coming Soon 2026</p>
   </div>
 );
@@ -54,13 +54,15 @@ const App: React.FC = () => {
     });
   }, []);
 
-  // ZÁMEK SKROLOVÁNÍ: Dokud intro běží, zakážeme pohyb těla stránky
+  // OPRAVA ZÁMKU: Zamkne skrolování a gesta na pozadí
   useEffect(() => {
     if (!introFinished && introVideoUrl && isAuthorized) {
       document.body.style.overflow = 'hidden';
-      document.body.style.touchAction = 'none'; // Zakáže sliding na mobilech
+      document.body.style.height = '100dvh';
+      document.body.style.touchAction = 'none';
     } else {
       document.body.style.overflow = 'auto';
+      document.body.style.height = 'auto';
       document.body.style.touchAction = 'auto';
     }
   }, [introFinished, introVideoUrl, isAuthorized]);
@@ -87,7 +89,12 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/studio/*" element={<StudioPage />} />
         <Route path="*" element={
-          <div className={`min-h-[100dvh] flex flex-col transition-opacity duration-1000 ${introFinished ? 'opacity-100' : 'opacity-0'}`}>
+          <div 
+            className={`flex flex-col transition-opacity duration-1000 
+              ${introFinished 
+                ? 'opacity-100 min-h-[100dvh]' 
+                : 'opacity-0 h-0 overflow-hidden pointer-events-none'}`}
+          >
             <Navigation />
             <main className="flex-grow w-full z-10 relative">
               <Routes>
