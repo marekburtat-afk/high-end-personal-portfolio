@@ -27,12 +27,12 @@ export const NetflixIntro: React.FC<NetflixIntroProps> = ({ videoUrl, onComplete
     >
       <AnimatePresence mode="wait">
         {!hasStarted ? (
-          /* FIX: Přidáno absolute a inset-0 pro zamezení uskakování doleva */
+          /* FIX: absolute inset-0 a z-[10000] zaručí, že text už neuteče doleva */
           <motion.div
             key="welcome"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0, scale: 1.1 }} // Přidán jemný zoom při mizení
+            exit={{ opacity: 0, scale: 1.1 }}
             className="absolute inset-0 flex flex-col items-center justify-center bg-black z-[10000]"
           >
             <motion.h1 
@@ -43,20 +43,19 @@ export const NetflixIntro: React.FC<NetflixIntroProps> = ({ videoUrl, onComplete
               Marek Verťat
             </motion.h1>
 
-            {/* VÝRAZNÉ TLAČÍTKO S NETFLIX RED HOVER EFEKTEM */}
+            {/* TLAČÍTKO S TEXTEM "VSTOUPIT" A ČERVENÝM HOVEREM */}
             <button
               onClick={handleStart}
-              className="group relative px-12 py-4 bg-transparent border-2 border-white/20 rounded-sm transition-all duration-300 hover:border-[#E50914] overflow-hidden"
+              className="group relative px-16 py-4 bg-transparent border-2 border-white/20 rounded-sm transition-all duration-300 hover:border-[#E50914] overflow-hidden"
             >
-              <span className="relative z-10 text-white font-black uppercase tracking-[0.4em] text-xs transition-colors duration-300 group-hover:text-white">
-                Enter Experience
+              <span className="relative z-10 text-white font-black uppercase tracking-[0.5em] text-xs transition-colors duration-300 group-hover:text-white">
+                Vstoupit
               </span>
-              {/* Červená výplň, která vyjede při hoveru */}
+              {/* Netflix Red výplň */}
               <div className="absolute inset-0 bg-[#E50914] translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
             </button>
           </motion.div>
         ) : (
-          /* VIDEO SEKCE */
           <motion.div
             key="video"
             initial={{ opacity: 0 }}
