@@ -62,13 +62,13 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
       </h2>
       
       <div className="relative group/row flex items-center">
-        {/* LEVÁ ŠIPKA: Více vysunutá ven */}
+        {/* LEVÁ ŠIPKA: Čistá šipka, po najetí červené tlačítko */}
         {showLeftArrow && (
           <button
             onClick={() => handleScroll('left')}
-            className="absolute left-0 top-0 bottom-8 z-[60] w-16 md:w-24 bg-black/80 opacity-0 group-hover/row:opacity-100 transition-all flex items-center justify-center hover:bg-black hover:scale-110 hidden md:flex"
+            className="absolute left-0 top-0 bottom-8 z-[60] w-16 md:w-24 bg-transparent opacity-0 group-hover/row:opacity-100 transition-all duration-300 flex items-center justify-center hover:bg-[#E50914] hover:scale-110 hidden md:flex"
           >
-            <ChevronLeft className="w-12 h-12 md:w-20 md:h-20 text-white" />
+            <ChevronLeft className="w-12 h-12 md:w-20 md:h-20 text-white drop-shadow-[0_0_10px_rgba(0,0,0,0.8)]" />
           </button>
         )}
 
@@ -79,7 +79,6 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
           onMouseMove={onMouseMove}
           onMouseUp={onMouseUpOrLeave}
           onMouseLeave={onMouseUpOrLeave}
-          /* FIX: scroll-px-4 a md:scroll-px-12 zajistí, že snap-start bude brát v úvahu tvůj padding */
           className={`
             flex gap-3 overflow-x-auto scrollbar-hide pt-2 pb-8 px-4 md:px-12 snap-x snap-mandatory scroll-px-4 md:scroll-px-12
             ${isDragging ? 'cursor-grabbing scroll-auto' : 'cursor-grab scroll-smooth'}
@@ -122,17 +121,16 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
               </Link>
             </motion.div>
           ))}
-          {/* Pomocný prvek na konci, aby padding fungoval i vpravo při snapování */}
           <div className="flex-none w-[1px] h-full invisible md:block md:w-12" />
         </div>
 
-        {/* PRAVÁ ŠIPKA: Více vysunutá ven */}
+        {/* PRAVÁ ŠIPKA: Čistá šipka, po najetí červené tlačítko */}
         {showRightArrow && (
           <button
             onClick={() => handleScroll('right')}
-            className="absolute right-0 top-0 bottom-8 z-[60] w-16 md:w-24 bg-black/80 opacity-0 group-hover/row:opacity-100 transition-all flex items-center justify-center hover:bg-black hover:scale-110 hidden md:flex"
+            className="absolute right-0 top-0 bottom-8 z-[60] w-16 md:w-24 bg-transparent opacity-0 group-hover/row:opacity-100 transition-all duration-300 flex items-center justify-center hover:bg-[#E50914] hover:scale-110 hidden md:flex"
           >
-            <ChevronRight className="w-12 h-12 md:w-20 md:h-20 text-white" />
+            <ChevronRight className="w-12 h-12 md:w-20 md:h-20 text-white drop-shadow-[0_0_10px_rgba(0,0,0,0.8)]" />
           </button>
         )}
       </div>
