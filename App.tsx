@@ -6,8 +6,9 @@ import { Footer } from './components/Footer';
 import { Home } from './pages/Home';
 import { Work } from './pages/Work';
 import { Blog } from './pages/Blog';
-import { Contact } from './pages/Contact'; // Nový import
+import { Contact } from './pages/Contact';
 import { ProjectDetail } from './pages/ProjectDetail';
+import { PostDetail } from './pages/PostDetail'; // NOVÝ IMPORT
 import { StudioPage } from './pages/StudioPage';
 
 const isComingSoon = true; 
@@ -60,7 +61,8 @@ const App: React.FC = () => {
                   <Route path="/projects" element={<Work />} />
                   <Route path="/project/:slug" element={<ProjectDetail />} />
                   <Route path="/blog" element={<Blog />} />
-                  <Route path="/kontakt" element={<Contact />} /> {/* Nová cesta */}
+                  <Route path="/blog/:slug" element={<PostDetail />} /> {/* NOVÁ CESTA PRO DETAIL BLOGU */}
+                  <Route path="/kontakt" element={<Contact />} />
                 </Routes>
               </main>
               <Footer />
