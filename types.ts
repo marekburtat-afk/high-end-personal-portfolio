@@ -25,6 +25,9 @@ export interface Project {
   quality?: string;    // Kvalita (4K, HD...)
   output?: string;     // Tvůj nový "Výstup" (Online, Socky, Film...)
   isHero?: boolean;    // Přepínač pro hlavní video na úvodní stránce
+  
+  // PŘIDÁNO: Přepínač pro připnutí na první 4 pozice
+  pinned?: boolean;    
 }
 
 export interface Post {

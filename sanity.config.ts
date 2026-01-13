@@ -62,6 +62,16 @@ const projectSchema = {
   fields: [
     { name: 'title', type: 'string', title: 'Titulek' },
     { name: 'slug', type: 'slug', title: 'Slug', options: { source: 'title', maxLength: 96 } },
+    
+    // NOVÉ: Pole pro připnutí projektu na první pozice
+    { 
+      name: 'pinned', 
+      type: 'boolean', 
+      title: 'Připnout na začátek (Pin)', 
+      description: 'Pokud je zapnuto, tento projekt se v řadě "Moje tvorba" zobrazí jako první.',
+      initialValue: false 
+    },
+
     { name: 'description', type: 'text', title: 'Popis' },
     { name: 'mainImage', type: 'image', title: 'Hlavní foto' },
     { name: 'videoUrl', type: 'url', title: 'Video URL' },
@@ -137,7 +147,6 @@ const settingsSchema = {
       title: 'Moje fotka (Kontakt)',
       options: { hotspot: true }
     },
-    // PŘIDÁNO: Pole pro nahrání After Effects videa
     {
       name: 'introVideo',
       type: 'file',

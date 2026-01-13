@@ -11,12 +11,10 @@ export const client = createClient({
 
 const builder = imageUrlBuilder(client);
 
-// Funkce pro generování URL obrázků
 export function urlFor(source: any) {
   return builder.image(source);
 }
 
-// NOVÁ FUNKCE: Získá nastavení webu včetně Intro videa ze Sanity
 export async function getSettings() {
   return client.fetch(`*[_type == "settings"][0]{
     ...,
@@ -37,15 +35,15 @@ export async function getPartners() {
   }`);
 }
 
+// OPRAVENO: Nejdříve řadíme podle 'pinned' (sestupně), pak podle data vytvoření
 export async function getProjects(): Promise<Project[]> {
-  return client.fetch(`*[_type == "project" && (isHero != true || !defined(isHero))] | order(_createdAt desc)`);
+  return client.fetch(`*[_type == "project" && (isHero != true || !defined(isHero))] | order(pinned desc, _createdAt desc)`);
 }
 
 export async function getPosts(): Promise<Post[]> {
   return client.fetch(`*[_type == "post"] | order(publishedAt desc)`);
 }
 
-// Získá detail jednoho blogového příspěvku
 export async function getPost(slug: string): Promise<Post | null> {
     return client.fetch(`*[_type == "post" && slug.current == $slug][0]{
       ...,
