@@ -42,7 +42,6 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
   const handleScroll = (direction: 'left' | 'right') => {
     if (rowRef.current) {
       const { clientWidth } = rowRef.current;
-      // Posuneme o celou šířku kontejneru pro plynulý přechod sekcí
       const scrollAmount = direction === 'left' ? -clientWidth : clientWidth;
       rowRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
@@ -63,13 +62,13 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
       </h2>
       
       <div className="relative group/row flex items-center">
-        {/* LEVÁ ŠIPKA: Větší, více vlevo a silnější pozadí */}
+        {/* LEVÁ ŠIPKA: Více vysunutá ven */}
         {showLeftArrow && (
           <button
             onClick={() => handleScroll('left')}
-            className="absolute left-0 top-0 bottom-8 z-[60] w-14 md:w-20 bg-black/80 opacity-0 group-hover/row:opacity-100 transition-all flex items-center justify-center hover:bg-black hover:scale-105 hidden md:flex"
+            className="absolute left-0 top-0 bottom-8 z-[60] w-16 md:w-24 bg-black/80 opacity-0 group-hover/row:opacity-100 transition-all flex items-center justify-center hover:bg-black hover:scale-110 hidden md:flex"
           >
-            <ChevronLeft className="w-10 h-10 md:w-16 md:h-16 text-white" />
+            <ChevronLeft className="w-12 h-12 md:w-20 md:h-20 text-white" />
           </button>
         )}
 
@@ -80,9 +79,9 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
           onMouseMove={onMouseMove}
           onMouseUp={onMouseUpOrLeave}
           onMouseLeave={onMouseUpOrLeave}
-          // PŘIDÁNO: snap-x snap-mandatory pro magnetické zarovnání
+          /* FIX: scroll-px-4 a md:scroll-px-12 zajistí, že snap-start bude brát v úvahu tvůj padding */
           className={`
-            flex gap-2 overflow-x-auto scrollbar-hide pt-2 pb-8 px-4 md:px-12 snap-x snap-mandatory
+            flex gap-3 overflow-x-auto scrollbar-hide pt-2 pb-8 px-4 md:px-12 snap-x snap-mandatory scroll-px-4 md:scroll-px-12
             ${isDragging ? 'cursor-grabbing scroll-auto' : 'cursor-grab scroll-smooth'}
           `}
         >
@@ -90,7 +89,6 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
             <motion.div
               key={project._id}
               whileHover={!isDragging ? { scale: 1.05, zIndex: 50 } : {}}
-              // PŘIDÁNO: snap-start pro zarovnání karty na začátek řady
               className="flex-none w-[75%] md:w-[31%] lg:w-[23.8%] relative snap-start"
             >
               <Link 
@@ -124,15 +122,17 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
               </Link>
             </motion.div>
           ))}
+          {/* Pomocný prvek na konci, aby padding fungoval i vpravo při snapování */}
+          <div className="flex-none w-[1px] h-full invisible md:block md:w-12" />
         </div>
 
-        {/* PRAVÁ ŠIPKA: Větší, více vpravo a silnější pozadí */}
+        {/* PRAVÁ ŠIPKA: Více vysunutá ven */}
         {showRightArrow && (
           <button
             onClick={() => handleScroll('right')}
-            className="absolute right-0 top-0 bottom-8 z-[60] w-14 md:w-20 bg-black/80 opacity-0 group-hover/row:opacity-100 transition-all flex items-center justify-center hover:bg-black hover:scale-105 hidden md:flex"
+            className="absolute right-0 top-0 bottom-8 z-[60] w-16 md:w-24 bg-black/80 opacity-0 group-hover/row:opacity-100 transition-all flex items-center justify-center hover:bg-black hover:scale-110 hidden md:flex"
           >
-            <ChevronRight className="w-10 h-10 md:w-16 md:h-16 text-white" />
+            <ChevronRight className="w-12 h-12 md:w-20 md:h-20 text-white" />
           </button>
         )}
       </div>
