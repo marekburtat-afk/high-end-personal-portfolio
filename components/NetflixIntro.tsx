@@ -10,13 +10,13 @@ export const NetflixIntro: React.FC<NetflixIntroProps> = ({ videoUrl, onComplete
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    // Prohlížeče často blokují autoplay se zvukem. 
-    // Pokud chceš zvuk, video se nemusí spustit samo bez interakce.
     if (videoRef.current) {
       videoRef.current.play().catch(err => {
-        console.warn("Autoplay s audiem byl zablokován prohlížečem. Video běží ztlumeně.", err);
-        if (videoRef.current) videoRef.current.muted = true;
-        videoRef.current?.play();
+        console.warn("Autoplay block. Muting for start.", err);
+        if (videoRef.current) {
+          videoRef.current.muted = true;
+          videoRef.current.play();
+        }
       });
     }
   }, []);
@@ -24,24 +24,25 @@ export const NetflixIntro: React.FC<NetflixIntroProps> = ({ videoUrl, onComplete
   return (
     <motion.div
       initial={{ opacity: 1 }}
-      exit={{ opacity: 0, scale: 1.1, filter: 'blur(20px)' }}
-      transition={{ duration: 1 }}
-      className="fixed inset-0 z-[1000] bg-black flex items-center justify-center overflow-hidden"
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.8 }}
+      // fixed inset-0 + z-index zajistí, že video je nad vším a nepohne se
+      className="fixed inset-0 z-[9999] bg-black flex items-center justify-center overflow-hidden touch-none select-none"
     >
       <video
         ref={videoRef}
         src={videoUrl}
         onEnded={onComplete}
-        className="w-full h-full object-cover md:object-contain"
+        // object-cover zajistí, že video vyplní celou plochu bez mezer
+        className="w-full h-[100dvh] object-cover pointer-events-none"
         autoPlay
         playsInline
-        muted={false} // Nastav na true, pokud chceš mít jistotu, že autoplay proběhne vždy
+        muted={false}
       />
-
-      {/* Tlačítko Přeskočit */}
+      
       <button 
         onClick={onComplete}
-        className="absolute bottom-10 right-10 text-white/20 hover:text-white text-[10px] font-black uppercase tracking-[0.3em] transition-all border border-white/10 px-4 py-2 rounded-sm backdrop-blur-md"
+        className="absolute bottom-8 right-8 text-white/40 hover:text-white text-[10px] font-black uppercase tracking-[0.3em] transition-all border border-white/10 px-6 py-3 rounded-none bg-black/20 backdrop-blur-sm z-[10000]"
       >
         Skip Intro
       </button>

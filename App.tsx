@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { Navigation } from './components/Navigation';
 import { Footer } from './components/Footer';
 import { Home } from './pages/Home';
@@ -23,7 +23,7 @@ const ScrollToTop = () => {
 };
 
 const ComingSoon = () => (
-  <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center text-white p-6 text-center font-black uppercase">
+  <div className="fixed inset-0 bg-[#050505] flex flex-col items-center justify-center text-white p-6 text-center font-black uppercase z-[2000]">
     <h1 className="text-4xl md:text-6xl mb-4">Marek Verťat</h1>
     <p className="text-neutral-500 tracking-[0.5em] text-xs">Coming Soon 2026</p>
   </div>
@@ -48,11 +48,22 @@ const App: React.FC = () => {
     getSettings().then(data => {
       if (data?.introVideoUrl) {
         setIntroVideoUrl(data.introVideoUrl);
-      } else if (!sessionStorage.getItem('hasSeenIntro')) {
+      } else {
         setIntroFinished(true);
       }
     });
   }, []);
+
+  // ZÁMEK SKROLOVÁNÍ: Dokud intro běží, zakážeme pohyb těla stránky
+  useEffect(() => {
+    if (!introFinished && introVideoUrl && isAuthorized) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none'; // Zakáže sliding na mobilech
+    } else {
+      document.body.style.overflow = 'auto';
+      document.body.style.touchAction = 'auto';
+    }
+  }, [introFinished, introVideoUrl, isAuthorized]);
 
   const handleIntroComplete = () => {
     sessionStorage.setItem('hasSeenIntro', 'true');
@@ -67,19 +78,16 @@ const App: React.FC = () => {
     <Router>
       <ScrollToTop />
       
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {!introFinished && introVideoUrl && (
           <NetflixIntro videoUrl={introVideoUrl} onComplete={handleIntroComplete} />
         )}
       </AnimatePresence>
       
       <Routes>
-        {/* Administrace - zcela oddělená, aby se v ní nepropisoval web */}
         <Route path="/studio/*" element={<StudioPage />} />
-
-        {/* Hlavní web - s hlavičkou a patičkou */}
         <Route path="*" element={
-          <div className={`min-h-screen flex flex-col transition-opacity duration-1000 ${introFinished ? 'opacity-100' : 'opacity-0'}`}>
+          <div className={`min-h-[100dvh] flex flex-col transition-opacity duration-1000 ${introFinished ? 'opacity-100' : 'opacity-0'}`}>
             <Navigation />
             <main className="flex-grow w-full z-10 relative">
               <Routes>
