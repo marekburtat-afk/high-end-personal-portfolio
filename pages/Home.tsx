@@ -53,22 +53,22 @@ export const Home: React.FC = () => {
           <div className="absolute bottom-1/4 left-0 right-0 z-10">
             <div className="max-w-[1800px] mx-auto px-4 md:px-12 text-left">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-                <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-4 tracking-tighter uppercase drop-shadow-2xl">
+                <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-4 tracking-tighter uppercase">
                   {heroProject.title}
                 </h1>
-                <p className="text-sm md:text-lg text-neutral-200 max-w-2xl mb-8 line-clamp-3 font-medium drop-shadow-lg">
+                <p className="text-sm md:text-lg text-neutral-200 max-w-2xl mb-8 line-clamp-3 font-medium">
                   {heroProject.description}
                 </p>
                 <div className="flex gap-4">
                   <button 
                     onClick={() => setShowVideoModal(true)}
-                    className="flex items-center gap-2 bg-white text-black px-8 py-3 rounded-sm font-black uppercase text-sm hover:bg-white/80 transition-transform active:scale-95 shadow-xl"
+                    className="flex items-center gap-2 bg-white text-black px-8 py-3 rounded-sm font-black uppercase text-sm hover:bg-white/80 transition-transform active:scale-95"
                   >
                     <Play size={20} fill="black" /> Přehrát
                   </button>
                   <Link 
                     to={`/project/${heroProject.slug?.current}`} 
-                    className="flex items-center gap-2 bg-neutral-500/40 text-white px-8 py-3 rounded-sm font-black uppercase text-sm hover:bg-neutral-500/60 backdrop-blur-md transition-transform active:scale-95 shadow-xl"
+                    className="flex items-center gap-2 bg-neutral-500/40 text-white px-8 py-3 rounded-sm font-black uppercase text-sm hover:bg-neutral-500/60 backdrop-blur-md transition-transform active:scale-95"
                   >
                     <Info size={20} /> Více informací
                   </Link>
@@ -79,32 +79,28 @@ export const Home: React.FC = () => {
         </section>
       )}
 
-      {/* --- NUKLEÁRNÍ FIX PRO MODAL PŘES PORTAL --- */}
+      {/* --- DEFINITIVNÍ FIX: VIDEO MODAL NA STŘED MONITORU --- */}
       {createPortal(
         <AnimatePresence>
           {showVideoModal && heroProject?.videoUrl && (
-            <div className="fixed inset-0 z-[99999] flex items-center justify-center">
-              {/* BACKDROP: Fixovaný na monitor */}
+            <div className="fixed inset-0 z-[99999] flex items-center justify-center overflow-hidden">
+              {/* Pozadí fixované na okno prohlížeče */}
               <motion.div 
-                initial={{ opacity: 0 }} 
-                animate={{ opacity: 1 }} 
-                exit={{ opacity: 0 }}
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 className="fixed inset-0 bg-black/95 backdrop-blur-xl" 
                 onClick={() => setShowVideoModal(false)} 
               />
               
-              {/* OKNO S VIDEEM: Vždy uprostřed monitoru */}
+              {/* Video okno - VŽDY uprostřed tvého výhledu */}
               <motion.div 
-                initial={{ scale: 0.9, opacity: 0, y: 20 }} 
-                animate={{ scale: 1, opacity: 1, y: 0 }} 
-                exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                className="relative w-[95vw] max-w-6xl aspect-video bg-black rounded-sm overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.8)] z-[100000]"
+                initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+                className="relative w-[90vw] max-w-6xl aspect-video bg-black rounded-sm overflow-hidden shadow-2xl z-[100000]"
               >
                 <button 
                   onClick={() => setShowVideoModal(false)}
-                  className="absolute top-4 right-4 z-[100001] p-3 bg-black/50 text-white rounded-full hover:bg-white hover:text-black transition-all active:scale-90"
+                  className="absolute top-4 right-4 z-[100001] p-2 bg-black/50 text-white rounded-full hover:bg-white hover:text-black transition-all"
                 >
-                  <X size={28} />
+                  <X size={24} />
                 </button>
                 <iframe
                   className="w-full h-full"
@@ -120,7 +116,6 @@ export const Home: React.FC = () => {
         document.body
       )}
 
-      {/* SEKCE S ŘADAMI */}
       <div className="relative z-20 -mt-20 space-y-12 pb-12">
         <ProjectRow title="Moje tvorba" projects={projects} />
         {partners.length > 0 && (
