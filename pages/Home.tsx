@@ -47,11 +47,9 @@ export const Home: React.FC = () => {
               <img src={urlFor(heroProject.mainImage).url()} className="w-full h-full object-cover" alt="" />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-[#141414]/20 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#141414] via-transparent to-transparent opacity-90" />
           </div>
 
           <div className="absolute bottom-1/4 left-0 right-0 z-10">
-            {/* Odsazení titulu sjednoceno s ProjectRow */}
             <div className="max-w-[1800px] mx-auto px-4 md:px-12">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
                 <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-4 tracking-tighter uppercase drop-shadow-2xl">
@@ -67,7 +65,6 @@ export const Home: React.FC = () => {
                   >
                     <Play size={20} fill="black" /> Přehrát
                   </button>
-                  {/* POJISTKA: heroProject.slug?.current zabrání chybě undefined */}
                   <Link 
                     to={`/project/${heroProject.slug?.current}`} 
                     className="flex items-center gap-2 bg-neutral-500/40 text-white px-8 py-3 rounded-sm font-black uppercase text-sm hover:bg-neutral-500/60 backdrop-blur-md transition-transform active:scale-95 shadow-xl"
@@ -81,21 +78,24 @@ export const Home: React.FC = () => {
         </section>
       )}
 
-      {/* VIDEO MODAL */}
+      {/* VIDEO MODAL: PŘIPNUTÝ NA STŘED OBRAZOVKY */}
       <AnimatePresence>
         {showVideoModal && heroProject?.videoUrl && (
           <motion.div 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-8"
+            className="fixed inset-0 z-[500] flex items-center justify-center p-4 md:p-12"
           >
-            <div className="absolute inset-0 bg-black/95 backdrop-blur-sm" onClick={() => setShowVideoModal(false)} />
+            {/* Tmavé pozadí fixované na celý viewport */}
+            <div className="fixed inset-0 bg-black/95 backdrop-blur-md" onClick={() => setShowVideoModal(false)} />
+            
+            {/* Samotné video okno centrované uprostřed */}
             <motion.div 
-              initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
-              className="relative w-full max-w-6xl aspect-video bg-black rounded-sm overflow-hidden shadow-2xl border border-white/10"
+              initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+              className="relative w-full max-w-6xl aspect-video bg-black rounded-sm overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/10"
             >
               <button 
                 onClick={() => setShowVideoModal(false)}
-                className="absolute top-4 right-4 z-50 p-2 bg-black/50 text-white rounded-full hover:bg-white hover:text-black transition-colors shadow-lg"
+                className="absolute top-4 right-4 z-[510] p-2 bg-black/50 text-white rounded-full hover:bg-white hover:text-black transition-all shadow-lg active:scale-90"
               >
                 <X size={24} />
               </button>
@@ -111,14 +111,8 @@ export const Home: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* KONTEJNER PRO ŘADY PROJEKTŮ */}
-      {/* Odsazení nahoru a mezery mezi řadami upraveny pro High-End vzhled */}
       <div className="relative z-20 -mt-20 space-y-12 pb-12">
         <ProjectRow title="Moje tvorba" projects={projects} />
-        
-        {/* Zde můžeš přidat další řady, např. podle kategorií */}
-        {/* <ProjectRow title="VFX & Reklamy" projects={projects.filter(p => p.category === 'vfx')} /> */}
-
         {partners.length > 0 && (
           <div className="pt-12 border-t border-white/5 mx-4 md:px-12"> 
             <PartnerRow partners={partners} />
