@@ -39,7 +39,6 @@ const beforeAfterSlider = {
   fields: [
     { name: 'beforeImage', type: 'image', title: 'Před' },
     { name: 'afterImage', type: 'image', title: 'Po' },
-    // NOVÉ POLE: Zarovnání i pro slider
     {
       name: 'alignment',
       type: 'string',
@@ -105,7 +104,32 @@ const postSchema = {
   fields: [
     { name: 'title', type: 'string', title: 'Titulek' },
     { name: 'slug', type: 'slug', title: 'Slug', options: { source: 'title', maxLength: 96 } },
-    { name: 'body', type: 'array', title: 'Text', of: [{ type: 'block' }, imageWithCaption, videoEmbed, beforeAfterSlider] }
+    
+    // PŘIDÁNO: Hlavní obrázek článku pro grid
+    { 
+      name: 'mainImage', 
+      type: 'image', 
+      title: 'Hlavní obrázek',
+      options: { hotspot: true } 
+    },
+    
+    // PŘIDÁNO: Datum publikace (vyřeší "Invalid Date")
+    { 
+      name: 'publishedAt', 
+      type: 'datetime', 
+      title: 'Datum publikace',
+      initialValue: (new Date()).toISOString()
+    },
+
+    // PŘIDÁNO: Krátký popisek (pro grid)
+    { name: 'excerpt', type: 'text', title: 'Krátký výtah', rows: 3 },
+
+    { 
+      name: 'body', 
+      type: 'array', 
+      title: 'Text článku', 
+      of: [{ type: 'block' }, imageWithCaption, videoEmbed, beforeAfterSlider] 
+    }
   ]
 };
 
