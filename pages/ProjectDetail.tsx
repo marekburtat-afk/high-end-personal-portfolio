@@ -8,8 +8,8 @@ import { PortableText } from '@portabletext/react';
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 
 const ptComponents = {
-  // NOVÁ SEKCE: Marks (zpracovává Bold, Kurzívu, Podtržení a Odkazy)
   marks: {
+    // Oprava Bold vlastnosti - font-black pro maximální Netflix look
     strong: ({ children }: any) => (
       <strong className="font-black text-white">{children}</strong>
     ),
@@ -77,8 +77,8 @@ const ptComponents = {
           </div>
           <div className="rounded-xl overflow-hidden border border-white/10 shadow-2xl">
             <ReactCompareSlider
-              itemOne={<ReactCompareSliderImage src={urlFor(value.beforeImage).width(isFloating ? 800 : 1400).url()} alt="Před" />}
-              itemTwo={<ReactCompareSliderImage src={urlFor(value.afterImage).width(isFloating ? 800 : 1400).url()} alt="Po" />}
+              itemOne={<ReactCompareSliderImage src={urlFor(value.beforeImage).width(1400).url()} alt="Před" />}
+              itemTwo={<ReactCompareSliderImage src={urlFor(value.afterImage).width(1400).url()} alt="Po" />}
               handle={
                 <div className="relative h-full flex items-center justify-center">
                   <div className="w-[2px] h-full bg-[#E50914] shadow-[0_0_20px_rgba(229,9,20,1)]"></div>
@@ -109,7 +109,7 @@ export const ProjectDetail: React.FC = () => {
     if (slug) { getProject(slug).then(data => setProject(data)); }
   }, [slug]);
 
-  if (!project) return <div className="min-h-screen bg-[#141414] flex items-center justify-center text-white font-black uppercase tracking-[0.5em]">Loading...</div>;
+  if (!project) return <div className="min-h-screen bg-[#141414] flex items-center justify-center text-white font-black uppercase tracking-widest">Načítám projekt...</div>;
 
   const getEmbedUrl = (url: string) => {
     if (!url) return "";
@@ -133,6 +133,8 @@ export const ProjectDetail: React.FC = () => {
       
       <div className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-24 -mt-40 relative z-10">
         <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
+          
+          {/* HLAVNÍ NADPIS: Nyní rovný font bez kurzívy */}
           <h1 className="text-5xl md:text-8xl lg:text-9xl font-black mb-8 uppercase tracking-tighter text-white drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)] leading-none">
             {project.title}
           </h1>
@@ -140,7 +142,8 @@ export const ProjectDetail: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-12">
             <div className="lg:col-span-2">
               <div className="flex items-center gap-6 text-sm font-black mb-6">
-                <span className="text-green-500 italic">{project.match || 98}% MATCH</span>
+                {/* MATCH: Také odstraněna kurzíva pro sjednocení */}
+                <span className="text-green-500">{project.match || 98}% MATCH</span>
                 <span className="text-neutral-400">{project.year || '2026'}</span>
                 <span className="border border-neutral-700 px-3 py-1 text-[10px] rounded-sm text-white bg-white/5 tracking-[0.2em]">
                   {project.quality || '4K ULTRA HD'}

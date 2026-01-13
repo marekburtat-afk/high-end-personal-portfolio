@@ -18,6 +18,13 @@ export interface Project {
   mainImage?: SanityImage;
   videoUrl?: string;
   category?: string;
+  
+  // NOVÁ POLE: Netflix metadata a nastavení
+  match?: number;      // Procentuální shoda (např. 98)
+  year?: string;       // Rok projektu
+  quality?: string;    // Kvalita (4K, HD...)
+  output?: string;     // Tvůj nový "Výstup" (Online, Socky, Film...)
+  isHero?: boolean;    // Přepínač pro hlavní video na úvodní stránce
 }
 
 export interface Post {

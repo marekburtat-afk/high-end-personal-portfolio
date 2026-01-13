@@ -2,11 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { X, Calendar, Clock } from 'lucide-react';
-import { getPost, urlFor } from '../lib/sanity'; // getPost musíme přidat do lib/sanity.ts
+import { getPost, urlFor } from '../lib/sanity';
 import { PortableText } from '@portabletext/react';
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 
-// Použijeme tvůj vyladěný styl pro texty a fotky
 const ptComponents = {
   marks: {
     strong: ({ children }: any) => <strong className="font-black text-white">{children}</strong>,
@@ -61,16 +60,15 @@ export const PostDetail: React.FC = () => {
     if (slug) { getPost(slug).then(data => setPost(data)); }
   }, [slug]);
 
-  if (!post) return <div className="min-h-screen bg-[#141414] flex items-center justify-center text-white font-black uppercase italic tracking-widest">Načítám článek...</div>;
+  // OPRAVA: Odstraněno 'italic' z načítacího textu
+  if (!post) return <div className="min-h-screen bg-[#141414] flex items-center justify-center text-white font-black uppercase tracking-widest">Načítám článek...</div>;
 
   return (
     <div className="min-h-screen bg-[#141414] pb-32 relative overflow-x-hidden">
-      {/* Tlačítko zpět */}
       <Link to="/blog" className="fixed top-24 right-6 md:right-12 z-[110] bg-black/60 backdrop-blur-xl p-4 rounded-full text-white hover:bg-red-600 transition-all border border-white/10">
         <X size={24} />
       </Link>
 
-      {/* Hero sekce článku */}
       <div className="relative h-[60vh] w-full overflow-hidden">
         {post.mainImage && (
           <img src={urlFor(post.mainImage).url()} className="w-full h-full object-cover" alt={post.title} />
@@ -80,13 +78,15 @@ export const PostDetail: React.FC = () => {
 
       <div className="max-w-[1000px] mx-auto px-6 md:px-12 lg:px-24 -mt-32 relative z-10">
         <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-          {/* Metadata */}
+          
           <div className="flex items-center gap-6 text-[10px] font-black uppercase tracking-widest text-red-600 mb-6">
             <span className="flex items-center gap-2"><Calendar size={12} /> {new Date(post.publishedAt).toLocaleDateString('cs-CZ')}</span>
-            <span className="flex items-center gap-2 text-neutral-400 italic">Marek Verťat</span>
+            {/* OPRAVA: Odstraněno 'italic' u jména autora */}
+            <span className="flex items-center gap-2 text-neutral-400 font-black">Marek Verťat</span>
           </div>
 
-          <h1 className="text-4xl md:text-7xl font-black mb-12 uppercase tracking-tighter text-white italic leading-none drop-shadow-2xl">
+          {/* TITULEK: Odstraněno 'italic' pro čistý, masivní vzhled */}
+          <h1 className="text-4xl md:text-7xl font-black mb-12 uppercase tracking-tighter text-white leading-none drop-shadow-2xl">
             {post.title}
           </h1>
 
