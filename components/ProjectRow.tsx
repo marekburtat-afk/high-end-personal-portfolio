@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { createPortal } from 'react-dom'; // Důležité pro fixaci pozice kurzoru
 import { Link } from 'react-router-dom';
 import { motion, useMotionValue } from 'framer-motion';
 import { Project } from '../types';
@@ -15,17 +16,17 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
   
-  // DRAG LOGIKA
+  // Dragging logiku jsme zjednodušili pro maximální plynulost
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeftStart, setScrollLeftStart] = useState(0);
 
-  // KURZOR LOGIKA
+  // Moderní kurzor (kroužek)
   const [isHoveringRow, setIsHoveringRow] = useState(false);
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
 
-  // Globální sledování myši - odstraní ten offset z videa
+  // Sledování myši – clientX/Y jsou souřadnice okna
   useEffect(() => {
     const moveCursor = (e: MouseEvent) => {
       cursorX.set(e.clientX);
@@ -37,23 +38,20 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
 
   if (projects.length === 0) return null;
 
-  // ZAČÁTEK TAHU (Click)
+  // --- START TAHU ---
   const onMouseDown = (e: React.MouseEvent) => {
     if (!rowRef.current) return;
     setIsDragging(true);
-    // Používáme clientX pro absolutní přesnost vůči oknu
-    setStartX(e.clientX);
+    setStartX(e.clientX); // Používáme clientX pro absolutní shodu s oknem
     setScrollLeftStart(rowRef.current.scrollLeft);
   };
 
-  // POHYB (Drag)
+  // --- POHYB (Musí být 1:1 k myši) ---
   const onMouseMove = (e: React.MouseEvent) => {
     if (!isDragging || !rowRef.current) return;
     e.preventDefault();
-    
-    // Rozdíl mezi startem a aktuální pozicí myši
     const deltaX = e.clientX - startX;
-    // Okamžitý posun 1:1 bez lagu
+    // Karty se teď hýbou přesně o tolik, o kolik pohneš myší
     rowRef.current.scrollLeft = scrollLeftStart - deltaX;
   };
 
@@ -80,24 +78,27 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
   return (
     <div className="space-y-2 mb-8 md:mb-12 select-none relative">
       
-      {/* ELEGANTNÍ KURZOR - PŘESNĚ NA ŠPIČCE MYŠI */}
-      <motion.div
-        className="fixed top-0 left-0 w-16 h-16 border border-white/40 rounded-full pointer-events-none z-[9999] mix-blend-difference"
-        style={{
-          x: cursorX,
-          y: cursorY,
-          translateX: "-50%",
-          translateY: "-50%",
-          opacity: isHoveringRow ? 1 : 0,
-          scale: isDragging ? 0.7 : 1, // Při "chycení" se kroužek lehce stáhne
-        }}
-      />
+      {/* PORTAL: Vykreslí kurzor mimo všechny divy, přímo do body */}
+      {isHoveringRow && createPortal(
+        <motion.div
+          className="fixed top-0 left-0 w-16 h-16 border border-white/40 rounded-full pointer-events-none z-[99999] mix-blend-difference"
+          style={{
+            x: cursorX,
+            y: cursorY,
+            translateX: "-50%",
+            translateY: "-50%",
+            scale: isDragging ? 0.7 : 1, // Kroužek se při stisku lehce zmenší
+          }}
+        />,
+        document.body
+      )}
 
       <h2 className="text-[1.4vw] md:text-xl lg:text-2xl font-black text-[#e5e5e5] px-4 md:px-12 uppercase tracking-tighter">
         {title}
       </h2>
       
       <div className="relative group/row">
+        {/* LEVÁ ŠIPKA */}
         {showLeftArrow && (
           <button
             onClick={() => handleScroll('left')}
@@ -107,6 +108,7 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
           </button>
         )}
 
+        {/* KONTEJNER PRO KARTY */}
         <div 
           ref={rowRef}
           onScroll={checkScroll}
@@ -118,7 +120,7 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
           className={`
             flex gap-1.5 overflow-x-auto scrollbar-hide pt-2 pb-8 px-4 md:px-12
             ${isHoveringRow ? 'cursor-none' : 'cursor-auto'}
-            ${isDragging ? 'scroll-auto' : 'scroll-smooth'}
+            ${isDragging ? 'scroll-auto touch-none' : 'scroll-smooth'}
           `}
         >
           {projects.map((project: any) => (
@@ -160,6 +162,7 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
           ))}
         </div>
 
+        {/* PRAVÁ ŠIPKA */}
         {showRightArrow && (
           <button
             onClick={() => handleScroll('right')}
