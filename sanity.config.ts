@@ -2,7 +2,7 @@ import { defineConfig } from 'sanity';
 import { structureTool } from 'sanity/structure';
 import { orderableDocumentListDeskItem } from '@sanity/orderable-document-list';
 
-// --- SCHÉMATA ---
+// --- POMOCNÁ SCHÉMATA (Musí mít definované 'name', aby se na ně dalo odkazovat) ---
 
 const imageWithCaption = {
   name: 'imageWithCaption',
@@ -50,7 +50,6 @@ const videoEmbed = {
   ]
 };
 
-// NOVÉ: Prvek pro mřížku médií (videa a fotky vedle sebe)
 const mediaGrid = {
   name: 'mediaGrid',
   type: 'object',
@@ -60,6 +59,7 @@ const mediaGrid = {
       name: 'items',
       type: 'array',
       title: 'Položky v mřížce',
+      // Odkazujeme na zaregistrované typy níže
       of: [{ type: 'imageWithCaption' }, { type: 'videoEmbed' }],
       options: { layout: 'grid' }
     },
@@ -95,6 +95,30 @@ const beforeAfterSlider = {
     }
   ]
 };
+
+const gallery = {
+  name: 'gallery',
+  type: 'object',
+  title: 'Galerie / Koláž',
+  fields: [
+    {
+      name: 'images',
+      type: 'array',
+      title: 'Obrázky v galerii',
+      of: [{ type: 'image', options: { hotspot: true }, fields: [{ name: 'caption', type: 'string', title: 'Popisek' }] }],
+      options: { layout: 'grid' }
+    },
+    {
+      name: 'columns',
+      type: 'number',
+      title: 'Počet sloupců (desktop)',
+      initialValue: 3,
+      options: { list: [2, 3, 4] }
+    }
+  ]
+};
+
+// --- HLAVNÍ DOKUMENTY ---
 
 const projectSchema = {
   name: 'project',
@@ -142,18 +166,8 @@ const projectSchema = {
       name: 'content', 
       type: 'array', 
       title: 'Obsah', 
-      of: [{ type: 'block' }, imageWithCaption, videoEmbed, mediaGrid, beforeAfterSlider] 
+      of: [{ type: 'block' }, { type: 'imageWithCaption' }, { type: 'videoEmbed' }, { type: 'mediaGrid' }, { type: 'beforeAfterSlider' }, { type: 'gallery' }] 
     },
-  ]
-};
-
-const settingsSchema = {
-  name: 'settings',
-  title: 'Nastavení webu',
-  type: 'document',
-  fields: [
-    { name: 'contactPhoto', type: 'image', title: 'Moje fotka (Kontakt)', options: { hotspot: true } },
-    { name: 'introVideo', type: 'file', title: 'Intro Video (MP4/WebM)', options: { accept: 'video/*' } }
   ]
 };
 
@@ -167,9 +181,21 @@ const postSchema = {
     { name: 'mainImage', type: 'image', title: 'Hlavní obrázek', options: { hotspot: true } },
     { name: 'publishedAt', type: 'datetime', title: 'Datum publikace', initialValue: (new Date()).toISOString() },
     { name: 'excerpt', type: 'text', title: 'Krátký výtah', rows: 3 },
-    { name: 'body', type: 'array', title: 'Text článku', of: [{ type: 'block' }, imageWithCaption, videoEmbed, mediaGrid, beforeAfterSlider] }
+    { name: 'body', type: 'array', title: 'Text článku', of: [{ type: 'block' }, { type: 'imageWithCaption' }, { type: 'videoEmbed' }, { type: 'mediaGrid' }, { type: 'beforeAfterSlider' }, { type: 'gallery' }] }
   ]
 };
+
+const settingsSchema = {
+  name: 'settings',
+  title: 'Nastavení webu',
+  type: 'document',
+  fields: [
+    { name: 'contactPhoto', type: 'image', title: 'Moje fotka (Kontakt)', options: { hotspot: true } },
+    { name: 'introVideo', type: 'file', title: 'Intro Video (MP4/WebM)', options: { accept: 'video/*' } }
+  ]
+};
+
+// --- KONFIGURACE ---
 
 export default defineConfig({
   name: 'default',
@@ -198,6 +224,7 @@ export default defineConfig({
   ],
   schema: { 
     types: [
+      // HLAVNÍ DOKUMENTY
       projectSchema,
       postSchema, 
       settingsSchema, 
@@ -206,7 +233,13 @@ export default defineConfig({
         title: 'Partneři', 
         type: 'document', 
         fields: [{ name: 'name', type: 'string' }, { name: 'logo', type: 'image' }, { name: 'description', type: 'text' }] 
-      }
+      },
+      // TADY REGISTRUJEME POMOCNÉ TYPY (Tím zmizí chyby Unknown type)
+      imageWithCaption,
+      videoEmbed,
+      mediaGrid,
+      beforeAfterSlider,
+      gallery
     ] 
   },
 });
