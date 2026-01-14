@@ -66,14 +66,49 @@ const ptComponents = {
         </figure>
       );
     },
+
+    // UPRAVENO: Video nyní podporuje zarovnání
     videoEmbed: ({ value }: any) => {
+      const isFloating = value.alignment === 'left' || value.alignment === 'right';
+      const floatClass = value.alignment === 'left' ? 'md:float-left md:mr-8 md:mb-4' : value.alignment === 'right' ? 'md:float-right md:ml-8 md:mb-4' : '';
+      const widthClass = isFloating ? 'md:w-1/2 w-full' : 'w-full';
       const id = value.url?.includes('v=') ? value.url.split('v=')[1]?.split('&')[0] : value.url?.split('/').pop();
+
       return (
-        <div className="my-8 aspect-video rounded-lg overflow-hidden border border-neutral-800 shadow-2xl bg-black clear-both">
+        <div className={`my-8 ${floatClass} ${widthClass} aspect-video rounded-lg overflow-hidden border border-neutral-800 shadow-2xl bg-black clear-both`}>
           <iframe className="w-full h-full" src={`https://www.youtube.com/embed/${id}?rel=0`} frameBorder="0" allowFullScreen></iframe>
         </div>
       );
     },
+
+    // NOVÉ: Zobrazení Galerie
+    gallery: ({ value }: any) => {
+      const gridCols = {
+        2: 'md:grid-cols-2',
+        3: 'md:grid-cols-3',
+        4: 'md:grid-cols-4'
+      }[value.columns as 2 | 3 | 4] || 'md:grid-cols-3';
+
+      return (
+        <div className={`my-12 grid grid-cols-1 ${gridCols} gap-4 clear-both`}>
+          {value.images?.map((img: any, idx: number) => (
+            <div key={idx} className="group relative aspect-square rounded-sm overflow-hidden border border-white/5 shadow-xl">
+              <img 
+                src={urlFor(img).width(800).url()} 
+                alt="" 
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+              {img.caption && (
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                  <p className="text-white text-[10px] uppercase font-black tracking-widest">{img.caption}</p>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      );
+    },
+
     beforeAfterSlider: ({ value }: any) => {
       const isFloating = value.alignment === 'left' || value.alignment === 'right';
       const floatClass = value.alignment === 'left' ? 'md:float-left md:mr-8 md:mb-4' : value.alignment === 'right' ? 'md:float-right md:ml-8 md:mb-4' : '';
@@ -106,7 +141,6 @@ const ptComponents = {
     },
   },
   block: {
-    // OPRAVA: Odstraněno max-w-4xl, aby text sahal až k okraji
     normal: ({ children }: any) => <p className="text-neutral-300 text-lg md:text-xl leading-relaxed mb-4 font-light">{children}</p>,
     h2: ({ children }: any) => <h2 className="text-2xl md:text-4xl font-black text-white mt-12 mb-6 uppercase tracking-tighter border-b border-red-600 pb-2 inline-block">{children}</h2>,
     h3: ({ children }: any) => <h3 className="text-xl md:text-2xl font-black text-white mt-8 mb-4 uppercase tracking-tight">{children}</h3>,

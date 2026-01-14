@@ -1,9 +1,8 @@
 import { defineConfig } from 'sanity';
-// ZMĚNĚNO: Používáme moderní structureTool místo deskTool
 import { structureTool } from 'sanity/structure';
 import { orderableDocumentListDeskItem } from '@sanity/orderable-document-list';
 
-// --- SCHÉMATA (zůstávají stejná) ---
+// --- SCHÉMATA ---
 
 const imageWithCaption = {
   name: 'imageWithCaption',
@@ -29,11 +28,51 @@ const imageWithCaption = {
   ]
 };
 
+// UPRAVENO: Video má nyní také volbu zarovnání
 const videoEmbed = {
   name: 'videoEmbed',
   type: 'object',
   title: 'Video',
-  fields: [{ name: 'url', type: 'url', title: 'URL' }]
+  fields: [
+    { name: 'url', type: 'url', title: 'URL (YouTube)' },
+    {
+      name: 'alignment',
+      type: 'string',
+      title: 'Zarovnání',
+      options: {
+        list: [
+          { title: 'Na celou šířku', value: 'full' },
+          { title: 'Vlevo (obtékání textem)', value: 'left' },
+          { title: 'Vpravo (obtékání textem)', value: 'right' },
+        ],
+      },
+      initialValue: 'full',
+    }
+  ]
+};
+
+// NOVÉ: Prvek pro Galerii / Koláž
+const gallery = {
+  name: 'gallery',
+  type: 'object',
+  title: 'Galerie / Koláž',
+  fields: [
+    {
+      name: 'images',
+      type: 'array',
+      title: 'Obrázky v galerii',
+      of: [{ type: 'image', options: { hotspot: true }, fields: [{ name: 'caption', type: 'string', title: 'Popisek' }] }],
+      options: { layout: 'grid' }
+    },
+    {
+      name: 'columns',
+      type: 'number',
+      title: 'Počet sloupců (desktop)',
+      description: 'Na mobilu bude vždy 1 sloupec.',
+      initialValue: 3,
+      options: { list: [2, 3, 4] }
+    }
+  ]
 };
 
 const beforeAfterSlider = {
@@ -101,7 +140,8 @@ const projectSchema = {
         layout: 'radio'
       }
     },
-    { name: 'content', type: 'array', title: 'Obsah', of: [{ type: 'block' }, imageWithCaption, videoEmbed, beforeAfterSlider] },
+    // PŘIDÁNO: gallery do obsahu
+    { name: 'content', type: 'array', title: 'Obsah', of: [{ type: 'block' }, imageWithCaption, videoEmbed, gallery, beforeAfterSlider] },
   ]
 };
 
@@ -115,7 +155,8 @@ const postSchema = {
     { name: 'mainImage', type: 'image', title: 'Hlavní obrázek', options: { hotspot: true } },
     { name: 'publishedAt', type: 'datetime', title: 'Datum publikace', initialValue: (new Date()).toISOString() },
     { name: 'excerpt', type: 'text', title: 'Krátký výtah', rows: 3 },
-    { name: 'body', type: 'array', title: 'Text článku', of: [{ type: 'block' }, imageWithCaption, videoEmbed, beforeAfterSlider] }
+    // PŘIDÁNO: gallery do obsahu blogu
+    { name: 'body', type: 'array', title: 'Text článku', of: [{ type: 'block' }, imageWithCaption, videoEmbed, gallery, beforeAfterSlider] }
   ]
 };
 
@@ -129,8 +170,6 @@ const settingsSchema = {
   ]
 };
 
-// --- HLAVNÍ KONFIGURACE ---
-
 export default defineConfig({
   name: 'default',
   title: 'Portfolio Studio',
@@ -143,7 +182,6 @@ export default defineConfig({
         S.list()
           .title('Obsah')
           .items([
-            // Tady aktivujeme táhla pro manuální řazení
             orderableDocumentListDeskItem({
               type: 'project',
               title: 'Projekty (Manuální řazení)',
