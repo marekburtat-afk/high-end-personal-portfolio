@@ -11,18 +11,13 @@ export const Work: React.FC = () => {
     getProjects().then(data => setProjects(data));
   }, []);
 
-  // 1. ŘAZENÍ PODLE AKTUALITY: Pro první řadu ignorujeme Piny a řadíme čistě podle data (_createdAt)
-  const newestProjects = [...projects].sort((a, b) => 
-    new Date(b._createdAt).getTime() - new Date(a._createdAt).getTime()
-  );
-
-  // 2. FILTRY PRO KATEGORIE: Zde zůstávají projekty tak, jak přišly ze Sanity
+  // FILTRY PRO KATEGORIE: Projekty se řadí podle tvého manuálního pořadí ze Sanity
   const vfxProjects = projects.filter(p => p.category === 'vfx');
   const commercialProjects = projects.filter(p => p.category === 'reklama');
 
   return (
     <div className="min-h-screen bg-[#141414] pb-32 overflow-x-hidden">
-      {/* HEADER: Ponechán pouze čistý nadpis s paddingem sjednoceným pro Netflix styl */}
+      {/* HEADER: Čistý nadpis v Netflix stylu */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -36,10 +31,7 @@ export const Work: React.FC = () => {
 
       {/* KONTEJNER PRO ŘADY */}
       <div className="space-y-4 md:space-y-12">
-        {/* První řada: Čistě nejnovější kousky bez ohledu na Pin */}
-        {newestProjects.length > 0 && (
-          <ProjectRow title="Moje nejnovější práce" projects={newestProjects} />
-        )}
+        {/* ZDE BYLA SEKCE "MOJE NEJNOVĚJŠÍ PRÁCE" - ODSTRANĚNO */}
         
         {vfxProjects.length > 0 && (
           <ProjectRow title="VFX a Motion Graphics" projects={vfxProjects} />
