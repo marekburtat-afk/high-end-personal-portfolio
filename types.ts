@@ -19,16 +19,17 @@ export interface Project {
   videoUrl?: string;
   category?: string;
   
-  // NOVÁ POLE: Netflix metadata a nastavení
-  match?: number;      // Procentuální shoda (např. 98)
-  year?: string;       // Rok projektu (ponecháno pro zpětnou kompatibilitu)
-  releaseDate?: string; // NOVÉ: Přesné datum pro chronologické řazení (YYYY-MM-DD)
+  // METADATA: Čistý design bez kalendáře
+  year?: string;       // Klasický rok projektu jako text
   quality?: string;    // Kvalita (4K, HD...)
-  output?: string;     // Tvůj nový "Výstup" (Online, Socky, Film...)
-  isHero?: boolean;    // Přepínač pro hlavní video na úvodní stránce
+  output?: string;     // Výstup (Online, Socky, Film...)
+  isHero?: boolean;    // Přepínač pro hlavní video
   
-  // OPRAVENO: Změna z boolean na číslo pro přesné pořadí Pin #1 až #4
-  pinPosition?: number;    
+  // ŘAZENÍ: Manuální kontrola
+  pinPosition?: number; // Pozice Pin #1 až #4
+  orderRank?: string;   // NOVÉ: Pole pro manuální drag-and-drop řazení
+  
+  match?: number;      // Ponecháno jako skryté pozůstatky
 }
 
 export interface Post {

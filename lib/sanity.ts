@@ -36,17 +36,15 @@ export async function getPartners() {
 }
 
 /**
- * DEFINITIVNÍ ŘAZENÍ:
- * 1. pinPosition (1-4) - ty co mají špendlík, jdou první.
- * 2. releaseDate (Kalendář) - zbytek se řadí od nejnovějšího.
- * 3. _createdAt - záloha, pokud releaseDate není vyplněno.
+ * MANUÁLNÍ ŘAZENÍ:
+ * 1. pinPosition (1-4) - projekty se špendlíkem mají absolutní přednost.
+ * 2. orderRank - zbytek se řadí přesně tak, jak si je v Sanity ručně poskládáš.
  */
 export async function getProjects(): Promise<Project[]> {
   return client.fetch(`
     *[_type == "project" && (isHero != true || !defined(isHero))] | order(
       select(defined(pinPosition) && pinPosition > 0 => pinPosition, 999) asc, 
-      releaseDate desc,
-      _createdAt desc
+      orderRank asc
     )
   `);
 }

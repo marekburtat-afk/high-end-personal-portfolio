@@ -60,6 +60,9 @@ const projectSchema = {
   title: 'Projekty',
   type: 'document',
   fields: [
+    // NOVÉ: Skryté pole pro manuální řazení (drag-and-drop)
+    { name: 'orderRank', type: 'string', hidden: true },
+
     { name: 'title', type: 'string', title: 'Titulek' },
     { name: 'slug', type: 'slug', title: 'Slug', options: { source: 'title', maxLength: 96 } },
     
@@ -67,7 +70,7 @@ const projectSchema = {
       name: 'pinPosition', 
       type: 'number', 
       title: 'Pozice připnutí (Pin)', 
-      description: 'Vyber pozici 1-4 pro fixní pořadí na začátku. Projekty bez pinu se zařadí chronologicky za ně.',
+      description: 'Vyber pozici 1-4 pro fixní pořadí. Pokud chceš řadit úplně manuálně v seznamu, nech zde 0.',
       options: {
         list: [
           { title: 'Bez pinu', value: 0 },
@@ -87,21 +90,11 @@ const projectSchema = {
       name: 'isHero', 
       type: 'boolean', 
       title: 'Hlavní projekt (Hero)', 
-      description: 'Pokud je zapnuto, tento projekt se zobrazí nahoře na úvodní stránce.',
       initialValue: false 
     },
 
-    // ZMĚNĚNO: Místo textového pole "rok" je zde nyní KALENDÁŘ
-    { 
-      name: 'releaseDate', 
-      type: 'date', 
-      title: 'Datum natáčení / projektu',
-      description: 'Vyber přesné datum z kalendáře. Podle tohoto data se budou projekty řadit (od nejnovějších).',
-      options: {
-        dateFormat: 'YYYY-MM-DD',
-      },
-      initialValue: (new Date()).toISOString().split('T')[0]
-    },
+    // VRÁCENO ZPĚT: Obyčejné textové pole pro Rok
+    { name: 'year', type: 'string', title: 'Rok projektu', initialValue: '2026' },
 
     { name: 'quality', type: 'string', title: 'Kvalita (např. 4K Ultra HD)', initialValue: '4K Ultra HD' },
     { 
@@ -123,8 +116,6 @@ const projectSchema = {
       }
     },
     { name: 'content', type: 'array', title: 'Obsah', of: [{ type: 'block' }, imageWithCaption, videoEmbed, beforeAfterSlider] },
-    
-    // Ponecháno skryté pole pro "match", pokud bys ho chtěl v budoucnu použít, ale teď v designu nebude vidět
     { name: 'match', type: 'number', title: 'Procento shody', hidden: true },
   ]
 };
@@ -136,12 +127,7 @@ const postSchema = {
   fields: [
     { name: 'title', type: 'string', title: 'Titulek' },
     { name: 'slug', type: 'slug', title: 'Slug', options: { source: 'title', maxLength: 96 } },
-    { 
-      name: 'mainImage', 
-      type: 'image', 
-      title: 'Hlavní obrázek',
-      options: { hotspot: true } 
-    },
+    { name: 'mainImage', type: 'image', title: 'Hlavní obrázek', options: { hotspot: true } },
     { 
       name: 'publishedAt', 
       type: 'datetime', 
@@ -149,12 +135,7 @@ const postSchema = {
       initialValue: (new Date()).toISOString()
     },
     { name: 'excerpt', type: 'text', title: 'Krátký výtah', rows: 3 },
-    { 
-      name: 'body', 
-      type: 'array', 
-      title: 'Text článku', 
-      of: [{ type: 'block' }, imageWithCaption, videoEmbed, beforeAfterSlider] 
-    }
+    { name: 'body', type: 'array', title: 'Text článku', of: [{ type: 'block' }, imageWithCaption, videoEmbed, beforeAfterSlider] }
   ]
 };
 
@@ -163,20 +144,12 @@ const settingsSchema = {
   title: 'Nastavení webu',
   type: 'document',
   fields: [
-    { 
-      name: 'contactPhoto', 
-      type: 'image', 
-      title: 'Moje fotka (Kontakt)',
-      options: { hotspot: true }
-    },
+    { name: 'contactPhoto', type: 'image', title: 'Moje fotka (Kontakt)', options: { hotspot: true } },
     {
       name: 'introVideo',
       type: 'file',
       title: 'Intro Video (MP4/WebM)',
-      description: 'Nahraj video vyexportované z After Effects pro úvodní animaci.',
-      options: {
-        accept: 'video/*'
-      }
+      options: { accept: 'video/*' }
     }
   ]
 };
@@ -187,7 +160,7 @@ export default defineConfig({
   projectId: '1ycy3rf5',
   dataset: 'production',
   basePath: '/studio',
-  plugins: [deskTool()],
+  plugins: [deskTool()], // Zde v budoucnu přidáme Orderable List Structure
   schema: { 
     types: [
       projectSchema, 
