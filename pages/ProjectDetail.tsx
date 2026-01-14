@@ -2,14 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
-import { getProject, urlFor } from '../lib/sanity'; // Opraveno na getProject
+import { getProject, urlFor } from '../lib/sanity';
 import { PortableText } from '@portabletext/react';
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 
 // Pomocná funkce pro YouTube ID
 const getYoutubeId = (url: string) => {
   if (!url) return null;
-  return url.includes('v=') ? url.split('v=')[1]?.split('&')[0] : url.split('/').pop();
+  const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&]{11})/);
+  return match ? match[1] : null;
 };
 
 const ptComponents = {
@@ -18,6 +19,19 @@ const ptComponents = {
     em: ({ children }: any) => <em className="italic text-neutral-200">{children}</em>,
     underline: ({ children }: any) => <span className="underline decoration-red-600 underline-offset-4">{children}</span>,
   },
+
+  // OBNOVENO: Červené tečky a správné odsazení seznamů
+  list: {
+    bullet: ({ children }: any) => (
+      <ul className="list-disc pl-5 space-y-2 mb-6">{children}</ul>
+    ),
+  },
+  listItem: {
+    bullet: ({ children }: any) => (
+      <li className="marker:text-red-600 text-neutral-300 text-lg md:text-xl pl-2">{children}</li>
+    ),
+  },
+
   types: {
     imageWithCaption: ({ value }: any) => {
       const isFloating = value.alignment === 'left' || value.alignment === 'right';
@@ -46,7 +60,6 @@ const ptComponents = {
       );
     },
 
-    // NOVÉ: Vykreslení mřížky (Media Grid)
     mediaGrid: ({ value }: any) => {
       const columns = value.items?.length || 2;
       return (
@@ -91,8 +104,14 @@ const ptComponents = {
   },
   block: {
     normal: ({ children }: any) => <p className="text-neutral-300 text-lg md:text-xl leading-relaxed mb-6 font-light">{children}</p>,
-    h2: ({ children }: any) => <h2 className="text-2xl md:text-4xl font-black text-white mt-12 mb-6 uppercase tracking-tighter border-b border-red-600 pb-2 inline-block">{children}</h2>,
-    h3: ({ children }: any) => <h3 className="text-xl md:text-2xl font-black text-white mt-8 mb-4 uppercase tracking-tight">{children}</h3>,
+    h2: ({ children }: any) => (
+      <div className="flex items-center gap-4 mt-16 mb-8">
+        <div className="w-1 h-10 bg-red-600"></div>
+        <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter">{children}</h2>
+      </div>
+    ),
+    // OBNOVENO: Styl pro H3 nadpisy
+    h3: ({ children }: any) => <h3 className="text-xl md:text-2xl font-black text-white mt-10 mb-5 uppercase tracking-tight">{children}</h3>,
   }
 };
 
@@ -108,18 +127,34 @@ export const ProjectDetail: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#141414] pb-32 relative overflow-x-hidden">
-      <Link to="/" className="fixed top-24 right-6 md:right-12 z-[110] bg-black/60 backdrop-blur-xl p-4 rounded-full text-white hover:bg-red-600 transition-all border border-white/10">
+      <Link to="/" className="fixed top-24 right-6 md:right-12 z-[110] bg-black/60 backdrop-blur-xl p-4 rounded-full text-white hover:bg-red-600 transition-all border border-white/10 shadow-2xl">
         <X size={24} />
       </Link>
 
-      {/* Hero sekce zůstává stejná jako u tvého původního designu */}
-      <div className="max-w-[1200px] mx-auto px-6 pt-32 relative z-10">
+      <div className="relative h-[70vh] md:h-[90vh] w-full overflow-hidden">
+        {project.videoUrl ? (
+          <div className="absolute inset-0 w-full h-full pointer-events-none">
+            <iframe 
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[1.2] md:scale-[1.5] w-full h-full" 
+              style={{ width: '100vw', height: '56.25vw', minHeight: '100vh', minWidth: '177.77vh' }} 
+              src={`https://www.youtube.com/embed/${getYoutubeId(project.videoUrl)}?autoplay=1&mute=1&loop=1&playlist=${getYoutubeId(project.videoUrl)}&rel=0&modestbranding=1`} 
+              frameBorder="0" 
+              allow="autoplay; encrypted-media"
+            ></iframe>
+          </div>
+        ) : (
+          project.mainImage && <img src={urlFor(project.mainImage).url()} className="w-full h-full object-cover" alt="" />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-[#141414]/40 to-transparent" />
+      </div>
+
+      <div className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-24 -mt-40 relative z-10">
         <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-          <h1 className="text-5xl md:text-8xl font-black mb-12 uppercase tracking-tighter text-white leading-none">
+          <h1 className="text-5xl md:text-8xl lg:text-9xl font-black mb-12 uppercase tracking-tighter text-white drop-shadow-2xl leading-none">
             {project.title}
           </h1>
 
-          <div className="rich-text-content border-t border-white/5 pt-12">
+          <div className="rich-text-content border-t border-white/10 pt-12">
             {project.content && <PortableText value={project.content} components={ptComponents} />}
           </div>
         </motion.div>
