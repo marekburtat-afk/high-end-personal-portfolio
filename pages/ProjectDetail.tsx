@@ -32,10 +32,10 @@ const ptComponents = {
     },
   },
 
-  // 1. OPRAVA: ČERVENÉ TEČKY (ODRÁŽKY)
+  // OPRAVA ODSAZENÍ TEČEK: Přidán padding-left (pl-5) pro zarovnání s textem
   list: {
     bullet: ({ children }: any) => (
-      <ul className="list-disc ml-8 space-y-2 mb-6">{children}</ul>
+      <ul className="list-disc pl-5 space-y-2 mb-6">{children}</ul>
     ),
   },
   listItem: {
@@ -82,9 +82,10 @@ const ptComponents = {
 
       return (
         <div className={`my-12 ${floatClass} ${widthClass} space-y-4 clear-both`}>
+          {/* TEXTY VRÁCENY NA "Před" a "Po" */}
           <div className="flex justify-between items-end mb-2 uppercase tracking-[0.2em] text-xs md:text-sm font-black text-white/90">
-            <span className="bg-black/40 px-3 py-1 rounded-sm border border-white/10 text-[10px]">Před úpravou</span>
-            <span className="bg-red-600/20 px-3 py-1 rounded-sm border border-red-600/30 text-red-500 text-[10px]">Finální VFX</span>
+            <span className="bg-black/40 px-3 py-1 rounded-sm border border-white/10">Před</span>
+            <span className="bg-red-600/20 px-3 py-1 rounded-sm border border-red-600/30 text-red-500">Po</span>
           </div>
           <div className="rounded-xl overflow-hidden border border-white/10 shadow-2xl">
             <ReactCompareSlider
@@ -109,7 +110,7 @@ const ptComponents = {
   block: {
     normal: ({ children }: any) => <p className="text-neutral-300 text-lg md:text-xl leading-relaxed mb-4 font-light max-w-4xl">{children}</p>,
     h2: ({ children }: any) => <h2 className="text-2xl md:text-4xl font-black text-white mt-12 mb-6 uppercase tracking-tighter border-b border-red-600 pb-2 inline-block">{children}</h2>,
-    // 2. OPRAVA: STYL PRO H3 (PŘÍPRAVA A KONCEPT)
+    // STYL PRO H3 (PŘÍPRAVA A KONCEPT)
     h3: ({ children }: any) => <h3 className="text-xl md:text-2xl font-black text-white mt-8 mb-4 uppercase tracking-tight">{children}</h3>,
   }
 };
