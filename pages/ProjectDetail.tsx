@@ -7,11 +7,10 @@ import { Project } from '../types';
 import { PortableText } from '@portabletext/react';
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 
-// OPRAVENO: Odolnější funkce, která ořízne parametry jako ?si= nebo &feature=
+// DEFINITIVNÍ OPRAVA: Podpora pro Shorts, standardní videa i parametry jako ?si=
 const getYoutubeId = (url: string) => {
   if (!url) return null;
-  // Regex, který vybere přesně 11 znaků ID a ignoruje vše za otazníkem nebo ampersandem
-  const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]{11})/);
+  const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|shorts\/|watch\?v=|watch\?.+&v=))([^&?]{11})/);
   return match ? match[1] : null;
 };
 
@@ -40,7 +39,7 @@ const ptComponents = {
     },
   },
 
-  // ZACHOVÁNO: Červené tečky a odsazení
+  // ZACHOVÁNO: Červené tečky a přesné odsazení
   list: {
     bullet: ({ children }: any) => (
       <ul className="list-disc pl-5 space-y-2 mb-6">{children}</ul>
@@ -89,12 +88,13 @@ const ptComponents = {
       );
     },
 
+    // ZACHOVÁNO: Funkční Mřížka pro videa (včetně Shorts) a fotky vedle sebe
     mediaGrid: ({ value }: any) => {
-      const columns = value.items?.length || 2;
+      const cols = value.columns || 2;
       return (
-        <div className={`my-12 grid grid-cols-1 md:grid-cols-${columns} gap-6 clear-both`}>
-          {value.items?.map((item: any, index: number) => (
-            <div key={index} className="space-y-3">
+        <div className={`my-12 grid grid-cols-1 md:grid-cols-${cols} gap-6 clear-both`}>
+          {value.items?.map((item: any, i: number) => (
+            <div key={i} className="space-y-2">
               {item._type === 'videoEmbed' ? (
                 <div className="aspect-video rounded-lg overflow-hidden border border-neutral-800 shadow-xl bg-black">
                   <iframe className="w-full h-full" src={`https://www.youtube.com/embed/${getYoutubeId(item.url)}?rel=0`} frameBorder="0" allowFullScreen></iframe>
@@ -111,6 +111,7 @@ const ptComponents = {
       );
     },
 
+    // ZACHOVÁNO: Funkční Galerie / Koláž
     gallery: ({ value }: any) => {
       const gridCols = {
         2: 'md:grid-cols-2',
@@ -125,7 +126,7 @@ const ptComponents = {
               <img 
                 src={urlFor(img).width(800).url()} 
                 alt="" 
-                className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-110"
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
               />
               {img.caption && (
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
@@ -170,7 +171,7 @@ const ptComponents = {
     },
   },
   block: {
-    // ZACHOVÁNO: Text bez max-w-4xl (zarovnání k okraji)
+    // ZACHOVÁNO: Zarovnání textu až k okraji fotek
     normal: ({ children }: any) => <p className="text-neutral-300 text-lg md:text-xl leading-relaxed mb-4 font-light">{children}</p>,
     h2: ({ children }: any) => <h2 className="text-2xl md:text-4xl font-black text-white mt-12 mb-6 uppercase tracking-tighter border-b border-red-600 pb-2 inline-block">{children}</h2>,
     // ZACHOVÁNO: Styl nadpisů H3
