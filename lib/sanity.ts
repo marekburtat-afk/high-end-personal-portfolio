@@ -36,15 +36,17 @@ export async function getPartners() {
 }
 
 /**
- * ZÍSKÁNÍ PROJEKTŮ S POKROČILÝM ŘAZENÍM:
- * 1. Přednost mají projekty se špendlíkem (Pin #1 až #4).
- * 2. Zbytek se řadí chronologicky podle "releaseDate" (od nejnovějšího).
+ * DEFINITIVNÍ ŘAZENÍ:
+ * 1. pinPosition (1-4) - ty co mají špendlík, jdou první.
+ * 2. releaseDate (Kalendář) - zbytek se řadí od nejnovějšího.
+ * 3. _createdAt - záloha, pokud releaseDate není vyplněno.
  */
 export async function getProjects(): Promise<Project[]> {
   return client.fetch(`
     *[_type == "project" && (isHero != true || !defined(isHero))] | order(
       select(defined(pinPosition) && pinPosition > 0 => pinPosition, 999) asc, 
-      releaseDate desc
+      releaseDate desc,
+      _createdAt desc
     )
   `);
 }

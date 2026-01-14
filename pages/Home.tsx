@@ -67,7 +67,6 @@ export const Home: React.FC = () => {
                     <Play size={20} fill="black" /> Přehrát
                   </button>
                   
-                  {/* UPRAVENO: Tlačítko nyní vede na stránku /projects */}
                   <Link 
                     to="/projects" 
                     className="flex items-center gap-2 bg-neutral-500/40 text-white px-8 py-3 rounded-sm font-black uppercase text-sm hover:bg-neutral-500/60 backdrop-blur-md transition-transform active:scale-95"
