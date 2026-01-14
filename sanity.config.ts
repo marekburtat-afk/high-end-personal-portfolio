@@ -28,13 +28,12 @@ const imageWithCaption = {
   ]
 };
 
-// UPRAVENO: Video má nyní také volbu zarovnání
 const videoEmbed = {
   name: 'videoEmbed',
   type: 'object',
   title: 'Video',
   fields: [
-    { name: 'url', type: 'url', title: 'URL (YouTube)' },
+    { name: 'url', type: 'url', title: 'YouTube URL' },
     {
       name: 'alignment',
       type: 'string',
@@ -51,26 +50,25 @@ const videoEmbed = {
   ]
 };
 
-// NOVÉ: Prvek pro Galerii / Koláž
-const gallery = {
-  name: 'gallery',
+// NOVÉ: Prvek pro mřížku médií (videa a fotky vedle sebe)
+const mediaGrid = {
+  name: 'mediaGrid',
   type: 'object',
-  title: 'Galerie / Koláž',
+  title: 'Mřížka médií (Vedle sebe)',
   fields: [
     {
-      name: 'images',
+      name: 'items',
       type: 'array',
-      title: 'Obrázky v galerii',
-      of: [{ type: 'image', options: { hotspot: true }, fields: [{ name: 'caption', type: 'string', title: 'Popisek' }] }],
+      title: 'Položky v mřížce',
+      of: [{ type: 'imageWithCaption' }, { type: 'videoEmbed' }],
       options: { layout: 'grid' }
     },
     {
       name: 'columns',
       type: 'number',
-      title: 'Počet sloupců (desktop)',
-      description: 'Na mobilu bude vždy 1 sloupec.',
-      initialValue: 3,
-      options: { list: [2, 3, 4] }
+      title: 'Počet sloupců',
+      options: { list: [2, 3] },
+      initialValue: 2
     }
   ]
 };
@@ -140,8 +138,22 @@ const projectSchema = {
         layout: 'radio'
       }
     },
-    // PŘIDÁNO: gallery do obsahu
-    { name: 'content', type: 'array', title: 'Obsah', of: [{ type: 'block' }, imageWithCaption, videoEmbed, gallery, beforeAfterSlider] },
+    { 
+      name: 'content', 
+      type: 'array', 
+      title: 'Obsah', 
+      of: [{ type: 'block' }, imageWithCaption, videoEmbed, mediaGrid, beforeAfterSlider] 
+    },
+  ]
+};
+
+const settingsSchema = {
+  name: 'settings',
+  title: 'Nastavení webu',
+  type: 'document',
+  fields: [
+    { name: 'contactPhoto', type: 'image', title: 'Moje fotka (Kontakt)', options: { hotspot: true } },
+    { name: 'introVideo', type: 'file', title: 'Intro Video (MP4/WebM)', options: { accept: 'video/*' } }
   ]
 };
 
@@ -155,18 +167,7 @@ const postSchema = {
     { name: 'mainImage', type: 'image', title: 'Hlavní obrázek', options: { hotspot: true } },
     { name: 'publishedAt', type: 'datetime', title: 'Datum publikace', initialValue: (new Date()).toISOString() },
     { name: 'excerpt', type: 'text', title: 'Krátký výtah', rows: 3 },
-    // PŘIDÁNO: gallery do obsahu blogu
-    { name: 'body', type: 'array', title: 'Text článku', of: [{ type: 'block' }, imageWithCaption, videoEmbed, gallery, beforeAfterSlider] }
-  ]
-};
-
-const settingsSchema = {
-  name: 'settings',
-  title: 'Nastavení webu',
-  type: 'document',
-  fields: [
-    { name: 'contactPhoto', type: 'image', title: 'Moje fotka (Kontakt)', options: { hotspot: true } },
-    { name: 'introVideo', type: 'file', title: 'Intro Video (MP4/WebM)', options: { accept: 'video/*' } }
+    { name: 'body', type: 'array', title: 'Text článku', of: [{ type: 'block' }, imageWithCaption, videoEmbed, mediaGrid, beforeAfterSlider] }
   ]
 };
 
