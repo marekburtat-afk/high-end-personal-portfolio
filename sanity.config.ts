@@ -1,5 +1,9 @@
 import { defineConfig } from 'sanity';
-import { deskTool } from 'sanity/desk';
+// ZMĚNĚNO: Používáme moderní structureTool místo deskTool
+import { structureTool } from 'sanity/structure';
+import { orderableDocumentListDeskItem } from '@sanity/orderable-document-list';
+
+// --- SCHÉMATA (zůstávají stejná) ---
 
 const imageWithCaption = {
   name: 'imageWithCaption',
@@ -60,21 +64,17 @@ const projectSchema = {
   title: 'Projekty',
   type: 'document',
   fields: [
-    // NOVÉ: Skryté pole pro manuální řazení (drag-and-drop)
     { name: 'orderRank', type: 'string', hidden: true },
-
     { name: 'title', type: 'string', title: 'Titulek' },
     { name: 'slug', type: 'slug', title: 'Slug', options: { source: 'title', maxLength: 96 } },
-    
     { 
       name: 'pinPosition', 
       type: 'number', 
       title: 'Pozice připnutí (Pin)', 
-      description: 'Vyber pozici 1-4 pro fixní pořadí. Pokud chceš řadit úplně manuálně v seznamu, nech zde 0.',
       options: {
         list: [
           { title: 'Bez pinu', value: 0 },
-          { title: 'Pin #1 (První)', value: 1 },
+          { title: 'Pin #1', value: 1 },
           { title: 'Pin #2', value: 2 },
           { title: 'Pin #3', value: 3 },
           { title: 'Pin #4', value: 4 },
@@ -82,27 +82,13 @@ const projectSchema = {
       },
       initialValue: 0
     },
-
     { name: 'description', type: 'text', title: 'Popis' },
     { name: 'mainImage', type: 'image', title: 'Hlavní foto' },
     { name: 'videoUrl', type: 'url', title: 'Video URL' },
-    { 
-      name: 'isHero', 
-      type: 'boolean', 
-      title: 'Hlavní projekt (Hero)', 
-      initialValue: false 
-    },
-
-    // VRÁCENO ZPĚT: Obyčejné textové pole pro Rok
+    { name: 'isHero', type: 'boolean', title: 'Hlavní projekt (Hero)', initialValue: false },
     { name: 'year', type: 'string', title: 'Rok projektu', initialValue: '2026' },
-
-    { name: 'quality', type: 'string', title: 'Kvalita (např. 4K Ultra HD)', initialValue: '4K Ultra HD' },
-    { 
-      name: 'output', 
-      type: 'string', 
-      title: 'Výstup (např. Online, Socky, Film)', 
-      initialValue: 'Online' 
-    },
+    { name: 'quality', type: 'string', title: 'Kvalita', initialValue: '4K Ultra HD' },
+    { name: 'output', type: 'string', title: 'Výstup', initialValue: 'Online' },
     { 
       name: 'category', 
       type: 'string', 
@@ -116,7 +102,6 @@ const projectSchema = {
       }
     },
     { name: 'content', type: 'array', title: 'Obsah', of: [{ type: 'block' }, imageWithCaption, videoEmbed, beforeAfterSlider] },
-    { name: 'match', type: 'number', title: 'Procento shody', hidden: true },
   ]
 };
 
@@ -128,12 +113,7 @@ const postSchema = {
     { name: 'title', type: 'string', title: 'Titulek' },
     { name: 'slug', type: 'slug', title: 'Slug', options: { source: 'title', maxLength: 96 } },
     { name: 'mainImage', type: 'image', title: 'Hlavní obrázek', options: { hotspot: true } },
-    { 
-      name: 'publishedAt', 
-      type: 'datetime', 
-      title: 'Datum publikace',
-      initialValue: (new Date()).toISOString()
-    },
+    { name: 'publishedAt', type: 'datetime', title: 'Datum publikace', initialValue: (new Date()).toISOString() },
     { name: 'excerpt', type: 'text', title: 'Krátký výtah', rows: 3 },
     { name: 'body', type: 'array', title: 'Text článku', of: [{ type: 'block' }, imageWithCaption, videoEmbed, beforeAfterSlider] }
   ]
@@ -145,14 +125,11 @@ const settingsSchema = {
   type: 'document',
   fields: [
     { name: 'contactPhoto', type: 'image', title: 'Moje fotka (Kontakt)', options: { hotspot: true } },
-    {
-      name: 'introVideo',
-      type: 'file',
-      title: 'Intro Video (MP4/WebM)',
-      options: { accept: 'video/*' }
-    }
+    { name: 'introVideo', type: 'file', title: 'Intro Video (MP4/WebM)', options: { accept: 'video/*' } }
   ]
 };
+
+// --- HLAVNÍ KONFIGURACE ---
 
 export default defineConfig({
   name: 'default',
@@ -160,10 +137,29 @@ export default defineConfig({
   projectId: '1ycy3rf5',
   dataset: 'production',
   basePath: '/studio',
-  plugins: [deskTool()], // Zde v budoucnu přidáme Orderable List Structure
+  plugins: [
+    structureTool({
+      structure: (S, context) =>
+        S.list()
+          .title('Obsah')
+          .items([
+            // Tady aktivujeme táhla pro manuální řazení
+            orderableDocumentListDeskItem({
+              type: 'project',
+              title: 'Projekty (Manuální řazení)',
+              S,
+              context,
+            }),
+            S.divider(),
+            S.documentTypeListItem('post').title('Blog'),
+            S.documentTypeListItem('partner').title('Partneři'),
+            S.documentListItem().schemaType('settings').id('settings').title('Nastavení webu'),
+          ]),
+    }),
+  ],
   schema: { 
     types: [
-      projectSchema, 
+      projectSchema,
       postSchema, 
       settingsSchema, 
       { 

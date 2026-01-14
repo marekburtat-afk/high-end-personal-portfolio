@@ -11,6 +11,7 @@
   "dependencies": {
     "@portabletext/react": "^6.0.2",
     "@sanity/client": "^7.14.0",
+    "@sanity/orderable-document-list": "^1.4.2",
     "framer-motion": "^12.25.0",
     "lucide-react": "^0.562.0",
     "react": "^19.2.3",
