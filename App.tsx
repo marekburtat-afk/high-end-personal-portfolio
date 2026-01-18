@@ -47,7 +47,7 @@ const EnterScreen: React.FC<{ onEnter: () => void }> = ({ onEnter }) => (
 );
 
 const App: React.FC = () => {
-  // Inicializace stavů: kontrola sessionStorage proběhne hned na začátku
+  // Inicializace stavů: Striktně kontrolujeme sessionStorage
   const [hasClickedEnter, setHasClickedEnter] = useState(() => {
     return sessionStorage.getItem('hasSeenIntro') === 'true';
   });
@@ -57,16 +57,13 @@ const App: React.FC = () => {
   const [introVideoUrl, setIntroVideoUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    // Pokud uživatel už v této relaci (tabu) intro viděl, nenačítáme nic
+    // Pokud uživatel intro viděl, nenačítáme nic a rovnou ho pustíme na web
     if (sessionStorage.getItem('hasSeenIntro') === 'true') return;
 
     // Jinak načteme video ze Sanity
     getSettings().then(data => {
       if (data?.introVideoUrl) {
         setIntroVideoUrl(data.introVideoUrl);
-      } else {
-        // Pokud video není, vstupní brána po kliku web rovnou zobrazí
-        console.warn("Intro video nenalezeno v Sanity settings.");
       }
     });
   }, []);
@@ -84,12 +81,12 @@ const App: React.FC = () => {
 
   const handleStartEverything = () => {
     if (!introVideoUrl) {
-      // Pokud video z nějakého důvodu nemáme, po kliku na vstoupit jdeme rovnou na web
+      // Fallback: Pokud video ze Sanity nedorazilo, jdeme po kliku rovnou na web
       sessionStorage.setItem('hasSeenIntro', 'true');
       setHasClickedEnter(true);
       setIntroFinished(true);
     } else {
-      // Pokud video máme, spustíme ho
+      // Máme video -> Spustíme Netflix Intro
       setHasClickedEnter(true);
     }
   };
@@ -103,7 +100,7 @@ const App: React.FC = () => {
     <Router>
       <ScrollToTop />
       
-      {/* 1. VRSTVA: Vstupní brána (Master) */}
+      {/* 1. VRSTVA: Vstupní brána - ukáže se jen při prvním vstupu (nová karta) */}
       <AnimatePresence>
         {!hasClickedEnter && (
           <motion.div 
@@ -117,17 +114,16 @@ const App: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* 2. VRSTVA: Netflix Intro */}
+      {/* 2. VRSTVA: Netflix Intro - spustí se hned po kliku na Vstoupit */}
       <AnimatePresence mode="wait">
         {hasClickedEnter && !introFinished && introVideoUrl && (
           <NetflixIntro videoUrl={introVideoUrl} onComplete={handleIntroComplete} />
         )}
       </AnimatePresence>
       
-      {/* 3. VRSTVA: Samotný Web */}
+      {/* 3. VRSTVA: Samotný Web - skrytý pod intrem, dokud intro neskončí */}
       <Routes>
         <Route path="/studio/*" element={<StudioPage />} />
-        
         <Route path="*" element={
           <div 
             className={`flex flex-col transition-opacity duration-1000 
