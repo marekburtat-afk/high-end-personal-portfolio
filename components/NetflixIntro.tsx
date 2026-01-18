@@ -27,7 +27,6 @@ export const NetflixIntro: React.FC<NetflixIntroProps> = ({ videoUrl, onComplete
     >
       <AnimatePresence mode="wait">
         {!hasStarted ? (
-          /* FIX: absolute inset-0 a z-[10000] zaručí, že text už neuteče doleva */
           <motion.div
             key="welcome"
             initial={{ opacity: 0 }}
@@ -40,10 +39,9 @@ export const NetflixIntro: React.FC<NetflixIntroProps> = ({ videoUrl, onComplete
               animate={{ y: 0 }}
               className="text-white text-5xl md:text-7xl font-black uppercase tracking-tighter mb-12"
             >
-              Marek Verťat
+              Marek Veřtat
             </motion.h1>
 
-            {/* TLAČÍTKO S TEXTEM "VSTOUPIT" A ČERVENÝM HOVEREM */}
             <button
               onClick={handleStart}
               className="group relative px-16 py-4 bg-transparent border-2 border-white/20 rounded-sm transition-all duration-300 hover:border-[#E50914] overflow-hidden"
@@ -51,7 +49,6 @@ export const NetflixIntro: React.FC<NetflixIntroProps> = ({ videoUrl, onComplete
               <span className="relative z-10 text-white font-black uppercase tracking-[0.5em] text-xs transition-colors duration-300 group-hover:text-white">
                 Vstoupit
               </span>
-              {/* Netflix Red výplň */}
               <div className="absolute inset-0 bg-[#E50914] translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
             </button>
           </motion.div>
