@@ -21,18 +21,7 @@ export const Home: React.FC = () => {
     getPartners().then(setPartners);
   }, []);
 
-  // --- NOVÉ: Zablokování scrollování při otevřeném modalu ---
-  useEffect(() => {
-    if (showVideoModal) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    // Cleanup funkce pro případ, že by se komponenta odmountovala
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [showVideoModal]);
+  // POZNÁMKA: Scroll Lock byl na tvé přání odstraněn, aby se dalo scrollovat i při otevřeném videu.
 
   const getYoutubeId = (url: string) => {
     if (!url) return null;
@@ -107,23 +96,23 @@ export const Home: React.FC = () => {
         </section>
       )}
 
-      {/* PORTAL PRO MODAL - Nyní s fixní pozicí, která se nehne */}
+      {/* PORTAL PRO MODAL - Fixní pozice zůstává, scroll pozadí je povolen */}
       {createPortal(
         <AnimatePresence>
           {showVideoModal && heroProject?.videoUrl && (
-            <div className="fixed inset-0 z-[99999] flex items-center justify-center">
+            <div className="fixed inset-0 top-0 left-0 w-full h-full z-[99999] flex items-center justify-center pointer-events-none">
               <motion.div 
                 initial={{ opacity: 0 }} 
                 animate={{ opacity: 1 }} 
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/95 backdrop-blur-xl" 
+                className="fixed inset-0 top-0 left-0 w-full h-full bg-black/95 backdrop-blur-xl pointer-events-auto" 
                 onClick={() => setShowVideoModal(false)} 
               />
               <motion.div 
                 initial={{ scale: 0.9, opacity: 0 }} 
                 animate={{ scale: 1, opacity: 1 }} 
                 exit={{ scale: 0.9, opacity: 0 }}
-                className="relative w-[90vw] max-w-6xl aspect-video bg-black rounded-sm overflow-hidden shadow-2xl z-[100000]"
+                className="relative w-[90vw] max-w-6xl aspect-video bg-black rounded-sm overflow-hidden shadow-2xl z-[100000] pointer-events-auto"
               >
                 <button 
                   onClick={() => setShowVideoModal(false)}
