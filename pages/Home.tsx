@@ -20,12 +20,20 @@ export const Home: React.FC = () => {
     getPartners().then(setPartners);
   }, []);
 
+  // OPRAVENO: Odolná funkce pro získání ID (podporuje Shorts, zkrácené i klasické odkazy)
   const getHeroEmbedUrl = (url: string, isModal: boolean = false) => {
     if (!url) return "";
-    const id = url.split('v=')[1]?.split('&')[0];
+    
+    // Regex, který vysekne přesně 11 znaků ID z jakékoliv YouTube adresy
+    const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|shorts\/|watch\?v=|watch\?.+&v=))([^&?]{11})/);
+    const id = match ? match[1] : null;
+
+    if (!id) return "";
+
     const params = isModal 
       ? `autoplay=1&rel=0&modestbranding=1&loop=1&playlist=${id}` 
       : `autoplay=1&mute=1&controls=0&loop=1&playlist=${id}&rel=0&showinfo=0&modestbranding=1&iv_load_policy=3&disablekb=1&enablejsapi=1`;
+    
     return `https://www.youtube.com/embed/${id}?${params}`;
   };
 
@@ -45,7 +53,7 @@ export const Home: React.FC = () => {
                 ></iframe>
               </div>
             ) : (
-              <img src={urlFor(heroProject.mainImage).url()} className="w-full h-full object-cover" alt="" />
+              heroProject.mainImage && <img src={urlFor(heroProject.mainImage).url()} className="w-full h-full object-cover" alt="" />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-[#141414]/20 to-transparent" />
           </div>
@@ -68,7 +76,7 @@ export const Home: React.FC = () => {
                   </button>
                   
                   <Link 
-                    to="/projects" 
+                    to={`/project/${heroProject.slug.current}`} 
                     className="flex items-center gap-2 bg-neutral-500/40 text-white px-8 py-3 rounded-sm font-black uppercase text-sm hover:bg-neutral-500/60 backdrop-blur-md transition-transform active:scale-95"
                   >
                     <Info size={20} /> Více informací
