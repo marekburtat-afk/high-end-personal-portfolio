@@ -213,7 +213,6 @@ export default defineConfig({
             }),
             S.divider(),
             S.documentTypeListItem('post').title('Blog'),
-            // UPRAVENO: Přidáno manuální řazení pro Partnery
             orderableDocumentListDeskItem({
               type: 'partner',
               title: 'Partneři (Manuální řazení)',
@@ -234,11 +233,12 @@ export default defineConfig({
         title: 'Partneři', 
         type: 'document', 
         fields: [
-          // UPRAVENO: Přidáno pole pro manuální řazení
           { name: 'orderRank', type: 'string', hidden: true },
-          { name: 'name', type: 'string' }, 
-          { name: 'logo', type: 'image' }, 
-          { name: 'description', type: 'text' }
+          { name: 'name', type: 'string', title: 'Název partnera' }, 
+          { name: 'logo', type: 'image', title: 'Logo' }, 
+          { name: 'description', type: 'text', title: 'Popis (zobrazí se po najetí)' },
+          // PŘIDÁNO: Políčko pro URL projektu
+          { name: 'projectUrl', type: 'string', title: 'Odkaz na projekt (např. /project/vfx-reel nebo externí URL)' }
         ] 
       },
       imageWithCaption,

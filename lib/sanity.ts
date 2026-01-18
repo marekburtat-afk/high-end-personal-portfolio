@@ -15,7 +15,6 @@ export function urlFor(source: any) {
   return builder.image(source);
 }
 
-// OPRAVENO: Cílíme na konkrétní ID "settings"
 export async function getSettings() {
   return client.fetch(`*[_id == "settings"][0]{
     ...,
@@ -28,11 +27,13 @@ export async function getHeroData() {
   return client.fetch(`*[_type == "project" && isHero == true][0]`);
 }
 
+// UPRAVENO: Přidáno projectUrl do dotazu
 export async function getPartners() {
   return await client.fetch(`*[_type == "partner"] | order(orderRank asc) {
     name,
     "logo": logo.asset->url,
-    description
+    description,
+    projectUrl
   }`);
 }
 
@@ -85,7 +86,6 @@ export async function getProject(slug: string): Promise<Project | null> {
     }`, { slug });
 }
 
-// OPRAVENO: Cílíme na konkrétní ID "settings"
 export async function getContactData() {
   return client.fetch(`*[_id == "settings"][0]{
     contactPhoto,
