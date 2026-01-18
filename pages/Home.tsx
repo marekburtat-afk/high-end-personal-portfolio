@@ -13,7 +13,7 @@ export const Home: React.FC = () => {
   const [partners, setPartners] = useState<any[]>([]);
   const [heroProject, setHeroProject] = useState<Project | null>(null);
   const [showVideoModal, setShowVideoModal] = useState(false);
-  // NOVÉ: Stav pro sledování, zda je video připraveno k zobrazení
+  // Stav pro sledování, zda je video připraveno k zobrazení
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
 
   useEffect(() => {
@@ -82,8 +82,10 @@ export const Home: React.FC = () => {
                   >
                     <Play size={20} fill="currentColor" /> Přehrát
                   </button>
+                  
+                  {/* UPRAVENO: Odkaz nyní směřuje na stránku /projects */}
                   <Link 
-                    to={`/project/${heroProject.slug.current}`} 
+                    to="/projects" 
                     className="flex items-center gap-2 bg-neutral-500/40 text-white px-8 py-3 rounded-sm font-black uppercase text-sm hover:bg-neutral-500/60 backdrop-blur-md transition-all active:scale-95"
                   >
                     <Info size={20} /> Více informací
@@ -95,7 +97,7 @@ export const Home: React.FC = () => {
         </section>
       )}
 
-      {/* PORTAL PRO MODAL - Zůstává stejný, jen s opraveným URL */}
+      {/* PORTAL PRO MODAL */}
       {createPortal(
         <AnimatePresence>
           {showVideoModal && heroProject?.videoUrl && (
