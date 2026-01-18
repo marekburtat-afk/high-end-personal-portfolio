@@ -19,8 +19,9 @@ export const Blog: React.FC = () => {
         transition={{ duration: 0.8 }}
         className="pt-32 pb-16 px-6 md:px-12 lg:px-24"
       >
+        {/* OPRAVENO: Změna z "Poznámky" na "Blog" */}
         <h1 className="text-6xl md:text-8xl lg:text-9xl font-black text-white mb-6 uppercase tracking-tighter leading-none">
-          Poznámky
+          Blog
         </h1>
         <p className="text-neutral-500 max-w-2xl text-lg md:text-xl font-medium leading-tight opacity-80">
           Myšlenky o designu, technologiích a tvůrčím procesu.
