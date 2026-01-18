@@ -15,8 +15,9 @@ export function urlFor(source: any) {
   return builder.image(source);
 }
 
+// OPRAVENO: Cílíme na konkrétní ID "settings"
 export async function getSettings() {
-  return client.fetch(`*[_type == "settings"][0]{
+  return client.fetch(`*[_id == "settings"][0]{
     ...,
     "photoUrl": contactPhoto.asset->url,
     "introVideoUrl": introVideo.asset->url
@@ -27,7 +28,6 @@ export async function getHeroData() {
   return client.fetch(`*[_type == "project" && isHero == true][0]`);
 }
 
-// UPRAVENO: Přidáno řazení podle orderRank pro manuální pořadí partnerů
 export async function getPartners() {
   return await client.fetch(`*[_type == "partner"] | order(orderRank asc) {
     name,
@@ -36,11 +36,6 @@ export async function getPartners() {
   }`);
 }
 
-/**
- * MANUÁLNÍ ŘAZENÍ:
- * 1. pinPosition (1-4) - projekty se špendlíkem mají absolutní přednost.
- * 2. orderRank - zbytek se řadí přesně tak, jak si je v Sanity ručně poskládáš.
- */
 export async function getProjects(): Promise<Project[]> {
   return client.fetch(`
     *[_type == "project" && (isHero != true || !defined(isHero))] | order(
@@ -90,8 +85,9 @@ export async function getProject(slug: string): Promise<Project | null> {
     }`, { slug });
 }
 
+// OPRAVENO: Cílíme na konkrétní ID "settings"
 export async function getContactData() {
-  return client.fetch(`*[_type == "settings"][0]{
+  return client.fetch(`*[_id == "settings"][0]{
     contactPhoto,
     "photoUrl": contactPhoto.asset->url
   }`);

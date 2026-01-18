@@ -19,6 +19,7 @@ export const Contact: React.FC = () => {
   const rotateY = useTransform(mouseX, [-300, 300], [-5, 5]);
 
   useEffect(() => {
+    // Načtení dat z konkrétního dokumentu "settings"
     getContactData().then(setData);
   }, []);
 
@@ -98,7 +99,6 @@ export const Contact: React.FC = () => {
             </div>
           </div>
 
-          {/* MALÉ CTA JAKO DODATEK */}
           <p className="text-neutral-600 text-sm md:text-base italic font-medium pt-8 border-t border-white/5 w-fit">
             Pojďme společně vytvořit něco výjimečného.
           </p>
@@ -111,12 +111,11 @@ export const Contact: React.FC = () => {
           transition={{ duration: 1 }}
           className="relative flex justify-center lg:justify-end order-1 lg:order-2"
         >
-          {data?.contactPhoto && (
+          {data?.contactPhoto ? (
             <motion.div 
               style={{ rotateX, rotateY, perspective: 1000 }}
               className="relative w-full max-w-[450px] pointer-events-none"
             >
-              {/* Efekt záře za fotkou */}
               <div className="absolute inset-0 bg-[#E50914]/10 blur-[100px] rounded-full -z-10" />
               
               <img 
@@ -125,6 +124,11 @@ export const Contact: React.FC = () => {
                 className="w-full h-auto object-contain drop-shadow-[0_25px_50px_rgba(0,0,0,0.5)]"
               />
             </motion.div>
+          ) : (
+            // Pokud fotka není v Sanity nahrána, zobrazí se aspoň záře
+            <div className="w-full max-w-[450px] aspect-square flex items-center justify-center">
+               <div className="w-64 h-64 bg-[#E50914]/5 blur-[80px] rounded-full" />
+            </div>
           )}
         </motion.div>
       </div>
