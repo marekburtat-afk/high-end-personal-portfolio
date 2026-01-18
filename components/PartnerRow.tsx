@@ -51,7 +51,8 @@ export const PartnerRow: React.FC<PartnerRowProps> = ({ partners }) => {
             >
               {partner.projectUrl ? (
                 isExternal ? (
-                  <a href={partner.projectUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-full h-full">
+                  /* ODSTRANĚNO target="_blank", aby se odkaz otevíral v aktuální kartě */
+                  <a href={partner.projectUrl} className="flex items-center justify-center w-full h-full">
                     {LogoContent}
                   </a>
                 ) : (
