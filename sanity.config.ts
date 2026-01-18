@@ -2,8 +2,7 @@ import { defineConfig } from 'sanity';
 import { structureTool } from 'sanity/structure';
 import { orderableDocumentListDeskItem } from '@sanity/orderable-document-list';
 
-// --- POMOCNÁ SCHÉMATA (Musí mít definované 'name', aby se na ně dalo odkazovat) ---
-
+// --- POMOCNÁ SCHÉMATA ---
 const imageWithCaption = {
   name: 'imageWithCaption',
   type: 'image',
@@ -59,7 +58,6 @@ const mediaGrid = {
       name: 'items',
       type: 'array',
       title: 'Položky v mřížce',
-      // Odkazujeme na zaregistrované typy níže
       of: [{ type: 'imageWithCaption' }, { type: 'videoEmbed' }],
       options: { layout: 'grid' }
     },
@@ -119,7 +117,6 @@ const gallery = {
 };
 
 // --- HLAVNÍ DOKUMENTY ---
-
 const projectSchema = {
   name: 'project',
   title: 'Projekty',
@@ -196,7 +193,6 @@ const settingsSchema = {
 };
 
 // --- KONFIGURACE ---
-
 export default defineConfig({
   name: 'default',
   title: 'Portfolio Studio',
@@ -217,14 +213,19 @@ export default defineConfig({
             }),
             S.divider(),
             S.documentTypeListItem('post').title('Blog'),
-            S.documentTypeListItem('partner').title('Partneři'),
+            // UPRAVENO: Přidáno manuální řazení pro Partnery
+            orderableDocumentListDeskItem({
+              type: 'partner',
+              title: 'Partneři (Manuální řazení)',
+              S,
+              context,
+            }),
             S.documentListItem().schemaType('settings').id('settings').title('Nastavení webu'),
           ]),
     }),
   ],
   schema: { 
     types: [
-      // HLAVNÍ DOKUMENTY
       projectSchema,
       postSchema, 
       settingsSchema, 
@@ -232,9 +233,14 @@ export default defineConfig({
         name: 'partner', 
         title: 'Partneři', 
         type: 'document', 
-        fields: [{ name: 'name', type: 'string' }, { name: 'logo', type: 'image' }, { name: 'description', type: 'text' }] 
+        fields: [
+          // UPRAVENO: Přidáno pole pro manuální řazení
+          { name: 'orderRank', type: 'string', hidden: true },
+          { name: 'name', type: 'string' }, 
+          { name: 'logo', type: 'image' }, 
+          { name: 'description', type: 'text' }
+        ] 
       },
-      // TADY REGISTRUJEME POMOCNÉ TYPY (Tím zmizí chyby Unknown type)
       imageWithCaption,
       videoEmbed,
       mediaGrid,

@@ -27,8 +27,9 @@ export async function getHeroData() {
   return client.fetch(`*[_type == "project" && isHero == true][0]`);
 }
 
+// UPRAVENO: Přidáno řazení podle orderRank pro manuální pořadí partnerů
 export async function getPartners() {
-  return await client.fetch(`*[_type == "partner"]{
+  return await client.fetch(`*[_type == "partner"] | order(orderRank asc) {
     name,
     "logo": logo.asset->url,
     description
