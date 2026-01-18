@@ -7,9 +7,9 @@ export const Footer: React.FC = () => {
     <footer className="bg-[#050505] border-t border-neutral-900/50 py-12 px-4 md:px-12 lg:px-24">
       <div className="max-w-[1920px] mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
         
-        {/* LEVÁ STRANA: Copyright */}
+        {/* LEVÁ STRANA: Copyright - OPRAVENO JMENO */}
         <div className="text-neutral-500 text-[10px] md:text-xs font-medium uppercase tracking-[0.2em]">
-          © {currentYear} Marek Verťat. Všechna práva vyhrazena.
+          © {currentYear} Marek Veřtat. Všechna práva vyhrazena.
         </div>
 
         {/* PRAVÁ STRANA: Pouze Instagram a TikTok */}

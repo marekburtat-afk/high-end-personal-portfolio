@@ -43,7 +43,7 @@ export const Navigation: React.FC = () => {
           <div className="flex items-center gap-12">
             <Link to="/" className="flex items-center">
               <span className="text-[#E50914] font-black text-2xl md:text-3xl tracking-tighter hover:scale-105 transition-transform">
-                MAREK VERŤAT
+                MAREK VEŘTAT
               </span>
             </Link>
 

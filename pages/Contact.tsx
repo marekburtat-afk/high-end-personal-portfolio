@@ -121,7 +121,7 @@ export const Contact: React.FC = () => {
               
               <img 
                 src={urlFor(data.contactPhoto).url()} 
-                alt="Marek Verťat" 
+                alt="Marek Veřtat" 
                 className="w-full h-auto object-contain drop-shadow-[0_25px_50px_rgba(0,0,0,0.5)]"
               />
             </motion.div>
