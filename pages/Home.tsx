@@ -21,8 +21,6 @@ export const Home: React.FC = () => {
     getPartners().then(setPartners);
   }, []);
 
-  // POZNÁMKA: Scroll Lock byl na tvé přání odstraněn, aby se dalo scrollovat i při otevřeném videu.
-
   const getYoutubeId = (url: string) => {
     if (!url) return null;
     const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|shorts\/|watch\?v=|watch\?.+&v=))([^&?]{11})/);
@@ -72,9 +70,12 @@ export const Home: React.FC = () => {
                 <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-4 tracking-tighter uppercase leading-none drop-shadow-2xl">
                   {heroProject.title}
                 </h1>
-                <p className="text-sm md:text-lg text-neutral-200 max-w-2xl mb-8 line-clamp-3 font-medium drop-shadow-lg">
+                
+                {/* UPRAVENO: Změněno na h2 a zvětšeno pro lepší SEO a vizuální styl */}
+                <h2 className="text-lg md:text-2xl lg:text-3xl text-neutral-200 max-w-2xl mb-8 line-clamp-3 font-medium drop-shadow-lg uppercase tracking-tight">
                   {heroProject.description}
-                </p>
+                </h2>
+
                 <div className="flex gap-4">
                   <button 
                     onClick={() => setShowVideoModal(true)}
@@ -96,7 +97,6 @@ export const Home: React.FC = () => {
         </section>
       )}
 
-      {/* PORTAL PRO MODAL - Fixní pozice zůstává, scroll pozadí je povolen */}
       {createPortal(
         <AnimatePresence>
           {showVideoModal && heroProject?.videoUrl && (
