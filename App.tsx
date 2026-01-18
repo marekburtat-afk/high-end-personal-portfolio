@@ -13,8 +13,6 @@ import { StudioPage } from './pages/StudioPage';
 import { NetflixIntro } from './components/NetflixIntro';
 import { getSettings } from './lib/sanity'; 
 
-// --- OSTRÝ START: Coming Soon a autorizace odstraněny ---
-
 const ScrollToTop = () => {
   const { pathname } = useLocation();
   useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
@@ -26,23 +24,22 @@ const App: React.FC = () => {
   const [introVideoUrl, setIntroVideoUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    // Kontrola, zda uživatel viděl intro v této relaci
-    if (sessionStorage.getItem('hasSeenIntro') === 'true') {
-      setIntroFinished(true);
-    }
-
-    // Načtení nastavení (intro video)
+    // NAČTENÍ DAT ZE SANITY
     getSettings().then(data => {
       if (data?.introVideoUrl) {
         setIntroVideoUrl(data.introVideoUrl);
       } else {
+        // Pokud v Sanity není video nastaveno, rovnou zobrazíme web
         setIntroFinished(true);
       }
+    }).catch(() => {
+      // Při chybě spojení také zobrazíme web rovnou
+      setIntroFinished(true);
     });
   }, []);
 
   useEffect(() => {
-    // Blokování scrollu pouze během běžícího úvodního intra
+    // Blokování scrollu během intra pro čistý Netflix zážitek
     if (!introFinished && introVideoUrl) {
       document.body.style.overflow = 'hidden';
       document.body.style.height = '100dvh';
@@ -55,7 +52,9 @@ const App: React.FC = () => {
   }, [introFinished, introVideoUrl]);
 
   const handleIntroComplete = () => {
-    sessionStorage.setItem('hasSeenIntro', 'true');
+    // Zde můžeš po testování odkomentovat řádek níže, 
+    // aby se intro ukazovalo jen jednou za návštěvu:
+    // sessionStorage.setItem('hasSeenIntro', 'true');
     setIntroFinished(true);
   };
 
@@ -63,6 +62,7 @@ const App: React.FC = () => {
     <Router>
       <ScrollToTop />
       
+      {/* INTRO VIDEO VRSTVA */}
       <AnimatePresence mode="wait">
         {!introFinished && introVideoUrl && (
           <NetflixIntro videoUrl={introVideoUrl} onComplete={handleIntroComplete} />
@@ -70,7 +70,10 @@ const App: React.FC = () => {
       </AnimatePresence>
       
       <Routes>
+        {/* Administrační rozhraní Sanity */}
         <Route path="/studio/*" element={<StudioPage />} />
+        
+        {/* Hlavní webové stránky */}
         <Route path="*" element={
           <div 
             className={`flex flex-col transition-opacity duration-1000 
