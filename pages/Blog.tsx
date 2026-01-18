@@ -23,8 +23,9 @@ export const Blog: React.FC = () => {
         <h1 className="text-6xl md:text-8xl lg:text-9xl font-black text-white mb-6 uppercase tracking-tighter leading-none">
           Blog
         </h1>
+        {/* AKTUALIZOVANÝ TEXT: Profesionálnější a lákavější podnadpis */}
         <p className="text-neutral-500 max-w-2xl text-lg md:text-xl font-medium leading-tight opacity-80">
-          Myšlenky o designu, technologiích a tvůrčím procesu.
+          Nahlédněte pod pokličku vizuálních efektů a digitální tvorby.
         </p>
       </motion.div>
 
