@@ -18,13 +18,16 @@ export const PartnerRow: React.FC<PartnerRowProps> = ({ partners }) => {
 
   return (
     <div className="pt-8 md:pt-2 pb-0 md:pb-24">
-      {/* Nadpis sekce */}
-      <h2 className="text-lg md:text-[1.4vw] lg:text-2xl font-black text-[#e5e5e5] uppercase tracking-tighter mb-10 md:mb-14">
+      {/* Nadpis sekce: text-2xl na mobilu, na PC tvůj původní styl */}
+      <h2 className="text-2xl md:text-xl lg:text-2xl font-black text-[#e5e5e5] uppercase tracking-tighter mb-10 md:mb-14">
         Reference a partneři
       </h2>
       
-      {/* Mřížka log - 3 sloupce na mobilu, flex na PC */}
-      <div className="grid grid-cols-3 gap-y-10 gap-x-4 items-center justify-items-center md:flex md:flex-wrap md:justify-start md:gap-x-16 md:gap-y-16 lg:gap-x-20">
+      {/* Mřížka log:
+          MOBIL: 3 sloupce (grid-cols-3)
+          PC: flexbox s velkými rozestupy (md:flex)
+      */}
+      <div className="grid grid-cols-3 gap-y-10 gap-x-4 items-center justify-items-center md:flex md:flex-wrap md:justify-start md:gap-x-16 md:gap-y-16 lg:gap-x-24">
         {partners.map((partner, index) => {
           const isExternal = partner.projectUrl?.startsWith('http');
           
@@ -43,7 +46,8 @@ export const PartnerRow: React.FC<PartnerRowProps> = ({ partners }) => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1, duration: 0.5 }}
-              className="group relative flex items-center justify-center w-full max-w-[100px] md:w-36 lg:w-44 h-10 md:h-16 lg:h-20"
+              /* OPRAVENO: Výrazně zvětšeny rozměry pro PC (md:w-48 lg:w-56) */
+              className="group relative flex items-center justify-center w-full max-w-[120px] md:w-48 md:max-w-none lg:w-56 h-12 md:h-20 lg:h-24"
             >
               {partner.projectUrl ? (
                 isExternal ? (
