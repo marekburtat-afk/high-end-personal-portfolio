@@ -13,7 +13,6 @@ export const Home: React.FC = () => {
   const [partners, setPartners] = useState<any[]>([]);
   const [heroProject, setHeroProject] = useState<Project | null>(null);
   const [showVideoModal, setShowVideoModal] = useState(false);
-  // Stav pro sledování, zda je video připraveno k zobrazení
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
 
   useEffect(() => {
@@ -21,6 +20,19 @@ export const Home: React.FC = () => {
     getProjects().then(setProjects);
     getPartners().then(setPartners);
   }, []);
+
+  // --- NOVÉ: Zablokování scrollování při otevřeném modalu ---
+  useEffect(() => {
+    if (showVideoModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    // Cleanup funkce pro případ, že by se komponenta odmountovala
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [showVideoModal]);
 
   const getYoutubeId = (url: string) => {
     if (!url) return null;
@@ -42,7 +54,6 @@ export const Home: React.FC = () => {
       {heroProject && (
         <section className="relative h-[85vh] w-full overflow-hidden bg-black">
           <div className="absolute inset-0 z-0">
-            {/* STILL IMAGE: Tento obrázek je vidět okamžitě */}
             {heroProject.mainImage && (
               <img 
                 src={urlFor(heroProject.mainImage).width(1920).quality(80).url()} 
@@ -83,7 +94,6 @@ export const Home: React.FC = () => {
                     <Play size={20} fill="currentColor" /> Přehrát
                   </button>
                   
-                  {/* UPRAVENO: Odkaz nyní směřuje na stránku /projects */}
                   <Link 
                     to="/projects" 
                     className="flex items-center gap-2 bg-neutral-500/40 text-white px-8 py-3 rounded-sm font-black uppercase text-sm hover:bg-neutral-500/60 backdrop-blur-md transition-all active:scale-95"
@@ -97,18 +107,22 @@ export const Home: React.FC = () => {
         </section>
       )}
 
-      {/* PORTAL PRO MODAL */}
+      {/* PORTAL PRO MODAL - Nyní s fixní pozicí, která se nehne */}
       {createPortal(
         <AnimatePresence>
           {showVideoModal && heroProject?.videoUrl && (
-            <div className="fixed inset-0 z-[99999] flex items-center justify-center overflow-hidden">
+            <div className="fixed inset-0 z-[99999] flex items-center justify-center">
               <motion.div 
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                initial={{ opacity: 0 }} 
+                animate={{ opacity: 1 }} 
+                exit={{ opacity: 0 }}
                 className="fixed inset-0 bg-black/95 backdrop-blur-xl" 
                 onClick={() => setShowVideoModal(false)} 
               />
               <motion.div 
-                initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+                initial={{ scale: 0.9, opacity: 0 }} 
+                animate={{ scale: 1, opacity: 1 }} 
+                exit={{ scale: 0.9, opacity: 0 }}
                 className="relative w-[90vw] max-w-6xl aspect-video bg-black rounded-sm overflow-hidden shadow-2xl z-[100000]"
               >
                 <button 
