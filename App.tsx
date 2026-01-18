@@ -13,8 +13,7 @@ import { StudioPage } from './pages/StudioPage';
 import { NetflixIntro } from './components/NetflixIntro';
 import { getSettings } from './lib/sanity'; 
 
-const isComingSoon = true; 
-const SECRET_KEY = 'ukaz-mi-to';
+// --- OSTRÝ START: Coming Soon a autorizace odstraněny ---
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -22,29 +21,17 @@ const ScrollToTop = () => {
   return null;
 };
 
-const ComingSoon = () => (
-  <div className="fixed inset-0 bg-[#050505] flex flex-col items-center justify-center text-white p-6 text-center font-black uppercase z-[9999]">
-    <h1 className="text-4xl md:text-6xl mb-4 tracking-tighter">Marek Verťat</h1>
-    <p className="text-neutral-500 tracking-[0.5em] text-xs">Coming Soon 2026</p>
-  </div>
-);
-
 const App: React.FC = () => {
-  const [isAuthorized, setIsAuthorized] = useState(false);
   const [introFinished, setIntroFinished] = useState(false);
   const [introVideoUrl, setIntroVideoUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('dev') === SECRET_KEY || localStorage.getItem('devMode') === 'true') {
-      setIsAuthorized(true);
-      localStorage.setItem('devMode', 'true');
-    }
-
+    // Kontrola, zda uživatel viděl intro v této relaci
     if (sessionStorage.getItem('hasSeenIntro') === 'true') {
       setIntroFinished(true);
     }
 
+    // Načtení nastavení (intro video)
     getSettings().then(data => {
       if (data?.introVideoUrl) {
         setIntroVideoUrl(data.introVideoUrl);
@@ -55,7 +42,8 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (!introFinished && introVideoUrl && isAuthorized) {
+    // Blokování scrollu pouze během běžícího úvodního intra
+    if (!introFinished && introVideoUrl) {
       document.body.style.overflow = 'hidden';
       document.body.style.height = '100dvh';
       document.body.style.touchAction = 'none';
@@ -64,16 +52,12 @@ const App: React.FC = () => {
       document.body.style.height = 'auto';
       document.body.style.touchAction = 'auto';
     }
-  }, [introFinished, introVideoUrl, isAuthorized]);
+  }, [introFinished, introVideoUrl]);
 
   const handleIntroComplete = () => {
     sessionStorage.setItem('hasSeenIntro', 'true');
     setIntroFinished(true);
   };
-
-  if (isComingSoon && !isAuthorized) {
-    return <ComingSoon />;
-  }
 
   return (
     <Router>
