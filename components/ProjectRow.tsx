@@ -57,7 +57,8 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
 
   return (
     <div className="space-y-4 mb-8 md:mb-12 select-none relative group/main">
-      <h2 className="text-[1.4vw] md:text-xl lg:text-2xl font-black text-[#e5e5e5] px-4 md:px-12 uppercase tracking-tighter">
+      {/* UPRAVENO: Fixní velikost text-lg pro mobil, vw zůstává pro PC */}
+      <h2 className="text-lg md:text-[1.4vw] lg:text-2xl font-black text-[#e5e5e5] px-4 md:px-12 uppercase tracking-tighter">
         {title}
       </h2>
       
@@ -102,19 +103,16 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects }) => {
                   />
                   
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4 flex flex-col justify-end pointer-events-none text-left">
-                    {/* ČISTÝ DESIGN: Pouze kvalita */}
                     <div className="mb-2">
                       <span className="border border-white/40 px-1 text-[8px] md:text-[10px] rounded-[1px] text-white font-black uppercase">
                         {project.quality || '4K ULTRA HD'}
                       </span>
                     </div>
 
-                    {/* NÁZEV */}
                     <h3 className="text-white text-xs md:text-sm font-black uppercase leading-tight mb-1">
                       {project.title}
                     </h3>
 
-                    {/* ČERVENÝ VÝSTUP */}
                     <p className="text-[#E50914] text-[7px] md:text-[9px] font-black uppercase tracking-[0.2em]">
                       {project.output || 'REKLAMA'}
                     </p>

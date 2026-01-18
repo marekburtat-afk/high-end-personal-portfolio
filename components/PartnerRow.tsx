@@ -6,7 +6,7 @@ interface Partner {
   name: string;
   logo: string;
   description?: string;
-  projectUrl?: string; // PŘIDÁNO
+  projectUrl?: string; 
 }
 
 interface PartnerRowProps {
@@ -17,8 +17,9 @@ export const PartnerRow: React.FC<PartnerRowProps> = ({ partners }) => {
   if (!partners || partners.length === 0) return null;
 
   return (
-    <div className="pt-2 pb-16 md:pb-24">
-      <h2 className="text-[1.4vw] md:text-xl lg:text-2xl font-black text-[#e5e5e5] uppercase tracking-tighter mb-10 md:mb-14">
+    <div className="pt-8 md:pt-2 pb-16 md:pb-24">
+      {/* UPRAVENO: Fixní velikost textu pro mobil */}
+      <h2 className="text-lg md:text-[1.4vw] lg:text-2xl font-black text-[#e5e5e5] uppercase tracking-tighter mb-10 md:mb-14">
         Reference a partneři
       </h2>
       
@@ -26,7 +27,6 @@ export const PartnerRow: React.FC<PartnerRowProps> = ({ partners }) => {
         {partners.map((partner, index) => {
           const isExternal = partner.projectUrl?.startsWith('http');
           
-          // Vnitřní obsah loga
           const LogoContent = (
             <img
               src={partner.logo}
@@ -42,9 +42,8 @@ export const PartnerRow: React.FC<PartnerRowProps> = ({ partners }) => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1, duration: 0.5 }}
-              className="group relative flex items-center justify-center w-28 md:w-36 lg:w-44 h-12 md:h-16 lg:h-20"
+              className="group relative flex items-center justify-center w-24 md:w-36 lg:w-44 h-10 md:h-16 lg:h-20"
             >
-              {/* Logika odkazu: Pokud existuje URL, obalíme logo odkazem */}
               {partner.projectUrl ? (
                 isExternal ? (
                   <a href={partner.projectUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-full h-full">
@@ -59,7 +58,6 @@ export const PartnerRow: React.FC<PartnerRowProps> = ({ partners }) => {
                 LogoContent
               )}
               
-              {/* TOOLTIP */}
               {partner.description && (
                 <div className="absolute top-full mt-4 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-50 min-w-[250px] md:min-w-[350px]">
                   <div className="bg-[#141414] border border-white/10 p-4 shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-xl text-center">
